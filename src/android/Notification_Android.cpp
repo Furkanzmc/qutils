@@ -1,4 +1,4 @@
-#include "zmc/Notification_Android.h"
+#include "zmc/android/Notification_Android.h"
 // Qt
 #include <QDebug>
 

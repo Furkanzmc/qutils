@@ -1,65 +1,23 @@
-#include "zmc/NotificationClient_Android.h"
-#include "zmc/Notification_Android.h"
+#include "zmc/android/NotificationClient_Android.h"
+// Qt
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
-#include <QtAndroid>
 #endif // Q_OS_ANDROID
 #include <QDebug>
 #include <QTimer>
 #include <QDateTime>
+// Local
+#include "zmc/android/Notification_Android.h"
+#include "zmc/android/AndroidUtils.h"
+
+#include <functional>
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
 using NotificationQueue = std::vector<std::tuple<QString, int, QString>>;
 
 #ifdef Q_OS_ANDROID
-
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
-
-static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
-{
-    const QString tag = QAndroidJniObject(jtag).toString();
-    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
-    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
-    if (client) {
-        client->emitNotificationReceivedSignal(tag, id);
-    }
-    else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName));
-    }
-}
-
-static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
-    {
-        "notificationReceived", // const char* function name;
-        "(Ljava/lang/String;ILjava/lang/String;)V", // const char* function signature
-        (void *)notificationReceivedCallback // function pointer
-    }
-};
-
-// This method is called automatically by Java VM after the .so file is loaded
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void * /*reserved*/)
-{
-    JNIEnv *env;
-    // Get the JNIEnv pointer.
-    if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-
-    // Search for Java class which declares the native methods
-    jclass javaClass = env->FindClass("org/zmc/qutils/notification/CppCallbacks");
-    if (!javaClass) {
-        return JNI_ERR;
-    }
-
-    // Register our native methods
-    if (env->RegisterNatives(javaClass, JAVA_CALLBACK_METHODS, sizeof(JAVA_CALLBACK_METHODS) / sizeof(JAVA_CALLBACK_METHODS[0])) < 0) {
-        return JNI_ERR;
-    }
-
-    return JNI_VERSION_1_6;
-}
-
 #endif // Q_OS_ANDROID
 
 namespace zmc

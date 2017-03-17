@@ -30,6 +30,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 android {
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
     DISTFILES += \
         android/AndroidManifest.xml \
         android/gradle/wrapper/gradle-wrapper.jar \
@@ -42,8 +43,6 @@ android {
 
     OTHER_FILES += \
             $$PWD/android/src/org/zmc/qutils/demo/MainActivity.java
-
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 }
 
 include(E:/Development/SourceTree/GitHub/qutils/qutils.pri)

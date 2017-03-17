@@ -3,6 +3,12 @@ package org.zmc.qutils;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.Window;
+
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.view.View;
+
 
 import org.zmc.qutils.notification.NotificationClient;
 import org.zmc.qutils.notification.NotificationReceiver;
@@ -17,6 +23,10 @@ public class QutilsActivity extends QtActivity
 {
     private static QutilsActivity m_Instance;
     protected static NotificationClient m_NotificationClient;
+    protected static AndroidUtils m_AndroidUtils;
+
+    protected static boolean m_IsImmersiveModeEnabled = false;
+    protected static boolean m_IsStatusBarVisible = true;
 
     public QutilsActivity()
     {
@@ -27,6 +37,7 @@ public class QutilsActivity extends QtActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         m_NotificationClient = new NotificationClient(this);
+        m_AndroidUtils = new AndroidUtils(this);
     }
 
     @Override
@@ -40,5 +51,29 @@ public class QutilsActivity extends QtActivity
         if (id > -1) {
             CppCallbacks.notificationReceived(tag, 0, notificationManagerName);
         }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            if (m_IsImmersiveModeEnabled) {
+                m_AndroidUtils.setImmersiveMode(true);
+            }
+
+            if (m_IsStatusBarVisible == false) {
+                m_AndroidUtils.setStatusBarVisible(false);
+            }
+        }
+    }
+
+    public static void setImmersiveModeEnabled(boolean enabled)
+    {
+        m_IsImmersiveModeEnabled = enabled;
+    }
+
+    public static void setStatusBarVisible(boolean visible)
+    {
+        m_IsStatusBarVisible = visible;
     }
 }

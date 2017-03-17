@@ -5,5 +5,10 @@
         <file>qml/CheckBox.qml</file>
         <file>qml/CheckSign.qml</file>
         <file>qml/CheckBoxStyle.qml</file>
+        <file>qml/ColorPalette.qml</file>
+        <file>qml/NotificationsView.qml</file>
+        <file>qml/Menu.qml</file>
+        <file>qml/MenuItem.qml</file>
+        <file>qml/StatusBarView.qml</file>
     </qresource>
 </RCC>

@@ -9,10 +9,10 @@ namespace zmc
  * @code
  *     // in main.cpp
  *     ScreenHelper manager;
- *     engine.rootContext()->setContextProperty("SM", &manager);
+ *     engine.rootContext()->setContextProperty("SH", &manager);
  * @endcode
  *
- * Pass the `QQuickWindow` to `QMLRefresh`, then use QM.relad() to reload at runtime!
+ * Then use like so:
  * @code
  *     Window {
  *         id: mainWindow
