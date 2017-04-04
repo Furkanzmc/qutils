@@ -63,7 +63,7 @@ public:
         m_Window = window;
     }
 
-    Q_INVOKABLE QString MainQMLFile() const
+    Q_INVOKABLE QString getMainQMLFile() const
     {
         return m_MainQMLFile;
     }
