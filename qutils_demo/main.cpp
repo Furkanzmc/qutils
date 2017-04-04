@@ -3,13 +3,13 @@
 #include <QQmlContext>
 
 #ifdef Q_OS_ANDROID
-#include "zmc/NotificationClient.h"
-#include "zmc/Notification.h"
-#include "zmc/android/AndroidUtils.h"
+#include "qutils/NotificationClient.h"
+#include "qutils/Notification.h"
+#include "qutils/android/AndroidUtils.h"
 #endif // Q_OS_ANDROID
-#include "zmc/ScreenHelper.h"
-#include "zmc/QMLRefresh.h"
-#include "zmc/Macros.h"
+#include "qutils/ScreenHelper.h"
+#include "qutils/QMLRefresh.h"
+#include "qutils/Macros.h"
 
 int main(int argc, char *argv[])
 {
