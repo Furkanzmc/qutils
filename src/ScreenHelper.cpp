@@ -1,9 +1,9 @@
-#include "zmc/ScreenHelper.h"
+#include "qutils/ScreenHelper.h"
 // Qt
 #include <QGuiApplication>
 #include <QScreen>
 // zmc
-#include "zmc/Macros.h"
+#include "qutils/Macros.h"
 
 namespace zmc
 {

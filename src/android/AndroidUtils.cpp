@@ -1,4 +1,4 @@
-#include "zmc/android/AndroidUtils.h"
+#include "qutils/android/AndroidUtils.h"
 // Qt
 #include <QDebug>
 #ifdef Q_OS_ANDROID

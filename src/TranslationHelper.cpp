@@ -1,4 +1,4 @@
-#include "zmc/TranslationHelper.h"
+#include "qutils/TranslationHelper.h"
 // Qt
 #include <QGuiApplication>
 #include <QTranslator>

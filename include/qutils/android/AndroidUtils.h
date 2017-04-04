@@ -6,7 +6,7 @@
 #include <QtAndroidExtras/QAndroidJniObject>
 #endif // Q_OS_ANDROID
 // Local
-#include "zmc/android/NotificationClient_Android.h"
+#include "qutils/android/NotificationClient_Android.h"
 
 static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
 {

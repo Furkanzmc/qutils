@@ -1,4 +1,4 @@
-#include "zmc/android/NotificationClient_Android.h"
+#include "qutils/android/NotificationClient_Android.h"
 // Qt
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
@@ -7,8 +7,8 @@
 #include <QTimer>
 #include <QDateTime>
 // Local
-#include "zmc/android/Notification_Android.h"
-#include "zmc/android/AndroidUtils.h"
+#include "qutils/android/Notification_Android.h"
+#include "qutils/android/AndroidUtils.h"
 
 #include <functional>
 

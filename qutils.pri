@@ -10,9 +10,9 @@ android {
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java
 
     HEADERS += \
-        $$PWD/include/zmc/android/Notification_Android.h \
-        $$PWD/include/zmc/android/NotificationClient_Android.h \
-        $$PWD/include/zmc/android/AndroidUtils.h
+        $$PWD/include/qutils/android/Notification_Android.h \
+        $$PWD/include/qutils/android/NotificationClient_Android.h \
+        $$PWD/include/qutils/android/AndroidUtils.h
 
     SOURCES += \
         $$PWD/src/android/Notification_Android.cpp \
@@ -23,12 +23,12 @@ android {
 }
 
 HEADERS += \
-    $$PWD/include/zmc/ScreenHelper.h \
-    $$PWD/include/zmc/QMLRefresh.h \
-    $$PWD/include/zmc/NotificationClient.h \
-    $$PWD/include/zmc/Notification.h \
-    $$PWD/include/zmc/Macros.h \
-    $$PWD/include/zmc/TranslationHelper.h
+    $$PWD/include/qutils/ScreenHelper.h \
+    $$PWD/include/qutils/QMLRefresh.h \
+    $$PWD/include/qutils/NotificationClient.h \
+    $$PWD/include/qutils/Notification.h \
+    $$PWD/include/qutils/Macros.h \
+    $$PWD/include/qutils/TranslationHelper.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \

@@ -1,5 +1,5 @@
 #pragma once
-#include "zmc/Macros.h"
+#include "qutils/Macros.h"
 
 #ifdef Q_OS_ANDROID
 #include "android/Notification_Android.h"
