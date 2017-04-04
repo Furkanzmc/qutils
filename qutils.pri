@@ -28,9 +28,11 @@ HEADERS += \
     $$PWD/include/zmc/NotificationClient.h \
     $$PWD/include/zmc/Notification.h \
     $$PWD/include/zmc/Macros.h \
+    $$PWD/include/zmc/TranslationHelper.h
 
 SOURCES += \
-    $$PWD/src/ScreenHelper.cpp
+    $$PWD/src/ScreenHelper.cpp \
+    $$PWD/src/TranslationHelper.cpp
 
 
 INCLUDEPATH += $$PWD/include
