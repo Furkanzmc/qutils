@@ -17,11 +17,16 @@ ScreenHelper::ScreenHelper(QObject *parent)
 
 qreal ScreenHelper::dp(const qreal &size)
 {
+    qreal newSize = size;
 #if defined(Q_OS_DESKTOP)
-    return round(size * (m_DPI / 90.0));
+    if (m_DPI <= 90) {
+        newSize = round(size * (m_DPI / 90.0));
+    }
 #elif defined(Q_OS_ANDROID)
-    return round(size * (m_DPI / 160.0));
+    newSize = round(size * (m_DPI / 160.0));
 #endif // Platform Check
+
+    return newSize;
 }
 
 }
