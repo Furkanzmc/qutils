@@ -3,12 +3,13 @@ package org.zmc.qutils;
 import android.util.Log;
 import android.os.Bundle;
 import android.content.Intent;
-import android.view.Window;
 
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.view.View;
 
+import android.view.View;
+import android.view.KeyEvent;
 
 import org.zmc.qutils.notification.NotificationClient;
 import org.zmc.qutils.notification.NotificationReceiver;
@@ -75,5 +76,19 @@ public class QutilsActivity extends QtActivity
     public static void setStatusBarVisible(boolean visible)
     {
         m_IsStatusBarVisible = visible;
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            CppCallbacks.backButtonPressed();
+            return true;
+        }
+        else if (keyCode == KeyEvent.KEYCODE_MENU) {
+            CppCallbacks.menuButtonPressed();
+            return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 }

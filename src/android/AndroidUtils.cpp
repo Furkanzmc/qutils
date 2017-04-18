@@ -4,7 +4,6 @@
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
 
-
 #define ANDROID_UTILS_CLASS "org/zmc/qutils/AndroidUtils"
 
 static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
@@ -12,6 +11,16 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "notificationReceived", // const char* function name;
         "(Ljava/lang/String;ILjava/lang/String;)V", // const char* function signature
         (void *)notificationReceivedCallback // function pointer
+    },
+    {
+        "backButtonPressed", // const char* function name;
+        "()V", // const char* function signature
+        (void *)backButtonPressedCallback // function pointer
+    },
+    {
+        "menuButtonPressed", // const char* function name;
+        "()V", // const char* function signature
+        (void *)menuButtonPressedCallback // function pointer
     }
 };
 
@@ -43,15 +52,17 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void * /*reserved*/)
 namespace zmc
 {
 
+std::vector<AndroidUtils *> AndroidUtils::m_Instances = std::vector<AndroidUtils *>();
+
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
 {
-
+    m_Instances.push_back(this);
 }
 
 void AndroidUtils::setStatusBarColor(QColor color)
 {
-    auto asd = [color]() {
+    auto runnable = [color]() {
         QString ledColor = "";
         if (color.isValid()) {
             ledColor = color.name(QColor::NameFormat::HexArgb);
@@ -64,7 +75,7 @@ void AndroidUtils::setStatusBarColor(QColor color)
             jniColor.object<jstring>());
     };
 
-    QtAndroid::runOnAndroidThreadSync(asd);
+    QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
 void AndroidUtils::setStatusBarVisible(bool visible)
@@ -91,6 +102,28 @@ void AndroidUtils::setImmersiveMode(bool visible)
     };
 
     QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
+void AndroidUtils::emitBackButtonPressed()
+{
+    emit backButtonPressed();
+}
+
+void AndroidUtils::emitMenuButtonPressed()
+{
+    emit menuButtonPressed();
+}
+
+void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (isBackButton) {
+            utils->emitBackButtonPressed();
+        }
+        else {
+            utils->emitMenuButtonPressed();
+        }
+    }
 }
 
 }

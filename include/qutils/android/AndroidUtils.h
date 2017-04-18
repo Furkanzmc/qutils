@@ -8,19 +8,6 @@
 // Local
 #include "qutils/android/NotificationClient_Android.h"
 
-static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
-{
-    const QString tag = QAndroidJniObject(jtag).toString();
-    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
-    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
-    if (client) {
-        client->emitNotificationReceivedSignal(tag, id);
-    }
-    else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName));
-    }
-}
-
 namespace zmc
 {
 
@@ -34,9 +21,41 @@ public:
     Q_INVOKABLE void setStatusBarVisible(bool visible);
     Q_INVOKABLE void setImmersiveMode(bool visible);
 
-signals:
+    static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
 
-public slots:
+signals:
+    void backButtonPressed();
+    void menuButtonPressed();
+
+private:
+    static std::vector<AndroidUtils *> m_Instances;
+
+private:
+    void emitBackButtonPressed();
+    void emitMenuButtonPressed();
 };
 
+}
+
+static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
+{
+    const QString tag = QAndroidJniObject(jtag).toString();
+    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
+    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
+    if (client) {
+        client->emitNotificationReceivedSignal(tag, id);
+    }
+    else {
+        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName));
+    }
+}
+
+static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
+{
+    zmc::AndroidUtils::emitButtonPressedSignals(true, false);
+}
+
+static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
+{
+    zmc::AndroidUtils::emitButtonPressedSignals(false, true);
 }
