@@ -28,11 +28,13 @@ HEADERS += \
     $$PWD/include/qutils/NotificationClient.h \
     $$PWD/include/qutils/Notification.h \
     $$PWD/include/qutils/Macros.h \
-    $$PWD/include/qutils/TranslationHelper.h
+    $$PWD/include/qutils/TranslationHelper.h \
+    $$PWD/include/qutils/NativeUtils.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
-    $$PWD/src/TranslationHelper.cpp
+    $$PWD/src/TranslationHelper.cpp \
+    $$PWD/src/NativeUtils.cpp
 
 
 INCLUDEPATH += $$PWD/include
