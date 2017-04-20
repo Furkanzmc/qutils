@@ -27,7 +27,7 @@ public:
     Q_INVOKABLE void setImmersiveMode(bool visible);
 
 signals:
-    bool backButtonPressed();
+    void backButtonPressed();
     void menuButtonPressed();
 
 private:

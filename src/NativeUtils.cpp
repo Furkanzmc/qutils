@@ -16,8 +16,6 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::emitBackButtonPressed);
     connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::emitMenuButtonPressed);
 #endif // Q_OS_ANDROID
-
-    emitBackButtonPressed();
 }
 
 void NativeUtils::setStatusBarColor(QColor color)
@@ -49,8 +47,7 @@ void NativeUtils::setImmersiveMode(bool visible)
 
 void NativeUtils::emitBackButtonPressed()
 {
-    bool r = emit backButtonPressed();
-    qDebug() << r;
+    emit backButtonPressed();
 }
 
 void NativeUtils::emitMenuButtonPressed()
