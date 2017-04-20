@@ -24,6 +24,10 @@ public:
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
 
 signals:
+    /**
+     * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
+     * close it yourself.
+     */
     void backButtonPressed();
     void menuButtonPressed();
 
