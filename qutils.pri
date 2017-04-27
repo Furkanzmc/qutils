@@ -1,4 +1,5 @@
 CONFIG += c++11
+QT += sql
 
 android {
     QT += androidextras
@@ -29,12 +30,15 @@ HEADERS += \
     $$PWD/include/qutils/Notification.h \
     $$PWD/include/qutils/Macros.h \
     $$PWD/include/qutils/TranslationHelper.h \
-    $$PWD/include/qutils/NativeUtils.h
+    $$PWD/include/qutils/NativeUtils.h \
+    $$PWD/include/qutils/SqliteManager.h \
+    $$PWD/include/qutils/Ceset.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
     $$PWD/src/TranslationHelper.cpp \
-    $$PWD/src/NativeUtils.cpp
+    $$PWD/src/NativeUtils.cpp \
+    $$PWD/src/SqliteManager.cpp
 
 
 INCLUDEPATH += $$PWD/include

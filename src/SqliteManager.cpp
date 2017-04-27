@@ -1,0 +1,266 @@
+#include "qutils/SqliteManager.h"
+#include "qutils/Macros.h"
+// Qt
+#include <QSqlQuery>
+#include <QSqlRecord>
+
+namespace qutils
+{
+
+SqliteManager::SqliteManager()
+    : m_LastError()
+{
+
+}
+
+QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(databasePath);
+    db.open();
+    return db;
+}
+
+void SqliteManager::closeDatabase(QSqlDatabase &database)
+{
+    database.close();
+}
+
+bool SqliteManager::createTable(QSqlDatabase &database, const std::vector<ColumnDefinition> &columns, const QString &tableName)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Database is not open!");
+        return successful;
+    }
+
+    if (isTableExist(database, tableName)) {
+        LOG_ERROR("A table with the name " << tableName << " already exists in the database!");
+        return successful;
+    }
+
+    QString sqlQueryStr = "CREATE TABLE \"main\".\"" + tableName + "\" (";
+    unsigned int index = 0;
+    for (const ColumnDefinition &def : columns) {
+        sqlQueryStr += "\"" + def.name + "\" " + getColumnTypeName(def.type) + " " + def.getNullText();
+        index++;
+        if (index < columns.size()) {
+            sqlQueryStr += ",";
+        }
+    }
+
+    // Add the ending parenthesis
+    sqlQueryStr += ")";
+
+    QSqlQuery query(database);
+    bool isExecSuccessful = query.exec(sqlQueryStr);
+    if (isExecSuccessful == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+        successful = false;
+    }
+    else {
+        LOG("Table \"" << tableName << "\" was succesffuly created!");
+        successful = true;
+    }
+
+    return successful;
+}
+
+bool SqliteManager::isTableExist(QSqlDatabase &database, const QString &tableName)
+{
+    bool isExist = false;
+
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return isExist;
+    }
+
+    const QString sqlQueryStr = "SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
+    QSqlQuery query(database);
+    bool successfull = query.exec(sqlQueryStr);
+    if (successfull == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        while (query.next()) {
+            const QVariant countVar = query.value(0);
+            if (countVar.isValid()) {
+                bool ok = false;
+                const int count = countVar.toInt(&ok);
+                if (ok && count == 1) {
+                    isExist = true;
+                }
+            }
+        }
+    }
+
+    return isExist;
+}
+
+bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return successful;
+    }
+
+    const QString sqlQueryStr = "DROP TABLE " + tableName;
+    QSqlQuery query(database);
+    bool successfull = query.exec(sqlQueryStr);
+    if (successfull == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        successful = true;
+    }
+
+    return successful;
+}
+
+QString SqliteManager::constructWhereQuery(const std::vector<SqliteManager::Constraint> &values)
+{
+    QString query = "WHERE ";
+    unsigned int index = 0;
+    for (const auto &t : values) {
+        if (index != 0) {
+            query += " ";
+        }
+
+        query += std::get<0>(t) + "='" + std::get<1>(t) + "'";
+        if (index < values.size() - 1) {
+            query += " " + std::get<2>(t);
+        }
+
+        index++;
+    }
+
+    return query;
+}
+
+QVariantList SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
+{
+    QVariantList resultList;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return resultList;
+    }
+
+    QSqlQuery query(database);
+    if (query.exec(sqlQueryStr) == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        while (query.next()) {
+            const QSqlRecord record = query.record();
+            const unsigned int count = record.count();
+            QVariantMap resultMap;
+            for (unsigned int columnIndex = 0; columnIndex < count; columnIndex++) {
+                resultMap[record.fieldName(columnIndex)] = record.value(columnIndex);
+            }
+
+            resultList.append(resultMap);
+        }
+    }
+
+    return resultList;
+}
+
+QVariantList SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
+        const std::vector<Constraint> *constraints, const SelectOrder *selectOrder)
+{
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return QVariantList();
+    }
+
+    QString sqlQueryStr = "SELECT * FROM " + tableName;
+    if (constraints && constraints->size() > 0) {
+        sqlQueryStr += " " + constructWhereQuery(*constraints);
+    }
+
+    if (selectOrder && selectOrder->fieldName.length() > 0) {
+        const QString orderType = selectOrder->order == SelectOrder::OrderType::ASC ? "ASC" : "DESC";
+        sqlQueryStr += " ORDER BY " + selectOrder->fieldName + " " + orderType;
+    }
+
+    if (limit > 0) {
+        sqlQueryStr += " LIMIT " + QString::number(limit);
+    }
+
+    LOG(sqlQueryStr);
+    return executeSelectQuery(database, sqlQueryStr);
+}
+
+const SqliteManager::SqliteError &SqliteManager::getLastError() const
+{
+    return m_LastError;
+}
+
+QString SqliteManager::getColumnTypeName(const ColumnTypes &type) const
+{
+    QString name = "";
+    if (type == ColumnTypes::TEXT) {
+        name = "TEXT";
+    }
+    else if (type == ColumnTypes::PK_INTEGER) {
+        name = "INTEGER PRIMARY KEY";
+    }
+    else if (type == ColumnTypes::PK_AUTOINCREMENT) {
+        name = "INTEGER PRIMARY KEY AUTOINCREMENT";
+    }
+    else if (type == ColumnTypes::INTEGER) {
+        name = "INTEGER";
+    }
+    else if (type == ColumnTypes::REAL) {
+        name = "REAL";
+    }
+    else if (type == ColumnTypes::BLOB) {
+        name = "BLOB";
+    }
+    else if (type == ColumnTypes::NULL_TYPE) {
+        name = "NULL";
+    }
+
+    return name;
+}
+
+SqliteManager::ColumnTypes SqliteManager::getColumnType(const QString &typeName) const
+{
+    ColumnTypes type;
+    if (typeName == "TEXT") {
+        type = ColumnTypes::TEXT;
+    }
+    else if (typeName == "INTEGER PRIMARY KEY") {
+        type = ColumnTypes::PK_INTEGER;
+    }
+    else if (typeName == "INTEGER PRIMARY KEY AUTOINCREMENT") {
+        type = ColumnTypes::PK_AUTOINCREMENT;
+    }
+    else if (typeName == "INTEGER") {
+        type = ColumnTypes::INTEGER;
+    }
+    else if (typeName == "REAL") {
+        type = ColumnTypes::REAL;
+    }
+    else if (typeName == "BLOB") {
+        type = ColumnTypes::BLOB;
+    }
+    else if (typeName == "NULL") {
+        type = ColumnTypes::NULL_TYPE;
+    }
+
+    return type;
+}
+
+void SqliteManager::updateError(QSqlDatabase &db, const QString &query)
+{
+    m_LastError.error = db.lastError();
+    m_LastError.query = query;
+}
+
+}
