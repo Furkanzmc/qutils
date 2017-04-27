@@ -107,6 +107,11 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
         return successful;
     }
 
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return successful;
+    }
+
     const QString sqlQueryStr = "DROP TABLE " + tableName;
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
@@ -141,9 +146,9 @@ QString SqliteManager::constructWhereQuery(const std::vector<SqliteManager::Cons
     return query;
 }
 
-QVariantList SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
+QList<QVariantMap> SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
 {
-    QVariantList resultList;
+    QList<QVariantMap> resultList;
     if (database.isOpen() == false) {
         LOG_ERROR("Given database is not open!");
         return resultList;
@@ -170,12 +175,17 @@ QVariantList SqliteManager::executeSelectQuery(QSqlDatabase &database, const QSt
     return resultList;
 }
 
-QVariantList SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
+QList<QVariantMap> SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
         const std::vector<Constraint> *constraints, const SelectOrder *selectOrder)
 {
     if (database.isOpen() == false) {
         LOG_ERROR("Given database is not open!");
-        return QVariantList();
+        return QList<QVariantMap>();
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return QList<QVariantMap>();
     }
 
     QString sqlQueryStr = "SELECT * FROM " + tableName;
@@ -192,8 +202,48 @@ QVariantList SqliteManager::getFromTable(QSqlDatabase &database, const QString &
         sqlQueryStr += " LIMIT " + QString::number(limit);
     }
 
-    LOG(sqlQueryStr);
     return executeSelectQuery(database, sqlQueryStr);
+}
+
+bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return successful;
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return successful;
+    }
+
+    QSqlQuery query(database);
+    QString sqlQueryStr = "INSERT INTO " + tableName + " ";
+    QStringList columnNames, valuePlaceholders;
+    for (auto it = row.constBegin(); it != row.constEnd(); it++) {
+        columnNames.append(it.key());
+        valuePlaceholders.append(":" + it.key());
+    }
+
+    sqlQueryStr.append("(" + columnNames.join(',') + ") ");
+    sqlQueryStr.append("VALUES(" + valuePlaceholders.join(',') + ")");
+    query.prepare(sqlQueryStr);
+
+    // Now bind the values
+    for (auto it = row.constBegin(); it != row.constEnd(); it++) {
+        query.bindValue(":" + it.key(), it.value());
+    }
+
+    if (query.exec() == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        successful = true;
+    }
+
+    return successful;
 }
 
 const SqliteManager::SqliteError &SqliteManager::getLastError() const

@@ -79,7 +79,7 @@ public:
 
         friend std::ostream &operator<<(std::ostream &os, const SqliteError &err)
         {
-            os << "Sqlite Error: " << err.error.text().toStdString() << "\nQuery: " << err.query << std::endl;
+            os << "Sqlite Error: " << err.error.text().toStdString() << "\nQuery: " << err.query.toStdString() << std::endl;
             return os;
         }
     };
@@ -93,22 +93,19 @@ public:
      * @brief Creates a sqlite3 instance and returns it. If there's an error, returns nullptr. You can get the error with getLastError()
      * @param databasePath
      * @param createIfFileAbsent
-     * @return
+     * @return QSqlDatabase
      */
     QSqlDatabase openDatabase(const QString &databasePath);
 
     /**
      * @brief Closes the given database
      * @param database
-     * @return
+     * @return void
      */
     void closeDatabase(QSqlDatabase &database);
 
     /**
      * @brief createTable
-     * @param database
-     * @param columns
-     *
      * **Example Usage:**
      * @code
      *    SqliteManager man;
@@ -120,6 +117,9 @@ public:
      *    QSqlDatabase db = man.openDatabase("C:/Users/Furkanzmc/Desktop/test.sqlite");
      *    man.createTable(db, columns, "my_table");
      * @endcode
+     * @param database
+     * @param columns
+     * @return bool
      */
     bool createTable(QSqlDatabase &database, const std::vector<ColumnDefinition> &columns, const QString &tableName);
 
@@ -127,7 +127,7 @@ public:
      * @brief Returns true If the table with the given name exists, returns false otherwise.
      * @param database
      * @param tableName
-     * @return
+     * @return bool
      */
     bool isTableExist(QSqlDatabase &database, const QString &tableName);
 
@@ -135,7 +135,7 @@ public:
      * @brief Deletes the given table from the database
      * @param database
      * @param tableName
-     * @return
+     * @return bool
      */
     bool dropTable(QSqlDatabase &database, const QString &tableName);
 
@@ -146,8 +146,6 @@ public:
      *                 #2 is value
      *                 #3 is constraint (OR or AND)
      * The constraint is added to the end of the query. So for odd number of items, the query will not end with the contraint.
-     * @return Returns the query WITHOUT the WHERE clause
-     *
      * **Example Usage:**
      * @code
      *    SqliteManager man;
@@ -159,6 +157,7 @@ public:
      *    std::cerr << man.constructWhereQuery(values) << std::endl;
      *    // Output is: WHERE first=1 AND second=1
      * @endcode
+     * @return QString Returns the query WITHOUT the WHERE clause
      */
     QString constructWhereQuery(const std::vector<Constraint> &values);
 
@@ -179,22 +178,53 @@ public:
      *    const QVariantList data = man.executeSelectQuery(db, query);
      *    qDebug() << data;
      * @endcode
-     * @return
+     * @return QList<QVariantMap>
      */
-    QVariantList executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr);
+    QList<QVariantMap> executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr);
 
     /**
-     * @brief Executes a select query with the given constraints on the given table. If it succeeds, the table data is returned as a QVariantList.
+     * @brief Executes a select query with the given constraints on the given table. If it succeeds, the table data is returned as a QList<QVariantMap>.
      * If there's an error, the map will be empty.
+     * **Example Usage:**
+     * @code
+     *    qutils::SqliteManager man;
+     *    std::vector<qutils::SqliteManager::ColumnDefinition> columns {
+     *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::INTEGER, "first"),
+     *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::INTEGER, "second"),
+     *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::BLOB, "image")
+     *    };
+     *
+     *    QFile file("E:/Users/Furkanzmc/Pictures/Wallpapers/batman_trilogy_2-wallpaper-1440x1080.jpg");
+     *    file.open(QIODevice::ReadOnly);
+     *    const QByteArray inByteArray = file.readAll();
+     *
+     *    QSqlDatabase db = man.openDatabase("E:/Users/Furkanzmc/Desktop/test.sqlite");
+     *    man.createTable(db, columns, "my_table");
+     *    QVariantMap map;
+     *    map["first"] = 122;
+     *    map["second"] = 122;
+     *    map["image"] = inByteArray;
+     *    man.insertIntoTable(db, "my_table", map);
+     * @endcode
      * @param tableName
      * @param constraints
      * @param limit
      * @param selectOrder If it is empty, it is ignored.
-     * @return
+     * @return QList<QVariantMap>
      */
-    QVariantList getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
-                              const std::vector<Constraint> *constraints = nullptr,
-                              const SelectOrder *selectOrder = nullptr);
+    QList<QVariantMap> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
+                                    const std::vector<Constraint> *constraints = nullptr,
+                                    const SelectOrder *selectOrder = nullptr);
+
+    /**
+     * @brief Insert row(s) into the given table. If all of the rows have the same number of items, one SQL command will be used to insert them.
+     * If they have different sizes, multiple SQL commands are used.
+     * @param database
+     * @param tableName
+     * @param rows Rows must be a list of QVarianMap
+     * @return bool
+     */
+    bool insertIntoTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row);
 
     const SqliteError &getLastError() const;
 
