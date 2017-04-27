@@ -185,6 +185,19 @@ public:
     /**
      * @brief Executes a select query with the given constraints on the given table. If it succeeds, the table data is returned as a QList<QVariantMap>.
      * If there's an error, the map will be empty.
+     * @param tableName
+     * @param constraints
+     * @param limit
+     * @param selectOrder If it is empty, it is ignored.
+     * @return QList<QVariantMap>
+     */
+    QList<QVariantMap> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
+                                    const std::vector<Constraint> *constraints = nullptr,
+                                    const SelectOrder *selectOrder = nullptr);
+
+    /**
+     * @brief Insert row(s) into the given table. If all of the rows have the same number of items, one SQL command will be used to insert them.
+     * If they have different sizes, multiple SQL commands are used.
      * **Example Usage:**
      * @code
      *    qutils::SqliteManager man;
@@ -206,19 +219,6 @@ public:
      *    map["image"] = inByteArray;
      *    man.insertIntoTable(db, "my_table", map);
      * @endcode
-     * @param tableName
-     * @param constraints
-     * @param limit
-     * @param selectOrder If it is empty, it is ignored.
-     * @return QList<QVariantMap>
-     */
-    QList<QVariantMap> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
-                                    const std::vector<Constraint> *constraints = nullptr,
-                                    const SelectOrder *selectOrder = nullptr);
-
-    /**
-     * @brief Insert row(s) into the given table. If all of the rows have the same number of items, one SQL command will be used to insert them.
-     * If they have different sizes, multiple SQL commands are used.
      * @param database
      * @param tableName
      * @param rows Rows must be a list of QVarianMap
