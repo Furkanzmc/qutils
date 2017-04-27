@@ -31,8 +31,7 @@ HEADERS += \
     $$PWD/include/qutils/Macros.h \
     $$PWD/include/qutils/TranslationHelper.h \
     $$PWD/include/qutils/NativeUtils.h \
-    $$PWD/include/qutils/SqliteManager.h \
-    $$PWD/include/qutils/Ceset.h
+    $$PWD/include/qutils/SqliteManager.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
