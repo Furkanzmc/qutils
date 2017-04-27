@@ -196,8 +196,7 @@ public:
                                     const SelectOrder *selectOrder = nullptr);
 
     /**
-     * @brief Insert row(s) into the given table. If all of the rows have the same number of items, one SQL command will be used to insert them.
-     * If they have different sizes, multiple SQL commands are used.
+     * @brief Insert row(s) into the given table.
      * **Example Usage:**
      * @code
      *    qutils::SqliteManager man;
@@ -225,6 +224,16 @@ public:
      * @return bool
      */
     bool insertIntoTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row);
+
+    /**
+     * @brief Update the data in table with the new data.
+     * @param database
+     * @param tableName
+     * @param row
+     * @paragraph constraints This is required.
+     * @return
+     */
+    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const std::vector<Constraint> &constraints);
 
     const SqliteError &getLastError() const;
 

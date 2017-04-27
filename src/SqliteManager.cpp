@@ -246,6 +246,46 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
     return successful;
 }
 
+bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const std::vector<Constraint> &constraints)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return successful;
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return successful;
+    }
+
+    QSqlQuery query(database);
+    QString sqlQueryStr = "UPDATE " + tableName + " SET ";
+    QStringList newValues;
+    for (auto it = row.constBegin(); it != row.constEnd(); it++) {
+        newValues.append(it.key() + "=" + ":" + it.key());
+    }
+
+    sqlQueryStr.append(newValues.join(','));
+    sqlQueryStr.append(" " + constructWhereQuery(constraints));
+
+    query.prepare(sqlQueryStr);
+    // Now bind the values
+    for (auto it = row.constBegin(); it != row.constEnd(); it++) {
+        query.bindValue(":" + it.key(), it.value());
+    }
+
+    if (query.exec() == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        successful = true;
+    }
+
+    return successful;
+}
+
 const SqliteManager::SqliteError &SqliteManager::getLastError() const
 {
     return m_LastError;
