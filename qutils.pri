@@ -31,13 +31,15 @@ HEADERS += \
     $$PWD/include/qutils/Macros.h \
     $$PWD/include/qutils/TranslationHelper.h \
     $$PWD/include/qutils/NativeUtils.h \
-    $$PWD/include/qutils/SqliteManager.h
+    $$PWD/include/qutils/SqliteManager.h \
+    $$PWD/include/qutils/SettingsManager.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
     $$PWD/src/TranslationHelper.cpp \
     $$PWD/src/NativeUtils.cpp \
-    $$PWD/src/SqliteManager.cpp
+    $$PWD/src/SqliteManager.cpp \
+    $$PWD/src/SettingsManager.cpp
 
 
 INCLUDEPATH += $$PWD/include
