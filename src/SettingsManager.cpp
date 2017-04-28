@@ -13,13 +13,24 @@
 namespace zmc
 {
 
+QList<SettingsManager *> SettingsManager::m_Instances = QList<SettingsManager *>();
+int SettingsManager::m_InstanceLastIndex = 0;
+
 SettingsManager::SettingsManager(QObject *parent)
     : QObject(parent)
+    , m_InstanceIndex(m_InstanceLastIndex)
     , m_DatabasePath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/qutils_settings.sqlite")
     , m_SettingsTableName("settings")
     , m_SqlManager()
     , m_Database()
 {
+    m_Instances.append(this);
+    m_InstanceLastIndex++;
+}
+
+SettingsManager::~SettingsManager()
+{
+    m_Instances[m_InstanceIndex] = nullptr;
 }
 
 QString SettingsManager::getSystemLanguage() const
@@ -47,7 +58,7 @@ bool SettingsManager::write(const QString &key, const QString &value)
         const QVariantMap oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(m_Database, m_SettingsTableName, newMap, values);
 
-        emit settingChanged(key, oldMap[key].toString(), newMap[key].toString());
+        emitSettingChangedInAllInstances(key, oldMap[COL_SETTING_VALUE].toString(), newMap[COL_SETTING_VALUE].toString());
     }
     else {
         successful = m_SqlManager.insertIntoTable(m_Database, m_SettingsTableName, newMap);
@@ -55,7 +66,7 @@ bool SettingsManager::write(const QString &key, const QString &value)
             LOG(m_SqlManager.getLastError().query);
         }
 
-        emit settingChanged(key, "", newMap[key].toString());
+        emitSettingChangedInAllInstances(key, "", newMap[COL_SETTING_VALUE].toString());
     }
 
     return successful;
@@ -63,7 +74,13 @@ bool SettingsManager::write(const QString &key, const QString &value)
 
 QString SettingsManager::read(const QString &key)
 {
-    DATABASE_CHECK();
+    do {
+        if (m_Database.isOpen() == false) {
+            openDatabase();
+            createTable();
+        }
+    }
+    while (0);
 
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
@@ -136,6 +153,22 @@ void SettingsManager::restartDatabase()
 
     m_Database = m_SqlManager.openDatabase(m_DatabasePath);
     emit databaseOpened();
+}
+
+void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue)
+{
+    if (oldSettingValue != newSettingValue) {
+        for (SettingsManager *man : m_Instances) {
+            if (man) {
+                emitSettingChanged(settingName, oldSettingValue, newSettingValue);
+            }
+        }
+    }
+}
+
+void SettingsManager::emitSettingChanged(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue)
+{
+    emit settingChanged(settingName, oldSettingValue, newSettingValue);
 }
 
 }
