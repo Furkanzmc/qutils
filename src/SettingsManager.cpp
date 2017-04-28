@@ -8,6 +8,7 @@
 
 #define COL_SETTING_NAME "setting_name"
 #define COL_SETTING_VALUE "setting_value"
+#define COL_SETTING_TYPE "setting_type"
 #define DATABASE_CHECK() do { if (m_Database.isOpen() == false) { openDatabase(); createTable(); } } while (0)
 
 namespace zmc
@@ -40,7 +41,7 @@ QString SettingsManager::getSystemLanguage() const
     return name.left(name.indexOf("_"));
 }
 
-bool SettingsManager::write(const QString &key, const QString &value)
+bool SettingsManager::write(const QString &key, const QVariant &value)
 {
     DATABASE_CHECK();
 
@@ -53,7 +54,9 @@ bool SettingsManager::write(const QString &key, const QString &value)
     const bool exists = existingData.size() > 0;
     QVariantMap newMap;
     newMap[COL_SETTING_NAME] = key;
-    newMap[COL_SETTING_VALUE] = value;
+    newMap[COL_SETTING_VALUE] = value.toByteArray();
+    newMap[COL_SETTING_TYPE] = QVariant::fromValue<int>(value.type());
+
     if (exists) {
         const QVariantMap oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(m_Database, m_SettingsTableName, newMap, values);
@@ -62,9 +65,6 @@ bool SettingsManager::write(const QString &key, const QString &value)
     }
     else {
         successful = m_SqlManager.insertIntoTable(m_Database, m_SettingsTableName, newMap);
-        if (successful == false) {
-            LOG(m_SqlManager.getLastError().query);
-        }
 
         emitSettingChangedInAllInstances(key, "", newMap[COL_SETTING_VALUE].toString());
     }
@@ -72,25 +72,21 @@ bool SettingsManager::write(const QString &key, const QString &value)
     return successful;
 }
 
-QString SettingsManager::read(const QString &key)
+QVariant SettingsManager::read(const QString &key)
 {
-    do {
-        if (m_Database.isOpen() == false) {
-            openDatabase();
-            createTable();
-        }
-    }
-    while (0);
+    DATABASE_CHECK();
 
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    QString value;
+    QVariant value;
     const QList<QVariantMap> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
     const bool exists = existingData.size() > 0;
     if (exists) {
-        value = existingData.at(0)[COL_SETTING_VALUE].toString();
+        QVariant tempValue = existingData.at(0)[COL_SETTING_VALUE];
+        LOG(tempValue.convert(existingData.at(0)[COL_SETTING_TYPE].toInt()));
+        value = tempValue;
     }
 
     return value;
@@ -130,7 +126,8 @@ void SettingsManager::createTable()
 
     QList<SqliteManager::ColumnDefinition> columns {
         SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_SETTING_NAME),
-        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_SETTING_VALUE)
+        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::BLOB, COL_SETTING_VALUE),
+        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, COL_SETTING_TYPE)
     };
 
     m_SqlManager.createTable(m_Database, columns, m_SettingsTableName);

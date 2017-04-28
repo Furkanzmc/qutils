@@ -8,7 +8,7 @@ namespace zmc
 {
 
 /**
- * @brief The SettingsManager class uses a SqliteManager to store the settings. Settings are saved only in TEXT format.
+ * @brief The SettingsManager class uses a SqliteManager to store the settings. Settings are saved in QVariant format.
  * When a setting is changed the settingChanged signal is emitted and this signal is emitted in all of the
  */
 class SettingsManager : public QObject
@@ -34,14 +34,14 @@ public:
      * @param value
      * @return
      */
-    Q_INVOKABLE bool write(const QString &key, const QString &value);
+    Q_INVOKABLE bool write(const QString &key, const QVariant &value);
 
     /**
      * @brief Reads the setting with the given key. If the key doesn't exist, returns an empty string.
      * @param key
      * @return
      */
-    Q_INVOKABLE QString read(const QString &key);
+    Q_INVOKABLE QVariant read(const QString &key);
 
     QString getDatabasePath() const;
 
