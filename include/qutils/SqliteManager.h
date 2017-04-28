@@ -2,13 +2,8 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QVariantList>
-// STD
-#include <string>
-#include <map>
-#include <vector>
-#include <functional>
 
-namespace qutils
+namespace zmc
 {
 
 class SqliteManager
@@ -109,7 +104,7 @@ public:
      * **Example Usage:**
      * @code
      *    SqliteManager man;
-     *    std::vector<SqliteManager::ColumnDefinition> columns {
+     *    QList<SqliteManager::ColumnDefinition> columns {
      *        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, "first"),
      *        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, "second")
      *    };
@@ -121,7 +116,7 @@ public:
      * @param columns
      * @return bool
      */
-    bool createTable(QSqlDatabase &database, const std::vector<ColumnDefinition> &columns, const QString &tableName);
+    bool createTable(QSqlDatabase &database, const QList<ColumnDefinition> &columns, const QString &tableName);
 
     /**
      * @brief Returns true If the table with the given name exists, returns false otherwise.
@@ -149,7 +144,7 @@ public:
      * **Example Usage:**
      * @code
      *    SqliteManager man;
-     *    std::vector<std::tuple<QString, QString, QString>> values {
+     *    QList<std::tuple<QString, QString, QString>> values {
      *        std::make_tuple("first", "1", "AND"),
      *        std::make_tuple("second", "1", "OR")
      *    };
@@ -159,7 +154,7 @@ public:
      * @endcode
      * @return QString Returns the query WITHOUT the WHERE clause
      */
-    QString constructWhereQuery(const std::vector<Constraint> &values);
+    QString constructWhereQuery(const QList<Constraint> &values);
 
     /**
      * @brief Executes the given query and if it is successful iterates through the results and calls the `callback` in each step.
@@ -192,7 +187,7 @@ public:
      * @return QList<QVariantMap>
      */
     QList<QVariantMap> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
-                                    const std::vector<Constraint> *constraints = nullptr,
+                                    const QList<Constraint> *constraints = nullptr,
                                     const SelectOrder *selectOrder = nullptr);
 
     /**
@@ -200,7 +195,7 @@ public:
      * **Example Usage:**
      * @code
      *    qutils::SqliteManager man;
-     *    std::vector<qutils::SqliteManager::ColumnDefinition> columns {
+     *    QList<qutils::SqliteManager::ColumnDefinition> columns {
      *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::INTEGER, "first"),
      *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::INTEGER, "second"),
      *        qutils::SqliteManager::ColumnDefinition(false, qutils::SqliteManager::ColumnTypes::BLOB, "image")
@@ -233,7 +228,24 @@ public:
      * @paragraph constraints This is required.
      * @return
      */
-    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const std::vector<Constraint> &constraints);
+    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const QList<Constraint> &constraints);
+
+    /**
+     * @brief Deletes the records in the table acording to the given constraints. If constraints have a size of 0, then everythin is deleted.
+     * @param database
+     * @param tableName
+     * @param constraints
+     * @return
+     */
+    bool deleteInTable(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints);
+
+    /**
+     * @brief Returns true If a row with the given constraints exists.
+     * @param database
+     * @param constraints
+     * @return
+     */
+    bool exists(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints);
 
     const SqliteError &getLastError() const;
 

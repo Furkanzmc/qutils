@@ -4,7 +4,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-namespace qutils
+namespace zmc
 {
 
 SqliteManager::SqliteManager()
@@ -17,7 +17,10 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(databasePath);
-    db.open();
+    if (db.open() == false) {
+        LOG_ERROR("Cannot open the database at " << databasePath);
+    }
+
     return db;
 }
 
@@ -26,7 +29,7 @@ void SqliteManager::closeDatabase(QSqlDatabase &database)
     database.close();
 }
 
-bool SqliteManager::createTable(QSqlDatabase &database, const std::vector<ColumnDefinition> &columns, const QString &tableName)
+bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefinition> &columns, const QString &tableName)
 {
     bool successful = false;
     if (database.isOpen() == false) {
@@ -108,7 +111,7 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
 
@@ -126,7 +129,7 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
     return successful;
 }
 
-QString SqliteManager::constructWhereQuery(const std::vector<SqliteManager::Constraint> &values)
+QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint> &values)
 {
     QString query = "WHERE ";
     unsigned int index = 0;
@@ -176,7 +179,7 @@ QList<QVariantMap> SqliteManager::executeSelectQuery(QSqlDatabase &database, con
 }
 
 QList<QVariantMap> SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
-        const std::vector<Constraint> *constraints, const SelectOrder *selectOrder)
+        const QList<Constraint> *constraints, const SelectOrder *selectOrder)
 {
     if (database.isOpen() == false) {
         LOG_ERROR("Given database is not open!");
@@ -246,7 +249,7 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
     return successful;
 }
 
-bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const std::vector<Constraint> &constraints)
+bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const QList<Constraint> &constraints)
 {
     bool successful = false;
     if (database.isOpen() == false) {
@@ -284,6 +287,67 @@ bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableNa
     }
 
     return successful;
+}
+
+bool SqliteManager::deleteInTable(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return successful;
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return successful;
+    }
+
+    QSqlQuery query(database);
+    QString sqlQueryStr = "DELETE FROM " + tableName + " ";
+    sqlQueryStr.append(constructWhereQuery(constraints));
+
+    if (query.exec(sqlQueryStr) == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        successful = true;
+    }
+
+    return successful;
+}
+
+bool SqliteManager::exists(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints)
+{
+    bool exists = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return exists;
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        return exists;
+    }
+
+    if (constraints.size() == 0) {
+        LOG_ERROR("Constraints size cannot be 0!");
+        return exists;
+    }
+
+    const QString sqlQueryStr = "SELECT COUNT(id) FROM " + tableName + " " + constructWhereQuery(constraints);
+    QSqlQuery query(database);
+    bool successfull = query.exec(sqlQueryStr);
+    if (successfull == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        const int count = query.value(0).toInt();
+        exists = count > 0;
+    }
+
+    return exists;
 }
 
 const SqliteManager::SqliteError &SqliteManager::getLastError() const
