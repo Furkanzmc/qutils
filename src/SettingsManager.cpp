@@ -84,9 +84,8 @@ QVariant SettingsManager::read(const QString &key)
     const QList<QVariantMap> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
     const bool exists = existingData.size() > 0;
     if (exists) {
-        QVariant tempValue = existingData.at(0)[COL_SETTING_VALUE];
-        LOG(tempValue.convert(existingData.at(0)[COL_SETTING_TYPE].toInt()));
-        value = tempValue;
+        value = existingData.at(0)[COL_SETTING_VALUE];
+        value.convert(existingData.at(0)[COL_SETTING_TYPE].toInt());
     }
 
     return value;
