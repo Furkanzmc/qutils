@@ -3,6 +3,8 @@
 #include <QLocale>
 #include <QStandardPaths>
 #include <QList>
+
+#include <QDir>
 // qutils
 #include "qutils/Macros.h"
 
@@ -17,11 +19,11 @@ namespace zmc
 QList<SettingsManager *> SettingsManager::m_Instances = QList<SettingsManager *>();
 int SettingsManager::m_InstanceLastIndex = 0;
 
-SettingsManager::SettingsManager(QObject *parent)
+SettingsManager::SettingsManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_InstanceLastIndex)
-    , m_DatabasePath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/qutils_settings.sqlite")
-    , m_SettingsTableName("settings")
+    , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
+    , m_SettingsTableName(tableName)
     , m_SqlManager()
     , m_Database()
 {
@@ -50,9 +52,9 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    const QList<QVariantMap> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
     const bool exists = existingData.size() > 0;
-    QVariantMap newMap;
+    QMap<QString, QVariant> newMap;
     newMap[COL_SETTING_NAME] = key;
     newMap[COL_SETTING_VALUE] = value.toByteArray();
     newMap[COL_SETTING_TYPE] = QVariant::fromValue<int>(value.type());
@@ -60,13 +62,15 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
     if (exists) {
         const QVariantMap oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(m_Database, m_SettingsTableName, newMap, values);
+        QVariant oldValue = oldMap[COL_SETTING_VALUE];
+        oldValue.convert(oldMap[COL_SETTING_VALUE].toInt());
 
-        emitSettingChangedInAllInstances(key, oldMap[COL_SETTING_VALUE].toString(), newMap[COL_SETTING_VALUE].toString());
+        emitSettingChangedInAllInstances(key, oldValue, value);
     }
     else {
         successful = m_SqlManager.insertIntoTable(m_Database, m_SettingsTableName, newMap);
 
-        emitSettingChangedInAllInstances(key, "", newMap[COL_SETTING_VALUE].toString());
+        emitSettingChangedInAllInstances(key, "", value);
     }
 
     return successful;
@@ -81,7 +85,7 @@ QVariant SettingsManager::read(const QString &key)
     };
 
     QVariant value;
-    const QList<QVariantMap> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName, -1, &values);
     const bool exists = existingData.size() > 0;
     if (exists) {
         value = existingData.at(0)[COL_SETTING_VALUE];
@@ -91,14 +95,19 @@ QVariant SettingsManager::read(const QString &key)
     return value;
 }
 
-QString SettingsManager::getDatabasePath() const
+QString SettingsManager::getDatabaseName() const
 {
-    return m_DatabasePath;
+    return m_DatabaseName;
 }
 
-void SettingsManager::setDatabasePath(const QString &databasePath)
+void SettingsManager::setDatabaseName(const QString &databaseName)
 {
-    m_DatabasePath = databasePath;
+    if (QDir::isAbsolutePath(databaseName)) {
+        LOG_ERROR("Absolute path is given! Database name is just the file name.");
+        return;
+    }
+
+    m_DatabaseName = databaseName;
     emit databasePathChanged();
 
     restartDatabase();
@@ -135,7 +144,7 @@ void SettingsManager::createTable()
 void SettingsManager::openDatabase()
 {
     if (m_Database.isOpen() == false) {
-        m_Database = m_SqlManager.openDatabase(m_DatabasePath);
+        m_Database = m_SqlManager.openDatabase(m_DatabaseName);
         emit databaseOpened();
     }
 }
@@ -147,11 +156,11 @@ void SettingsManager::restartDatabase()
         emit databaseClosed();
     }
 
-    m_Database = m_SqlManager.openDatabase(m_DatabasePath);
+    m_Database = m_SqlManager.openDatabase(m_DatabaseName);
     emit databaseOpened();
 }
 
-void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue)
+void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
 {
     if (oldSettingValue != newSettingValue) {
         for (SettingsManager *man : m_Instances) {
@@ -162,7 +171,7 @@ void SettingsManager::emitSettingChangedInAllInstances(const QString &settingNam
     }
 }
 
-void SettingsManager::emitSettingChanged(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue)
+void SettingsManager::emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
 {
     emit settingChanged(settingName, oldSettingValue, newSettingValue);
 }

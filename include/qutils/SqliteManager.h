@@ -173,20 +173,21 @@ public:
      *    const QVariantList data = man.executeSelectQuery(db, query);
      *    qDebug() << data;
      * @endcode
-     * @return QList<QVariantMap>
+     * @return QList<QMap<QString, QVariant>>
      */
-    QList<QVariantMap> executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr);
+    QList<QMap<QString, QVariant>> executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr);
 
     /**
-     * @brief Executes a select query with the given constraints on the given table. If it succeeds, the table data is returned as a QList<QVariantMap>.
+     * @brief Executes a select query with the given constraints on the given table. If it succeeds,
+     * the table data is returned as a QList<QMap<QString, QVariant>>.
      * If there's an error, the map will be empty.
      * @param tableName
      * @param constraints
      * @param limit
      * @param selectOrder If it is empty, it is ignored.
-     * @return QList<QVariantMap>
+     * @return QList<QMap<QString, QVariant>>
      */
-    QList<QVariantMap> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
+    QList<QMap<QString, QVariant>> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
                                     const QList<Constraint> *constraints = nullptr,
                                     const SelectOrder *selectOrder = nullptr);
 
@@ -207,7 +208,7 @@ public:
      *
      *    QSqlDatabase db = man.openDatabase("E:/Users/Furkanzmc/Desktop/test.sqlite");
      *    man.createTable(db, columns, "my_table");
-     *    QVariantMap map;
+     *    QMap<QString, QVariant> map;
      *    map["first"] = 122;
      *    map["second"] = 122;
      *    map["image"] = inByteArray;
@@ -218,7 +219,7 @@ public:
      * @param rows Rows must be a list of QVarianMap
      * @return bool
      */
-    bool insertIntoTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row);
+    bool insertIntoTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row);
 
     /**
      * @brief Update the data in table with the new data.
@@ -228,7 +229,7 @@ public:
      * @paragraph constraints This is required.
      * @return
      */
-    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const QList<Constraint> &constraints);
+    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row, const QList<Constraint> &constraints);
 
     /**
      * @brief Deletes the records in the table acording to the given constraints. If constraints have a size of 0, then everythin is deleted.

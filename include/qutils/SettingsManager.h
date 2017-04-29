@@ -2,7 +2,14 @@
 // Qt
 #include <QObject>
 // qutils
-#include "SqliteManager.h"
+#include "qutils/Macros.h"
+#include "qutils/SqliteManager.h"
+
+#ifdef QUTILS_APP_NAME
+#define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"
+#else
+#define SETTINGS_DB_FILE_NAME "qutils_settings.sqlite"
+#endif // QUTILS_APP_NAME
 
 namespace zmc
 {
@@ -15,11 +22,11 @@ class SettingsManager : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString databasePath READ getDatabasePath WRITE setDatabasePath NOTIFY databasePathChanged)
+    Q_PROPERTY(QString databasePath READ getDatabaseName WRITE setDatabaseName NOTIFY databasePathChanged)
     Q_PROPERTY(QString settingsTableName READ getSettingsTableName WRITE setSettingsTableName NOTIFY settingsTableNameChanged)
 
 public:
-    explicit SettingsManager(QObject *parent = 0);
+    explicit SettingsManager(QString databaseName = SETTINGS_DB_FILE_NAME, QString tableName = "settings", QObject *parent = 0);
     ~SettingsManager();
 
     /**
@@ -43,20 +50,20 @@ public:
      */
     Q_INVOKABLE QVariant read(const QString &key);
 
-    QString getDatabasePath() const;
+    QString getDatabaseName() const;
 
     /**
-     * @brief The database will be reloaded when this property changes.
+     * @brief The database will be reloaded when this property changes. This is the database file name only. Cache is alwasy created at the writable location.
      * @param databasePath
      */
-    void setDatabasePath(const QString &databasePath);
+    void setDatabaseName(const QString &databaseName);
 
     QString getSettingsTableName() const;
     void setSettingsTableName(const QString &tableName);
 
 private:
     const int m_InstanceIndex;
-    QString m_DatabasePath, m_SettingsTableName;
+    QString m_DatabaseName, m_SettingsTableName;
     zmc::SqliteManager m_SqlManager;
     QSqlDatabase m_Database;
 
@@ -76,8 +83,8 @@ private:
      */
     void restartDatabase();
 
-    void emitSettingChangedInAllInstances(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue);
-    void emitSettingChanged(const QString &settingName, const QString &oldSettingValue, const QString &newSettingValue);
+    void emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
+    void emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
 
 signals:
     /**
@@ -86,7 +93,7 @@ signals:
      * @param oldSettingValue This will an empty string if the setting is inserted for the first time.
      * @param newSettingValue
      */
-    void settingChanged(QString settingName, QString oldSettingValue, QString newSettingValue);
+    void settingChanged(QString settingName, QVariant oldSettingValue, QVariant newSettingValue);
     void databasePathChanged();
     void settingsTableNameChanged();
 

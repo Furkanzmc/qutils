@@ -149,9 +149,9 @@ QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint
     return query;
 }
 
-QList<QVariantMap> SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
+QList<QMap<QString, QVariant> > SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
 {
-    QList<QVariantMap> resultList;
+    QList<QMap<QString, QVariant>> resultList;
     if (database.isOpen() == false) {
         LOG_ERROR("Given database is not open!");
         return resultList;
@@ -178,17 +178,17 @@ QList<QVariantMap> SqliteManager::executeSelectQuery(QSqlDatabase &database, con
     return resultList;
 }
 
-QList<QVariantMap> SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
+QList<QMap<QString, QVariant> > SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
         const QList<Constraint> *constraints, const SelectOrder *selectOrder)
 {
     if (database.isOpen() == false) {
         LOG_ERROR("Given database is not open!");
-        return QList<QVariantMap>();
+        return QList<QMap<QString, QVariant>>();
     }
 
     if (isTableExist(database, tableName) == false) {
         LOG_ERROR("Given table, " << tableName << ", is does not exist!");
-        return QList<QVariantMap>();
+        return QList<QMap<QString, QVariant>>();
     }
 
     QString sqlQueryStr = "SELECT * FROM " + tableName;
@@ -208,7 +208,7 @@ QList<QVariantMap> SqliteManager::getFromTable(QSqlDatabase &database, const QSt
     return executeSelectQuery(database, sqlQueryStr);
 }
 
-bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row)
+bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row)
 {
     bool successful = false;
     if (database.isOpen() == false) {
@@ -240,7 +240,7 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
 
     if (query.exec() == false) {
         updateError(database, sqlQueryStr);
-        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << query.executedQuery());
     }
     else {
         successful = true;
@@ -249,7 +249,7 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
     return successful;
 }
 
-bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QVariantMap &row, const QList<Constraint> &constraints)
+bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row, const QList<Constraint> &constraints)
 {
     bool successful = false;
     if (database.isOpen() == false) {
