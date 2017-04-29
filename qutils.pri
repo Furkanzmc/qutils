@@ -32,14 +32,17 @@ HEADERS += \
     $$PWD/include/qutils/TranslationHelper.h \
     $$PWD/include/qutils/NativeUtils.h \
     $$PWD/include/qutils/SqliteManager.h \
-    $$PWD/include/qutils/SettingsManager.h
+    $$PWD/include/qutils/SettingsManager.h \
+    $$PWD/include/qutils/Network/NetworkManager.h \
+    $$PWD/include/qutils/Network/HttpCodes.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
     $$PWD/src/TranslationHelper.cpp \
     $$PWD/src/NativeUtils.cpp \
     $$PWD/src/SqliteManager.cpp \
-    $$PWD/src/SettingsManager.cpp
+    $$PWD/src/SettingsManager.cpp \
+    $$PWD/src/Network/NetworkManager.cpp
 
 
 INCLUDEPATH += $$PWD/include
