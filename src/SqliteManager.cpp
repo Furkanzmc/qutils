@@ -43,7 +43,7 @@ bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefini
     }
 
     QString sqlQueryStr = "CREATE TABLE \"main\".\"" + tableName + "\" (";
-    unsigned int index = 0;
+    int index = 0;
     for (const ColumnDefinition &def : columns) {
         sqlQueryStr += "\"" + def.name + "\" " + getColumnTypeName(def.type) + " " + def.getNullText();
         index++;
@@ -132,7 +132,7 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
 QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint> &values)
 {
     QString query = "WHERE ";
-    unsigned int index = 0;
+    int index = 0;
     for (const auto &t : values) {
         if (index != 0) {
             query += " ";
