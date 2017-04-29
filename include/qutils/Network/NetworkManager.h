@@ -11,8 +11,8 @@ namespace zmc
 namespace Network
 {
 
-struct ApiResponse {
-    ApiResponse(QString _data, unsigned int _httpCode)
+struct Response {
+    Response(QString _data, unsigned int _httpCode)
         : data(_data)
         , httpCode(_httpCode)
     {
@@ -23,7 +23,7 @@ struct ApiResponse {
     unsigned int httpCode;
 };
 
-using RequestCallback = std::function<void(const ApiResponse &)>;
+using RequestCallback = std::function<void(const Response &)>;
 
 class NetworkManager : public QObject
 {
@@ -57,6 +57,8 @@ public:
      */
     void setHeader(const QString &headerName, const QString &headerValue);
 
+    void removeHeader(const QString &headerName);
+
 private:
     QNetworkAccessManager m_Network;
     QList<RequestCallback> m_Callbacks;
@@ -68,7 +70,7 @@ private slots:
     void onRequestFinished(QNetworkReply *reply);
 
 private:
-    void onReceivedResponse(const ApiResponse &response, int threadIndex);
+    void onReceivedResponse(const Response &response, int threadIndex);
 
     /**
      * @brief Returns the first nullptr thread index. If none found, returns -1

@@ -55,7 +55,7 @@ void NetworkManager::sendPost(const QString &url, const QString &data, RequestCa
     const int availableIndex = getAvailableIndex();
     const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
-    QNetworkRequest request(url);
+    QNetworkRequest request(qurl);
     setHeaders(request);
 
     const QByteArray postData = data.toUtf8();
@@ -98,7 +98,12 @@ void NetworkManager::setHeader(const QString &headerName, const QString &headerV
     m_Headers[headerName.toUtf8()] = headerValue.toUtf8();
 }
 
-void NetworkManager::onReceivedResponse(const ApiResponse &response, int threadIndex)
+void NetworkManager::removeHeader(const QString &headerName)
+{
+    m_Headers.remove(headerName.toUtf8());
+}
+
+void NetworkManager::onReceivedResponse(const Response &response, int threadIndex)
 {
     if (threadIndex >= m_Callbacks.size()) {
         return;
@@ -114,7 +119,7 @@ void NetworkManager::onReceivedResponse(const ApiResponse &response, int threadI
 
 int NetworkManager::getAvailableIndex()
 {
-    auto foundIt = std::find_if(m_Callbacks.begin(), m_Callbacks.end(), [](std::function<void(const ApiResponse &)> cb) {
+    auto foundIt = std::find_if(m_Callbacks.begin(), m_Callbacks.end(), [](std::function<void(const Response &)> cb) {
         return cb == nullptr;
     });
 
@@ -150,7 +155,7 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
                   "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
     }
 
-    const ApiResponse response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+    const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
 
     bool intConversionOk = false;
     int callbackIndex = reply->objectName().toInt(&intConversionOk);
