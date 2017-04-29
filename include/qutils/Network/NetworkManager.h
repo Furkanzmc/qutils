@@ -5,7 +5,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-namespace Utils
+namespace zmc
+{
+
+namespace Network
 {
 
 struct ApiResponse {
@@ -82,5 +85,7 @@ private:
     void setHeaders(QNetworkRequest &request);
 
 };
+
+}
 
 }

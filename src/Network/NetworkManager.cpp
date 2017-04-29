@@ -5,7 +5,10 @@
 // qutils
 #include "qutils/Macros.h"
 
-namespace Utils
+namespace zmc
+{
+
+namespace Network
 {
 
 unsigned int NetworkManager::m_RequestCount = 0;
@@ -111,7 +114,7 @@ void NetworkManager::onReceivedResponse(const ApiResponse &response, int threadI
 
 int NetworkManager::getAvailableIndex()
 {
-    auto foundIt = std::find_if(m_Callbacks.begin(), m_Callbacks.end(), [](std::function<void(const Utils::ApiResponse &)> cb) {
+    auto foundIt = std::find_if(m_Callbacks.begin(), m_Callbacks.end(), [](std::function<void(const ApiResponse &)> cb) {
         return cb == nullptr;
     });
 
@@ -156,6 +159,8 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
     }
 
     onReceivedResponse(response, callbackIndex);
+}
+
 }
 
 }
