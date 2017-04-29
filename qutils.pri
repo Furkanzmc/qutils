@@ -33,6 +33,7 @@ HEADERS += \
     $$PWD/include/qutils/NativeUtils.h \
     $$PWD/include/qutils/SqliteManager.h \
     $$PWD/include/qutils/SettingsManager.h \
+    $$PWD/include/qutils/CacheManager.h \
     $$PWD/include/qutils/Network/NetworkManager.h \
     $$PWD/include/qutils/Network/HttpCodes.h \
     $$PWD/include/qutils/JsonUtils.h
@@ -43,6 +44,7 @@ SOURCES += \
     $$PWD/src/NativeUtils.cpp \
     $$PWD/src/SqliteManager.cpp \
     $$PWD/src/SettingsManager.cpp \
+    $$PWD/src/CacheManager.cpp \
     $$PWD/src/Network/NetworkManager.cpp \
     $$PWD/src/JsonUtils.cpp
 
