@@ -1,6 +1,9 @@
 #pragma once
 
-namespace Api
+namespace zmc
+{
+
+namespace Network
 {
 
 enum HttpCodes {
@@ -73,5 +76,7 @@ enum HttpCodes {
     NETWORK_AUTHENTICATION_REQUIRED = 511,
     NETWORK_CONNECT_TIMEOUT_ERROR = 599
 };
+
+}
 
 }
