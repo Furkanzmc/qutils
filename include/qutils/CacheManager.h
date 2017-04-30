@@ -92,11 +92,11 @@ private:
 signals:
     /**
      * @brief This is emitted when a cache is changed. This signal is emitted in all of the CacheManager instances when a cache is changed.
-     * @param settingName
+     * @param cacheName
      * @param oldCachedValue This will an empty string if the setting is inserted for the first time.
      * @param newCachedValue
      */
-    void cacheChanged(QString settingName, QVariant oldCachedValue, QVariant newCachedValue);
+    void cacheChanged(QString cacheName, QVariant oldCachedValue, QVariant newCachedValue);
     void databaseNameChanged();
     void cacheTableNameChanged();
 
