@@ -120,7 +120,7 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         if (isBackButton) {
             utils->emitBackButtonPressed();
         }
-        else {
+        else if (isMenuButton) {
             utils->emitMenuButtonPressed();
         }
     }
