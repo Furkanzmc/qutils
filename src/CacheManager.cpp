@@ -172,7 +172,7 @@ void CacheManager::emitCacheChangedInAllInstances(const QString &settingName, co
     if (oldSettingValue != newCachedValue) {
         for (CacheManager *man : m_Instances) {
             if (man) {
-                emitCacheChanged(settingName, oldSettingValue, newCachedValue);
+                man->emitCacheChanged(settingName, oldSettingValue, newCachedValue);
             }
         }
     }

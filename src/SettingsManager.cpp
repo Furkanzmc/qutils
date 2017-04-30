@@ -175,7 +175,7 @@ void SettingsManager::emitSettingChangedInAllInstances(const QString &settingNam
     if (oldSettingValue != newSettingValue) {
         for (SettingsManager *man : m_Instances) {
             if (man) {
-                emitSettingChanged(settingName, oldSettingValue, newSettingValue);
+                man->emitSettingChanged(settingName, oldSettingValue, newSettingValue);
             }
         }
     }
