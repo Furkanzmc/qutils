@@ -35,6 +35,7 @@ HEADERS += \
     $$PWD/include/qutils/SettingsManager.h \
     $$PWD/include/qutils/CacheManager.h \
     $$PWD/include/qutils/Network/NetworkManager.h \
+    $$PWD/include/qutils/Network/DownloadManager.h \
     $$PWD/include/qutils/Network/HttpCodes.h \
     $$PWD/include/qutils/JsonUtils.h
 
@@ -46,6 +47,7 @@ SOURCES += \
     $$PWD/src/SettingsManager.cpp \
     $$PWD/src/CacheManager.cpp \
     $$PWD/src/Network/NetworkManager.cpp \
+    $$PWD/src/Network/DownloadManager.cpp \
     $$PWD/src/JsonUtils.cpp
 
 
