@@ -15,10 +15,16 @@ SqliteManager::SqliteManager()
 
 QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(databasePath);
-    if (db.open() == false) {
-        LOG_ERROR("Cannot open the database at " << databasePath);
+    QSqlDatabase db;
+    if (QSqlDatabase::contains(databasePath)) {
+        db = QSqlDatabase::database(databasePath);
+    }
+    else {
+        db = QSqlDatabase::addDatabase("QSQLITE", databasePath);
+        db.setDatabaseName(databasePath);
+        if (db.open() == false) {
+            LOG_ERROR("Cannot open the database at " << databasePath);
+        }
     }
 
     return db;

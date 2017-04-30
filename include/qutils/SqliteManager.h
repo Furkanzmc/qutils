@@ -85,7 +85,9 @@ public:
     SqliteManager();
 
     /**
-     * @brief Creates a sqlite3 instance and returns it. If there's an error, returns nullptr. You can get the error with getLastError()
+     * @brief Creates a sqlite3 instance and returns it. If there's an error, you can get the error with getLastError().
+     * If another database with the same databasePath has been opened before, returns that database connection to avoid multiple connections to the same
+     * database.
      * @param databasePath
      * @param createIfFileAbsent
      * @return QSqlDatabase
@@ -188,8 +190,8 @@ public:
      * @return QList<QMap<QString, QVariant>>
      */
     QList<QMap<QString, QVariant>> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
-                                    const QList<Constraint> *constraints = nullptr,
-                                    const SelectOrder *selectOrder = nullptr);
+                                const QList<Constraint> *constraints = nullptr,
+                                const SelectOrder *selectOrder = nullptr);
 
     /**
      * @brief Insert row(s) into the given table.
