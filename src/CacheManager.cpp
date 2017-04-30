@@ -86,6 +86,17 @@ QVariant CacheManager::read(const QString &key)
     return value;
 }
 
+bool CacheManager::remove(const QString &key)
+{
+    DATABASE_CHECK();
+
+    const QList<SqliteManager::Constraint> constraints {
+        std::make_tuple(COL_CACHE_NAME, key, "AND")
+    };
+
+    return m_SqlManager.deleteInTable(m_Database, m_CacheTableName, constraints);
+}
+
 QString CacheManager::getDatabaseName() const
 {
     return m_DatabaseName;

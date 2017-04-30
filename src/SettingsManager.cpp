@@ -69,7 +69,6 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
     }
     else {
         successful = m_SqlManager.insertIntoTable(m_Database, m_SettingsTableName, newMap);
-
         emitSettingChangedInAllInstances(key, "", value);
     }
 
@@ -93,6 +92,17 @@ QVariant SettingsManager::read(const QString &key)
     }
 
     return value;
+}
+
+bool SettingsManager::remove(const QString &key)
+{
+    DATABASE_CHECK();
+
+    const QList<SqliteManager::Constraint> constraints {
+        std::make_tuple(COL_SETTING_NAME, key, "AND")
+    };
+
+    return m_SqlManager.deleteInTable(m_Database, m_SettingsTableName, constraints);
 }
 
 QString SettingsManager::getDatabaseName() const

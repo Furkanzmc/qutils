@@ -44,6 +44,13 @@ public:
      */
     Q_INVOKABLE QVariant read(const QString &key);
 
+    /**
+     * @brief Removes the given key from the settings.
+     * @param key
+     * @return bool Returns true If the key was removed, false if it wasn't.
+     */
+    Q_INVOKABLE bool remove(const QString &key);
+
     QString getDatabaseName() const;
 
     /**
