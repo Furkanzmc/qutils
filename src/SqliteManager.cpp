@@ -341,14 +341,15 @@ bool SqliteManager::exists(QSqlDatabase &database, const QString &tableName, con
         return exists;
     }
 
-    const QString sqlQueryStr = "SELECT COUNT(id) FROM " + tableName + " " + constructWhereQuery(constraints);
+    const QString sqlQueryStr = "SELECT COUNT(rowid) FROM " + tableName + " " + constructWhereQuery(constraints);
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
     if (successfull == false) {
         updateError(database, sqlQueryStr);
-        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << sqlQueryStr);
     }
     else {
+        query.first();
         const int count = query.value(0).toInt();
         exists = count > 0;
     }
