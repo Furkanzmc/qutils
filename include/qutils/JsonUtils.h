@@ -12,7 +12,10 @@ public:
 
     static QString toJsonString(const QVariantMap &data);
     static QString toJsonString(const QVariant &data);
+    static QString toJsonString(const QList<QVariantMap> &data);
+
     static QVariantMap toVariantMap(const QString &data);
+    static QList<QVariant> toVariantList(const QString &data);
 };
 
 }
