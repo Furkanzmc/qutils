@@ -105,6 +105,17 @@ bool SettingsManager::remove(const QString &key)
     return m_SqlManager.deleteInTable(m_Database, m_SettingsTableName, constraints);
 }
 
+bool SettingsManager::exists(const QString &key)
+{
+    DATABASE_CHECK();
+
+    const QList<SqliteManager::Constraint> constraints {
+        std::make_tuple(COL_SETTING_NAME, key, "AND")
+    };
+
+    return m_SqlManager.exists(m_Database, m_SettingsTableName, constraints);
+}
+
 QString SettingsManager::getDatabaseName() const
 {
     return m_DatabaseName;

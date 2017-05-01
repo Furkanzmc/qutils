@@ -57,6 +57,13 @@ public:
      */
     Q_INVOKABLE bool remove(const QString &key);
 
+    /**
+     * @brief Checks If the given key exists in the cache.
+     * @param key
+     * @return bool Returns true If the key exists.
+     */
+    Q_INVOKABLE bool exists(const QString &key);
+
     QString getDatabaseName() const;
 
     /**
