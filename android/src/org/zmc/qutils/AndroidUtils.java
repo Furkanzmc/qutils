@@ -27,13 +27,15 @@ public class AndroidUtils extends QtActivity
 
     public static void setStatusBarColor(String colorHexStr)
     {
-        Window window = m_MainContext.getWindow();
-        // clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        // finally change the color
-        window.setStatusBarColor(Color.parseColor(colorHexStr));
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            Window window = m_MainContext.getWindow();
+            // clear FLAG_TRANSLUCENT_STATUS flag:
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            // finally change the color
+            window.setStatusBarColor(Color.parseColor(colorHexStr));
+        }
     }
 
     public static void setStatusBarVisible(boolean visible)
