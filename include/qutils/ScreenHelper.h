@@ -6,7 +6,8 @@ namespace zmc
 
 /**
  * @brief ScreenHelper is a utility class to help create resolution indepentant UI in QML.
- * When using different icons for different screen densities.
+ * When using different icons for different screen densities. If `QUTILS_FOR_MOBILE` macro defined, the ratio is calculated for the values that were given
+ * int the constructor. This way, you can simulate different screen sizes on your desktop compiled app.
  * @code
  *     // in main.cpp
  *     ScreenHelper manager;
@@ -37,10 +38,14 @@ public:
     Q_PROPERTY(bool xxhdpi READ isXXHDPI)
     Q_PROPERTY(bool xxxhdpi READ isXXXHDPI)
 
+    Q_PROPERTY(float desiredWidth READ getDesiredWidth)
+    Q_PROPERTY(float desiredHeight READ getDesiredHeight)
+
 public:
-    explicit ScreenHelper(QObject *parent = 0);
+    ScreenHelper(float _dpi = 386.f, float _width = 1080.f, float _height = 1920.f, QObject *parent = nullptr);
 
     Q_INVOKABLE qreal dp(const qreal &size);
+    Q_INVOKABLE qreal fp(const qreal &size);
 
     Q_INVOKABLE QString getLowResourceFolderName() const;
     void setLowResourceFolderName(const QString &resourceName);
@@ -69,6 +74,9 @@ public:
      */
     Q_INVOKABLE QString getResource(const QString &fileName) const;
 
+    Q_INVOKABLE float getDesiredHeight() const;
+    Q_INVOKABLE float getDesiredWidth() const;
+
 private:
     const qreal m_DPI;
     const unsigned int m_LowDPIValue,
@@ -87,6 +95,11 @@ private:
             m_XXHighResourceName,
             m_XXXHighResourceName;
 
+    float m_Ratio,
+          m_RatioFont,
+          m_DesiredHeight,
+          m_DesiredWidth;
+
 private:
     bool isLDPI() const;
     bool isMDPI() const;
@@ -95,6 +108,15 @@ private:
     bool isXHDPI() const;
     bool isXXHDPI() const;
     bool isXXXHDPI() const;
+
+    /**
+     * @brief Get the scale that gives a size with preserved aspect ratio.
+     * @param origSize The original size of the image
+     * @param newSize This is the size you want it to be. Only one property used according to the useHeight parameter.
+     * @param useHeight If you want to scale the image according to its height, set to true. Set to false otherwise.
+     * @return
+     */
+    float getAspectRatioWidth(const QSize &origSize, const float &newHeight) const;
 
 };
 

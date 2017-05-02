@@ -11,7 +11,7 @@
 namespace zmc
 {
 
-ScreenHelper::ScreenHelper(QObject *parent)
+ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *parent)
     : QObject(parent)
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
     , m_LowDPIValue(120)
@@ -21,24 +21,44 @@ ScreenHelper::ScreenHelper(QObject *parent)
     , m_XXHighDPIValue(480)
     , m_XXXHighDPIValue(640)
     , m_DPIVariation(20)
+    , m_Ratio(1.f)
+    , m_RatioFont(1.f)
+    , m_DesiredWidth(0.f)
+    , m_DesiredHeight(0.f)
 {
 #ifdef QT_DEBUG
     qDebug() << "The DPI is: " << m_DPI;
 #endif // QT_DEBUG
+
+    // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
+    const float refDpi = _dpi;
+    const float refWidth = _width;
+    const float refHeight = _height;
+
+#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    m_DesiredHeight = QGuiApplication::primaryScreen()->geometry().height() * 0.9f;
+    m_DesiredWidth = getAspectRatioWidth(QSize(refWidth, refHeight), m_DesiredHeight);
+    const float dpi = refDpi;
+    const QRect rect(0, 0, m_DesiredWidth, m_DesiredHeight);
+#else
+    const QRect rect = QGuiApplication::primaryScreen()->geometry();
+    const float dpi = QGuiApplication::primaryScreen()->physicalDotsPerInch();
+#endif // Q_OS_DESKTOP
+
+    const float height = qMax(rect.width(), rect.height());
+    const float width = qMin(rect.width(), rect.height());
+    m_Ratio = qMin(height / refHeight, width / refWidth);
+    m_RatioFont = qMin(height * refDpi / (dpi * refHeight), width * refDpi / (dpi * refWidth));
 }
 
 qreal ScreenHelper::dp(const qreal &size)
 {
-    qreal newSize = size;
-#if defined(Q_OS_DESKTOP)
-    if (m_DPI <= 90) {
-        newSize = round(size * (m_DPI / 90.0));
-    }
-#elif defined(Q_OS_ANDROID)
-    newSize = round(size * (m_DPI / 160.0));
-#endif // Platform Check
+    return qMax(2, int(size * m_Ratio));;
+}
 
-    return newSize;
+qreal ScreenHelper::fp(const qreal &size)
+{
+    return int(size * m_RatioFont);
 }
 
 QString ScreenHelper::getLowResourceFolderName() const
@@ -129,6 +149,16 @@ QString ScreenHelper::getResource(const QString &fileName) const
     return getResourceFolderName() + "/" + fileName;
 }
 
+float ScreenHelper::getDesiredHeight() const
+{
+    return m_DesiredHeight;
+}
+
+float ScreenHelper::getDesiredWidth() const
+{
+    return m_DesiredWidth;
+}
+
 bool ScreenHelper::isLDPI() const
 {
     return m_DPI < m_LowDPIValue + m_DPIVariation;
@@ -157,6 +187,14 @@ bool ScreenHelper::isXXHDPI() const
 bool ScreenHelper::isXXXHDPI() const
 {
     return m_DPI < m_XXXHighDPIValue + m_DPIVariation && m_DPI > m_XXHighDPIValue + m_DPIVariation;
+}
+
+float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const
+{
+    // Width Formula: original height / original width * new width = new height
+    // Height Formula: orignal width / orignal height * new height = new width
+
+    return newHeight / (static_cast<float>(origSize.height()) / static_cast<float>(origSize.width()));
 }
 
 }
