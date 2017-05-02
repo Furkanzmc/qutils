@@ -30,16 +30,16 @@ class ScreenHelper : public QObject
     Q_OBJECT
 
 public:
-    Q_PROPERTY(bool ldpi READ isLDPI)
-    Q_PROPERTY(bool mdpi READ isMDPI)
-    Q_PROPERTY(bool hdpi READ isHDPI)
+    Q_PROPERTY(bool ldpi READ isLDPI CONSTANT)
+    Q_PROPERTY(bool mdpi READ isMDPI CONSTANT)
+    Q_PROPERTY(bool hdpi READ isHDPI CONSTANT)
 
-    Q_PROPERTY(bool xhdpi READ isXHDPI)
-    Q_PROPERTY(bool xxhdpi READ isXXHDPI)
-    Q_PROPERTY(bool xxxhdpi READ isXXXHDPI)
+    Q_PROPERTY(bool xhdpi READ isXHDPI CONSTANT)
+    Q_PROPERTY(bool xxhdpi READ isXXHDPI CONSTANT)
+    Q_PROPERTY(bool xxxhdpi READ isXXXHDPI CONSTANT)
 
-    Q_PROPERTY(float desiredWidth READ getDesiredWidth)
-    Q_PROPERTY(float desiredHeight READ getDesiredHeight)
+    Q_PROPERTY(float desiredWidth READ getDesiredWidth CONSTANT)
+    Q_PROPERTY(float desiredHeight READ getDesiredHeight CONSTANT)
 
 public:
     ScreenHelper(float _dpi = 386.f, float _width = 1080.f, float _height = 1920.f, QObject *parent = nullptr);
@@ -47,22 +47,22 @@ public:
     Q_INVOKABLE qreal dp(const qreal &size);
     Q_INVOKABLE qreal fp(const qreal &size);
 
-    Q_INVOKABLE QString getLowResourceFolderName() const;
+    QString getLowResourceFolderName() const;
     void setLowResourceFolderName(const QString &resourceName);
 
-    Q_INVOKABLE QString getMediumResourceFolderName() const;
+    QString getMediumResourceFolderName() const;
     void setMediumResourceFolderName(const QString &resourceName);
 
-    Q_INVOKABLE QString getHighResourceFolderName() const;
+    QString getHighResourceFolderName() const;
     void setHighResourceFolderName(const QString &resourceName);
 
-    Q_INVOKABLE QString getXHighResourceFolderName() const;
+    QString getXHighResourceFolderName() const;
     void setXHighResourceFolderName(const QString &resourceName);
 
-    Q_INVOKABLE QString getXXHighResourceFolderName() const;
+    QString getXXHighResourceFolderName() const;
     void setXXHighResourceFolderName(const QString &resourceName);
 
-    Q_INVOKABLE QString getXXXHighResourceFolderName() const;
+    QString getXXXHighResourceFolderName() const;
     void setXXXHighResourceFolderName(const QString &resourceName);
 
     Q_INVOKABLE QString getResourceFolderName() const;
