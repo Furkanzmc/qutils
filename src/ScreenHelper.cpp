@@ -36,7 +36,7 @@ ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *par
     const float refHeight = _height;
 
 #if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
-    m_DesiredHeight = QGuiApplication::primaryScreen()->geometry().height() * 0.9f;
+    m_DesiredHeight = qMin(refHeight, QGuiApplication::primaryScreen()->geometry().height() * 0.9f);
     m_DesiredWidth = getAspectRatioWidth(QSize(refWidth, refHeight), m_DesiredHeight);
     const float dpi = refDpi;
     const QRect rect(0, 0, m_DesiredWidth, m_DesiredHeight);
