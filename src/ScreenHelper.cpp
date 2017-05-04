@@ -11,7 +11,7 @@
 namespace zmc
 {
 
-ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *parent)
+ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const float &refHeight, const float &refSizeInInches, QObject *parent)
     : QObject(parent)
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
     , m_LowDPIValue(120)
@@ -28,21 +28,17 @@ ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *par
     , m_SizeInInches(0.f)
 {
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
-    const float refDpi = _dpi;
-    const float refWidth = _width;
-    const float refHeight = _height;
-
-    const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
-    m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
-
 #if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
     m_DesiredHeight = qMin(refHeight, QGuiApplication::primaryScreen()->geometry().height() * 0.9f);
     m_DesiredWidth = getAspectRatioWidth(QSize(refWidth, refHeight), m_DesiredHeight);
     const float dpi = refDpi;
     const QRect rect(0, 0, m_DesiredWidth, m_DesiredHeight);
+    m_SizeInInches = refSizeInInches;
 #else
     const QRect rect = QGuiApplication::primaryScreen()->geometry();
     const float dpi = m_DPI;
+    const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
+    m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
 #endif // Q_OS_DESKTOP
 
     const float height = qMax(rect.width(), rect.height());

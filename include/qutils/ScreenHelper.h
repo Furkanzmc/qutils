@@ -49,7 +49,8 @@ public:
     Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
 
 public:
-    ScreenHelper(float _dpi = 386.f, float _width = 1080.f, float _height = 1920.f, QObject *parent = nullptr);
+    ScreenHelper(const float &refDpi = 386.f, const float &refWidth = 1080.f, const float &refHeight = 1920.f, const float &refSizeInInches = 5.7f,
+                 QObject *parent = nullptr);
 
     Q_INVOKABLE qreal dp(const qreal &size);
     Q_INVOKABLE qreal fp(const qreal &size);
