@@ -40,6 +40,13 @@ public:
 
     Q_PROPERTY(float desiredWidth READ getDesiredWidth CONSTANT)
     Q_PROPERTY(float desiredHeight READ getDesiredHeight CONSTANT)
+    Q_PROPERTY(float sizeInInches READ getSizeInInches CONSTANT)
+
+    Q_PROPERTY(bool small READ isSmallSize CONSTANT)
+    Q_PROPERTY(bool normal READ isNormalSize CONSTANT)
+    Q_PROPERTY(bool large READ isLargeSize CONSTANT)
+
+    Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
 
 public:
     ScreenHelper(float _dpi = 386.f, float _width = 1080.f, float _height = 1920.f, QObject *parent = nullptr);
@@ -74,12 +81,14 @@ public:
      */
     Q_INVOKABLE QString getResource(const QString &fileName) const;
 
-    Q_INVOKABLE float getDesiredHeight() const;
-    Q_INVOKABLE float getDesiredWidth() const;
+    float getDesiredHeight() const;
+    float getDesiredWidth() const;
+
+    float getSizeInInches() const;
 
 private:
-    const qreal m_DPI;
-    const unsigned int m_LowDPIValue,
+    const float m_DPI;
+    const float m_LowDPIValue,
           m_MediumDPIValue,
           m_HighDPIValue,
           m_XHighDPIValue,
@@ -97,8 +106,9 @@ private:
 
     float m_Ratio,
           m_RatioFont,
+          m_DesiredWidth,
           m_DesiredHeight,
-          m_DesiredWidth;
+          m_SizeInInches;
 
 private:
     bool isLDPI() const;
@@ -109,6 +119,12 @@ private:
     bool isXXHDPI() const;
     bool isXXXHDPI() const;
 
+    bool isSmallSize() const;
+    bool isNormalSize() const;
+    bool isLargeSize() const;
+
+    bool isXLargeSize() const;
+
     /**
      * @brief Get the scale that gives a size with preserved aspect ratio.
      * @param origSize The original size of the image
@@ -117,6 +133,8 @@ private:
      * @return
      */
     float getAspectRatioWidth(const QSize &origSize, const float &newHeight) const;
+
+    void printScreenInfo() const;
 
 };
 

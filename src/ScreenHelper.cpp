@@ -25,15 +25,15 @@ ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *par
     , m_RatioFont(1.f)
     , m_DesiredWidth(0.f)
     , m_DesiredHeight(0.f)
+    , m_SizeInInches(0.f)
 {
-#ifdef QT_DEBUG
-    qDebug() << "The DPI is: " << m_DPI;
-#endif // QT_DEBUG
-
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
     const float refDpi = _dpi;
     const float refWidth = _width;
     const float refHeight = _height;
+
+    const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
+    m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
 
 #if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
     m_DesiredHeight = qMin(refHeight, QGuiApplication::primaryScreen()->geometry().height() * 0.9f);
@@ -42,18 +42,20 @@ ScreenHelper::ScreenHelper(float _dpi, float _width, float _height, QObject *par
     const QRect rect(0, 0, m_DesiredWidth, m_DesiredHeight);
 #else
     const QRect rect = QGuiApplication::primaryScreen()->geometry();
-    const float dpi = QGuiApplication::primaryScreen()->physicalDotsPerInch();
+    const float dpi = m_DPI;
 #endif // Q_OS_DESKTOP
 
     const float height = qMax(rect.width(), rect.height());
     const float width = qMin(rect.width(), rect.height());
     m_Ratio = qMin(height / refHeight, width / refWidth);
     m_RatioFont = qMin(height * refDpi / (dpi * refHeight), width * refDpi / (dpi * refWidth));
+
+    printScreenInfo();
 }
 
 qreal ScreenHelper::dp(const qreal &size)
 {
-    return qMax(2, int(size * m_Ratio));;
+    return qMax(2, int(size * m_Ratio));
 }
 
 qreal ScreenHelper::fp(const qreal &size)
@@ -123,13 +125,29 @@ void ScreenHelper::setXXXHighResourceFolderName(const QString &resourceName)
 
 QString ScreenHelper::getResourceFolderName() const
 {
-    QString name = getLowResourceFolderName();
+    QString name = "";
 
-    if (isMDPI()) {
+    if (isLDPI()) {
+        name = getLowResourceFolderName();
+    }
+    else if (isMDPI()) {
         name = getMediumResourceFolderName();
     }
     else if (isHDPI()) {
+#ifdef Q_OS_MOBILE
+        // This is checked in case we are on a low resolution but high DPI device. Like Samsung GT-I9190
+        if (isSmallSize()) {
+            name = getLowResourceFolderName();
+        }
+        else if (isNormalSize()) {
+            name = getMediumResourceFolderName();
+        }
+        else {
+            name = getHighResourceFolderName();
+        }
+#else
         name = getHighResourceFolderName();
+#endif // Q_OS_MOBILE
     }
     else if (isXHDPI()) {
         name = getXHighResourceFolderName();
@@ -159,34 +177,59 @@ float ScreenHelper::getDesiredWidth() const
     return m_DesiredWidth;
 }
 
+float ScreenHelper::getSizeInInches() const
+{
+    return m_SizeInInches;
+}
+
 bool ScreenHelper::isLDPI() const
 {
-    return m_DPI < m_LowDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) <= (m_LowDPIValue / m_MediumDPIValue);
 }
 
 bool ScreenHelper::isMDPI() const
 {
-    return m_DPI < m_MediumDPIValue + m_DPIVariation && m_DPI > m_LowDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) > (m_LowDPIValue / m_MediumDPIValue) && (m_DPI / m_MediumDPIValue) < (m_HighDPIValue / m_MediumDPIValue);
 }
 
 bool ScreenHelper::isHDPI() const
 {
-    return m_DPI < m_HighDPIValue + m_DPIVariation && m_DPI > m_MediumDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) >= (m_HighDPIValue / m_MediumDPIValue) && (m_DPI / m_MediumDPIValue) < (m_XHighDPIValue / m_MediumDPIValue);
 }
 
 bool ScreenHelper::isXHDPI() const
 {
-    return m_DPI < m_XHighDPIValue + m_DPIVariation && m_DPI > m_HighDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) >= (m_XHighDPIValue / m_MediumDPIValue) && (m_DPI / m_MediumDPIValue) < (m_XXHighDPIValue / m_MediumDPIValue);
 }
 
 bool ScreenHelper::isXXHDPI() const
 {
-    return m_DPI < m_XXHighDPIValue + m_DPIVariation && m_DPI > m_XHighDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) >= (m_XXHighDPIValue / m_MediumDPIValue) && (m_DPI / m_MediumDPIValue) < (m_XXXHighDPIValue / m_MediumDPIValue);
 }
 
 bool ScreenHelper::isXXXHDPI() const
 {
-    return m_DPI < m_XXXHighDPIValue + m_DPIVariation && m_DPI > m_XXHighDPIValue + m_DPIVariation;
+    return (m_DPI / m_MediumDPIValue) >= (m_XXXHighDPIValue / m_MediumDPIValue);
+}
+
+bool ScreenHelper::isSmallSize() const
+{
+    return m_SizeInInches <= 4.6f;
+}
+
+bool ScreenHelper::isNormalSize() const
+{
+    return m_SizeInInches > 4.6f && m_SizeInInches <= 5.3f;
+}
+
+bool ScreenHelper::isLargeSize() const
+{
+    return m_SizeInInches > 5.3f && m_SizeInInches < 6.0f;
+}
+
+bool ScreenHelper::isXLargeSize() const
+{
+    return m_SizeInInches >= 6.0f;
 }
 
 float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const
@@ -195,6 +238,27 @@ float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newH
     // Height Formula: orignal width / orignal height * new height = new width
 
     return newHeight / (static_cast<float>(origSize.height()) / static_cast<float>(origSize.width()));
+}
+
+void ScreenHelper::printScreenInfo() const
+{
+    LOG("----- Screen Info -----");
+    LOG("Size in Inches: " << m_SizeInInches);
+    LOG("DPI: " << m_DPI);
+    LOG("isSmallSize: " << isSmallSize());
+    LOG("isNormalSize: " << isNormalSize());
+    LOG("isLargeSize: " << isLargeSize());
+    LOG("isXLargeSize: " << isXLargeSize());
+    LOG("isLDPI: " << isLDPI());
+    LOG("isMDPI: " << isMDPI());
+    LOG("isHDPI: " << isHDPI());
+    LOG("isXHDPI: " << isXHDPI());
+    LOG("isXXHDPI: " << isXXHDPI());
+    LOG("isXXXHDPI: " << isXXXHDPI());
+    LOG("Ratio: " << m_Ratio);
+    LOG("RatioFont: " << m_RatioFont);
+
+    LOG("----- Screen Info End -----");
 }
 
 }
