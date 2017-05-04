@@ -28,14 +28,12 @@ QString JsonUtils::toJsonString(const QVariant &data)
     return doc.toJson(QJsonDocument::JsonFormat::Compact);
 }
 
-QString JsonUtils::toJsonString(const QList<QVariantMap> &data)
+QString JsonUtils::toJsonString(const QList<QVariant> &data)
 {
     QJsonDocument doc;
     QJsonArray array;
     for (int i = 0; i < data.size(); i++) {
-        const QVariantMap &map = data.at(i);
-        const QJsonObject obj = QJsonObject::fromVariantMap(map);
-        array.append(obj);
+        array.append(QJsonValue::fromVariant(data.at(i)));
     }
 
     doc.setArray(array);
