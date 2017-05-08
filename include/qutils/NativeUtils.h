@@ -27,10 +27,14 @@ public:
     Q_INVOKABLE void setImmersiveMode(bool visible);
 
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
+    Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
 signals:
     void backButtonPressed();
     void menuButtonPressed();
+    void alertDialogClicked(int buttonType);
+
+    void alertDialogCancelled();
 
 private:
 #ifdef Q_OS_ANDROID
@@ -40,6 +44,9 @@ private:
 private:
     void emitBackButtonPressed();
     void emitMenuButtonPressed();
+    void emitAlertDialogClicked(int buttonType);
+
+    void emitAlertDialogCancelled();
 };
 
 }

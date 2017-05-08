@@ -15,6 +15,9 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::emitBackButtonPressed);
     connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::emitMenuButtonPressed);
+    connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::emitAlertDialogClicked);
+
+    connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::emitAlertDialogCancelled);
 #endif // Q_OS_ANDROID
 }
 
@@ -55,6 +58,15 @@ void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
 #endif // Q_OS_ANDROID
 }
 
+void NativeUtils::showAlertDialog(const QVariantMap &dialogProperties)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->showAlertDialog(dialogProperties);
+#else
+    Q_UNUSED(dialogProperties);
+#endif // Q_OS_ANDROID
+}
+
 void NativeUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
@@ -63,6 +75,16 @@ void NativeUtils::emitBackButtonPressed()
 void NativeUtils::emitMenuButtonPressed()
 {
     emit menuButtonPressed();
+}
+
+void NativeUtils::emitAlertDialogClicked(int buttonType)
+{
+    emit alertDialogClicked(buttonType);
+}
+
+void NativeUtils::emitAlertDialogCancelled()
+{
+    emit alertDialogCancelled();
 }
 
 }
