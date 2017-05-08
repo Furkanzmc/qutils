@@ -34,10 +34,6 @@ DownloadManager::~DownloadManager()
 void DownloadManager::downloadFile(const QUrl &url, const QString &filePath)
 {
     QNetworkRequest request(url);
-    QSslConfiguration ssl = QSslConfiguration::defaultConfiguration();
-    ssl.setProtocol(QSsl::SslV3);
-    request.setSslConfiguration(ssl);
-
     QNetworkReply *reply = m_NetworkManager->get(request);
 
 #ifndef QT_NO_SSL
