@@ -9,6 +9,7 @@ import android.view.WindowManager.LayoutParams;
 import android.view.View;
 
 import android.os.Build;
+import android.content.Intent;
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
@@ -27,7 +28,7 @@ public class AndroidUtils extends QtActivity
 
     public static void setStatusBarColor(String colorHexStr)
     {
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 21) {
             Window window = m_MainContext.getWindow();
             // clear FLAG_TRANSLUCENT_STATUS flag:
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -78,5 +79,14 @@ public class AndroidUtils extends QtActivity
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
+    }
+
+    public static void shareText(String dialogTitle, String text)
+    {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        m_MainContext.startActivity(Intent.createChooser(sendIntent, dialogTitle));
     }
 }

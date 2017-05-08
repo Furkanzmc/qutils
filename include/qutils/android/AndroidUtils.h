@@ -21,6 +21,8 @@ public:
     Q_INVOKABLE void setStatusBarVisible(bool visible);
     Q_INVOKABLE void setImmersiveMode(bool visible);
 
+    Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
+
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
 
 signals:

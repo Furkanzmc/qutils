@@ -45,6 +45,16 @@ void NativeUtils::setImmersiveMode(bool visible)
 #endif // Q_OS_ANDROID
 }
 
+void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->shareText(dialogTitle, text);
+#else
+    Q_UNUSED(dialogTitle);
+    Q_UNUSED(text);
+#endif // Q_OS_ANDROID
+}
+
 void NativeUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();

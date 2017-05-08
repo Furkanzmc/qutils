@@ -104,6 +104,23 @@ void AndroidUtils::setImmersiveMode(bool visible)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
+{
+    auto runnable = [dialogTitle, text]() {
+        QAndroidJniObject jniDialogTitle = QAndroidJniObject::fromString(dialogTitle);
+        QAndroidJniObject jniText = QAndroidJniObject::fromString(text);
+
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "shareText",
+            "(Ljava/lang/String;Ljava/lang/String;)V",
+            jniDialogTitle.object<jstring>(),
+            jniText.object<jstring>());
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
