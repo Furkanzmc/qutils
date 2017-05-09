@@ -15,6 +15,7 @@ import android.os.SystemClock;
 
 import android.net.Uri;
 import android.util.Log;
+import android.os.Build;
 
 public class NotificationClient extends QtActivity
 {
@@ -168,9 +169,6 @@ public class NotificationClient extends QtActivity
         }
 
         builder.setPriority(m_Priority);
-        if (m_Category.length() > 0) {
-            builder.setCategory(m_Category);
-        }
 
         if (m_LedColor.length() > 0) {
             builder.setLights(Color.parseColor(m_LedColor), m_LedOnMS, m_LedOffMS);
@@ -180,8 +178,14 @@ public class NotificationClient extends QtActivity
             builder.setSound(Uri.parse(m_Sound));
         }
 
-        if (m_Visibility != -2) {
-            builder.setVisibility(m_Visibility);
+        if (Build.VERSION.SDK_INT >= 21) {
+            if (m_Visibility != -2) {
+                builder.setVisibility(m_Visibility);
+            }
+
+            if (m_Category.length() > 0) {
+                builder.setCategory(m_Category);
+            }
         }
 
         Notification notification = builder.build();
