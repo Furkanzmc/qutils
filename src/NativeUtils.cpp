@@ -18,9 +18,10 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
 
     connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::alertDialogCancelled);
+    connect(m_AndroidUtils, &AndroidUtils::alertDialogItemClicked, this, &NativeUtils::alertDialogItemClicked);
     connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::datePicked);
-    connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
 
+    connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::timePicked, this, &NativeUtils::timePicked);
     connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
 #endif // Q_OS_ANDROID

@@ -17,10 +17,6 @@ import android.content.DialogInterface;
 import android.app.DialogFragment;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-
-import java.util.Map;
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
@@ -64,9 +60,9 @@ public class AndroidUtils extends QtActivity
             // Hide the status bar.
             if (visible == false) {
                 decorView.setSystemUiVisibility(
-                                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN);
             }
             else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -82,12 +78,12 @@ public class AndroidUtils extends QtActivity
             // Hide the status bar.
             if (enabled) {
                 decorView.setSystemUiVisibility(
-                                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
             }
             else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -109,14 +105,16 @@ public class AndroidUtils extends QtActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(m_MainContext);
         builder.setCancelable(false);
         builder.setTitle((String)properties.get("title"));
-        builder.setMessage((String)properties.get("message"));
+        if (properties.containsKey("message")) {
+            builder.setMessage((String)properties.get("message"));
+        }
 
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, android.view.KeyEvent event) {
                 if (keyCode == android.view.KeyEvent.KEYCODE_BACK && event.getAction() == android.view.KeyEvent.ACTION_UP) {
                     dialog.cancel();
-                    CppCallbacks.alertDialogClicked(-2);
+                    CppCallbacks.alertDialogClicked(-2, -1);
                     return false;
                 }
 
@@ -124,45 +122,44 @@ public class AndroidUtils extends QtActivity
             }
         });
 
-        properties.remove("title");
-        properties.remove("message");
+        String buttonText = "";
 
-        // Get a set of the entries
-        Set set = properties.entrySet();
-        // Get an iterator
-        Iterator i = set.iterator();
+        if (properties.containsKey("positive")) {
+            buttonText = (String)properties.get("positive");
+            builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    CppCallbacks.alertDialogClicked(1, -1);
+                }
+            });
+        }
+        if (properties.containsKey("neutral")) {
+            buttonText = (String)properties.get("neutral");
+            builder.setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    CppCallbacks.alertDialogClicked(0, -1);
+                }
+            });
+        }
+        if (properties.containsKey("negative")) {
+            buttonText = (String)properties.get("negative");
+            builder.setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    CppCallbacks.alertDialogClicked(-1, -1);
+                }
+            });
+        }
 
-        // Display elements
-        while(i.hasNext()) {
-            Map.Entry me = (Map.Entry)i.next();
-            HashMap innerValue = (HashMap)me.getValue();
-            String buttonText = (String)me.getKey();
-            String buttonType = (String)innerValue.get("type");
-
-            if (buttonType.equals("positive")) {
-                builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        CppCallbacks.alertDialogClicked(1);
-                    }
-                });
-            }
-            else if (buttonType.equals("neutral")) {
-                builder.setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        CppCallbacks.alertDialogClicked(0);
-                    }
-                });
-            }
-            else if (buttonType.equals("negative")) {
-                builder.setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        CppCallbacks.alertDialogClicked(-1);
-                    }
-                });
-            }
+        if (properties.containsKey("items")) {
+            String[] items = (String[])properties.get("items");
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    CppCallbacks.alertDialogClicked(-3, which);
+                }
+            });
         }
 
         final AlertDialog dialog = builder.create();

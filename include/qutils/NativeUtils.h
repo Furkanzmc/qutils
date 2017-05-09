@@ -37,10 +37,11 @@ signals:
     void menuButtonPressed();
     void alertDialogClicked(int buttonType);
 
+    void alertDialogItemClicked(int itemIndex);
     void alertDialogCancelled();
     void datePicked(int year, int month, int day);
-    void datePickerCancelled();
 
+    void datePickerCancelled();
     void timePicked(int hourOfDay, int minute);
     void timePickerCancelled();
 

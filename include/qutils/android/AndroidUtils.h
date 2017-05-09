@@ -34,21 +34,27 @@ public:
      *
      * **Example**
      * @code
+     * // Show an alert sheet with items
      * var properties = {
-     *     "No": {
-     *         "type": "negative"
-     *     },
-     *     "Not Sure": {
-     *         "type": "neutral"
-     *     },
-     *     "Sure": {
-     *         "type": "positive"
-     *     },
-     *     "title": "Here's a dialog.",
-     *     "message": "Would you like something?"
+     *     "title": "Select An Item",
+     *     "items": [
+     *         "Item 1",
+     *         "Item 2"
+     *     ]
      * };
      *
-     * nativeUtils.showAlertDialog(properties);
+     * nu.showAlertDialog(properties);
+     *
+     * // Show an alert sheet with three buttons and a message
+     * var properties = {
+     *     "positive": "Yes",
+     *     "negative": "No",
+     *     "neutral": "Maybe",
+     *     "title": "Would you?",
+     *     "message": "Would you not?"
+     * };
+     *
+     * nu.showAlertDialog(properties);
      * @endcode
      * @param dialogData
      */
@@ -58,7 +64,7 @@ public:
     Q_INVOKABLE void showTimePicker();
 
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
-    static void emitAlertDialogClickedSignals(int buttonType);
+    static void emitAlertDialogClickedSignals(int buttonType, int itemIndex);
     static void emitDatePickedSignals(int year, int month, int day);
 
     static void emitTimePickedSignals(int hourOfDay, int minute);
@@ -78,6 +84,7 @@ signals:
 
     void timePicked(int hourOfDay, int minute);
     void timePickerCancelled();
+    void alertDialogItemClicked(int itemIndex);
 
 private:
     static std::vector<AndroidUtils *> m_Instances;
@@ -91,17 +98,21 @@ private:
 private:
     void emitBackButtonPressed();
     void emitMenuButtonPressed();
-    void emitAlertDialogClicked(int buttonType);
+    void emitAlertDialogClicked(int buttonType, int itemIndex);
 
     void emitDatePicked(int year, int month, int day);
     void emitTimePicked(int hourOfDay, int minute);
 
     /**
-     * @brief Converts a QVariantMap to HashMap in Java.
+     * @brief Converts a QVariantMap to HashMap in Java. Supported types are:
+     * - Integer
+     * - Bool
+     * - QVariantMap
+     * - List (Sadly, only String lists for now)
      * @param map
      * @return
      */
-    QAndroidJniObject getHashMap(const QVariantMap &map) const;
+    QAndroidJniObject getJNIHashMap(const QVariantMap &map) const;
 };
 
 }
@@ -129,9 +140,9 @@ static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
     zmc::AndroidUtils::emitButtonPressedSignals(false, true);
 }
 
-static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonType)
+static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonType, jint itemIndex)
 {
-    zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonType);
+    zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonType, itemIndex);
 }
 
 static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)

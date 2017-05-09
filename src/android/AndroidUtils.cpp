@@ -1,10 +1,9 @@
-
 #include "qutils/android/AndroidUtils.h"
 // Qt
 #include <QDebug>
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
-#include "qutils/Macros.h"
+#include <QAndroidJniEnvironment>
 
 #define ANDROID_UTILS_CLASS "org/zmc/qutils/AndroidUtils"
 
@@ -26,7 +25,7 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
     },
     {
         "alertDialogClicked", // const char* function name;
-        "(I)V", // const char* function signature
+        "(II)V", // const char* function signature
         (void *)alertDialogClickedCallback // function pointer
     },
     {
@@ -152,7 +151,7 @@ void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
 void AndroidUtils::showAlertDialog(const QVariantMap &dialogProperties)
 {
     m_IsAlertShown = true;
-    const QAndroidJniObject hashMapClass = getHashMap(dialogProperties);
+    const QAndroidJniObject hashMapClass = getJNIHashMap(dialogProperties);
     auto runnable = [hashMapClass]() {
         QAndroidJniObject::callStaticMethod<void>(
             ANDROID_UTILS_CLASS,
@@ -200,15 +199,18 @@ void AndroidUtils::emitMenuButtonPressed()
     emit menuButtonPressed();
 }
 
-void AndroidUtils::emitAlertDialogClicked(int buttonType)
+void AndroidUtils::emitAlertDialogClicked(int buttonType, int itemIndex)
 {
     if (m_IsAlertShown) {
         m_IsAlertShown = false;
         if (buttonType == -2) {
             emit alertDialogCancelled();
         }
-        else {
+        else if ((buttonType == -1 || buttonType == 0 || buttonType == 1) && itemIndex == -1) {
             emit alertDialogClicked(buttonType);
+        }
+        else {
+            emit alertDialogItemClicked(itemIndex);
         }
     }
 }
@@ -239,7 +241,7 @@ void AndroidUtils::emitTimePicked(int hourOfDay, int minute)
     }
 }
 
-QAndroidJniObject AndroidUtils::getHashMap(const QVariantMap &map) const
+QAndroidJniObject AndroidUtils::getJNIHashMap(const QVariantMap &map) const
 {
     QAndroidJniObject hashMapClass("java/util/HashMap");
     for (auto it = map.constBegin(); it != map.constEnd(); it++) {
@@ -263,7 +265,7 @@ QAndroidJniObject AndroidUtils::getHashMap(const QVariantMap &map) const
                 jniValue.object<jobject>());
         }
         else if (value.type() == QVariant::Map) {
-            jniValue = getHashMap(value.toMap());
+            jniValue = getJNIHashMap(value.toMap());
             hashMapClass.callObjectMethod(
                 "put",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
@@ -271,11 +273,31 @@ QAndroidJniObject AndroidUtils::getHashMap(const QVariantMap &map) const
                 jniValue.object<jobject>());
         }
         else if (value.type() == QVariant::Bool) {
+            jniValue = QAndroidJniObject::callStaticObjectMethod("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", value.toInt());
             hashMapClass.callObjectMethod(
                 "put",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
                 jniKey.object<jstring>(),
-                value.toBool());
+                jniValue.object<jobject>());
+        }
+        else if (value.type() == QVariant::List) {
+            QAndroidJniEnvironment qjniEnv;
+            jobjectArray jniList = nullptr;
+            QVariantList list = value.toList();
+
+            jniList = qjniEnv->NewObjectArray(list.size(), qjniEnv->FindClass("java/lang/String"), 0);
+
+            for (int i = 0; i < list.size(); i++) {
+                QAndroidJniObject o = QAndroidJniObject::fromString(list.at(i).toString());
+                qjniEnv->SetObjectArrayElement(jniList, i, o.object<jobject>());
+            }
+            hashMapClass.callObjectMethod(
+                "put",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                jniKey.object<jstring>(),
+                jniList);
+
+            qjniEnv->DeleteLocalRef(jniList);
         }
     }
 
@@ -298,14 +320,14 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 }
 
-void AndroidUtils::emitAlertDialogClickedSignals(int buttonType)
+void AndroidUtils::emitAlertDialogClickedSignals(int buttonType, int itemIndex)
 {
     for (AndroidUtils *utils : m_Instances) {
         if (utils == nullptr) {
             continue;
         }
 
-        utils->emitAlertDialogClicked(buttonType);
+        utils->emitAlertDialogClicked(buttonType, itemIndex);
     }
 }
 
