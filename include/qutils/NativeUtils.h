@@ -43,14 +43,6 @@ private:
 #ifdef Q_OS_ANDROID
     static AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
-
-private:
-    void emitBackButtonPressed();
-    void emitMenuButtonPressed();
-    void emitAlertDialogClicked(int buttonType);
-
-    void emitAlertDialogCancelled();
-    void emitDatePicked(int year, int month, int day);
 };
 
 }

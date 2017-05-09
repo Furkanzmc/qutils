@@ -13,12 +13,12 @@ NativeUtils::NativeUtils(QObject *parent)
     : QObject(parent)
 {
 #ifdef Q_OS_ANDROID
-    connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::emitBackButtonPressed);
-    connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::emitMenuButtonPressed);
-    connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::emitAlertDialogClicked);
+    connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
+    connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::menuButtonPressed);
+    connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
 
-    connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::emitAlertDialogCancelled);
-    connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::emitDatePicked);
+    connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::alertDialogCancelled);
+    connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::datePicked);
     connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
 #endif // Q_OS_ANDROID
 }
@@ -74,31 +74,6 @@ void NativeUtils::showDatePicker()
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->showDatePicker();
 #endif // Q_OS_ANDROID
-}
-
-void NativeUtils::emitBackButtonPressed()
-{
-    emit backButtonPressed();
-}
-
-void NativeUtils::emitMenuButtonPressed()
-{
-    emit menuButtonPressed();
-}
-
-void NativeUtils::emitAlertDialogClicked(int buttonType)
-{
-    emit alertDialogClicked(buttonType);
-}
-
-void NativeUtils::emitAlertDialogCancelled()
-{
-    emit alertDialogCancelled();
-}
-
-void NativeUtils::emitDatePicked(int year, int month, int day)
-{
-    emit datePicked(year, month, day);
 }
 
 }
