@@ -14,15 +14,19 @@ import android.app.AlertDialog.Builder;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import java.util.HashMap;
+import android.app.DialogFragment;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
 import java.util.Map;
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
+import org.zmc.qutils.DatePickerFragment;
+
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
 
@@ -162,5 +166,11 @@ public class AndroidUtils extends QtActivity
 
         final AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public static void showDatePicker()
+    {
+        DialogFragment newFragment = new DatePickerFragment(m_MainContext);
+        newFragment.show(m_MainContext.getFragmentManager(), "datePicker");
     }
 }

@@ -18,6 +18,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::emitAlertDialogClicked);
 
     connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::emitAlertDialogCancelled);
+    connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::emitDatePicked);
+    connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
 #endif // Q_OS_ANDROID
 }
 
@@ -67,6 +69,13 @@ void NativeUtils::showAlertDialog(const QVariantMap &dialogProperties)
 #endif // Q_OS_ANDROID
 }
 
+void NativeUtils::showDatePicker()
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->showDatePicker();
+#endif // Q_OS_ANDROID
+}
+
 void NativeUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
@@ -85,6 +94,11 @@ void NativeUtils::emitAlertDialogClicked(int buttonType)
 void NativeUtils::emitAlertDialogCancelled()
 {
     emit alertDialogCancelled();
+}
+
+void NativeUtils::emitDatePicked(int year, int month, int day)
+{
+    emit datePicked(year, month, day);
 }
 
 }

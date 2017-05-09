@@ -54,8 +54,11 @@ public:
      */
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
+    Q_INVOKABLE void showDatePicker();
+
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
     static void emitAlertDialogClickedSignals(int buttonType);
+    static void emitDatePickedSignals(int year, int month, int day);
 
 signals:
     /**
@@ -67,18 +70,22 @@ signals:
     void alertDialogClicked(int buttonType);
 
     void alertDialogCancelled();
+    void datePicked(int year, int month, int day);
+    void datePickerCancelled();
 
 private:
     static std::vector<AndroidUtils *> m_Instances;
     static int m_LastInstanceID;
 
     int m_InstanceID;
-    bool m_IsAlertShown;
+    bool m_IsAlertShown, m_IsDatePickerShown;
 
 private:
     void emitBackButtonPressed();
     void emitMenuButtonPressed();
     void emitAlertDialogClicked(int buttonType);
+
+    void emitDatePicked(int year, int month, int day);
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java.
@@ -116,4 +123,9 @@ static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
 static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonType)
 {
     zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonType);
+}
+
+static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)
+{
+    zmc::AndroidUtils::emitDatePickedSignals(year, month, day);
 }

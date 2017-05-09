@@ -28,6 +28,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "alertDialogClicked", // const char* function name;
         "(I)V", // const char* function signature
         (void *)alertDialogClickedCallback // function pointer
+    },
+    {
+        "datePicked", // const char* function name;
+        "(III)V", // const char* function signature
+        (void *)datePickedCallback // function pointer
     }
 };
 
@@ -66,6 +71,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_LastInstanceID)
     , m_IsAlertShown(false)
+    , m_IsDatePickerShown(false)
 {
     m_Instances.push_back(this);
     m_LastInstanceID++;
@@ -152,6 +158,19 @@ void AndroidUtils::showAlertDialog(const QVariantMap &dialogProperties)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::showDatePicker()
+{
+    m_IsDatePickerShown = true;
+    auto runnable = []() {
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "showDatePicker",
+            "()V");
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
@@ -171,6 +190,19 @@ void AndroidUtils::emitAlertDialogClicked(int buttonType)
         }
         else {
             emit alertDialogClicked(buttonType);
+        }
+    }
+}
+
+void AndroidUtils::emitDatePicked(int year, int month, int day)
+{
+    if (m_IsDatePickerShown) {
+        m_IsDatePickerShown = false;
+        if (year == -1 && month == -1 && day == -1) {
+            emit datePickerCancelled();
+        }
+        else {
+            emit datePicked(year, month, day);
         }
     }
 }
@@ -242,6 +274,17 @@ void AndroidUtils::emitAlertDialogClickedSignals(int buttonType)
         }
 
         utils->emitAlertDialogClicked(buttonType);
+    }
+}
+
+void AndroidUtils::emitDatePickedSignals(int year, int month, int day)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitDatePicked(year, month, day);
     }
 }
 

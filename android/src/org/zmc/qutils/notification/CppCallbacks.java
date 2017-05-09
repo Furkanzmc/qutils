@@ -7,4 +7,6 @@ public class CppCallbacks
     public static native void menuButtonPressed();
 
     public static native void alertDialogClicked(int buttonType);
+    // If all of the dates are -1, then the datePickerCancelled signal is emitted.
+    public static native void datePicked(int year, int month, int day);
 }

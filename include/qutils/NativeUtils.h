@@ -28,6 +28,7 @@ public:
 
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
+    Q_INVOKABLE void showDatePicker();
 
 signals:
     void backButtonPressed();
@@ -35,6 +36,8 @@ signals:
     void alertDialogClicked(int buttonType);
 
     void alertDialogCancelled();
+    void datePicked(int year, int month, int day);
+    void datePickerCancelled();
 
 private:
 #ifdef Q_OS_ANDROID
@@ -47,6 +50,7 @@ private:
     void emitAlertDialogClicked(int buttonType);
 
     void emitAlertDialogCancelled();
+    void emitDatePicked(int year, int month, int day);
 };
 
 }
