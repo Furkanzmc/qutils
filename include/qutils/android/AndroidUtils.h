@@ -55,10 +55,13 @@ public:
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
     Q_INVOKABLE void showDatePicker();
+    Q_INVOKABLE void showTimePicker();
 
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
     static void emitAlertDialogClickedSignals(int buttonType);
     static void emitDatePickedSignals(int year, int month, int day);
+
+    static void emitTimePickedSignals(int hourOfDay, int minute);
 
 signals:
     /**
@@ -73,12 +76,17 @@ signals:
     void datePicked(int year, int month, int day);
     void datePickerCancelled();
 
+    void timePicked(int hourOfDay, int minute);
+    void timePickerCancelled();
+
 private:
     static std::vector<AndroidUtils *> m_Instances;
     static int m_LastInstanceID;
 
     int m_InstanceID;
-    bool m_IsAlertShown, m_IsDatePickerShown;
+    bool m_IsAlertShown,
+         m_IsDatePickerShown,
+         m_IsTimePickerShown;
 
 private:
     void emitBackButtonPressed();
@@ -86,6 +94,7 @@ private:
     void emitAlertDialogClicked(int buttonType);
 
     void emitDatePicked(int year, int month, int day);
+    void emitTimePicked(int hourOfDay, int minute);
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java.
@@ -128,4 +137,9 @@ static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint bu
 static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)
 {
     zmc::AndroidUtils::emitDatePickedSignals(year, month, day);
+}
+
+static void timePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint hourOfDay, jint minute)
+{
+    zmc::AndroidUtils::emitTimePickedSignals(hourOfDay, minute);
 }

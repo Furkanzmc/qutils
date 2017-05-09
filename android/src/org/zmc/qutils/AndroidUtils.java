@@ -26,6 +26,7 @@ import java.util.Map;
 import org.zmc.qutils.notification.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
 import org.zmc.qutils.DatePickerFragment;
+import org.zmc.qutils.TimePickerFragment;
 
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -172,5 +173,11 @@ public class AndroidUtils extends QtActivity
     {
         DialogFragment newFragment = new DatePickerFragment(m_MainContext);
         newFragment.show(m_MainContext.getFragmentManager(), "datePicker");
+    }
+
+    public static void showTimePicker()
+    {
+        DialogFragment newFragment = new TimePickerFragment(m_MainContext);
+        newFragment.show(m_MainContext.getFragmentManager(), "timePicker");
     }
 }

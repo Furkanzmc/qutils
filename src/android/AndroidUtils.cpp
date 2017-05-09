@@ -33,6 +33,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "datePicked", // const char* function name;
         "(III)V", // const char* function signature
         (void *)datePickedCallback // function pointer
+    },
+    {
+        "timePicked", // const char* function name;
+        "(II)V", // const char* function signature
+        (void *)timePickedCallback // function pointer
     }
 };
 
@@ -72,6 +77,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_InstanceID(m_LastInstanceID)
     , m_IsAlertShown(false)
     , m_IsDatePickerShown(false)
+    , m_IsTimePickerShown(false)
 {
     m_Instances.push_back(this);
     m_LastInstanceID++;
@@ -171,6 +177,19 @@ void AndroidUtils::showDatePicker()
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::showTimePicker()
+{
+    m_IsTimePickerShown = true;
+    auto runnable = []() {
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "showTimePicker",
+            "()V");
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
@@ -203,6 +222,19 @@ void AndroidUtils::emitDatePicked(int year, int month, int day)
         }
         else {
             emit datePicked(year, month, day);
+        }
+    }
+}
+
+void AndroidUtils::emitTimePicked(int hourOfDay, int minute)
+{
+    if (m_IsTimePickerShown) {
+        m_IsTimePickerShown = false;
+        if (hourOfDay == -1 && minute == -1) {
+            emit timePickerCancelled();
+        }
+        else {
+            emit timePicked(hourOfDay, minute);
         }
     }
 }
@@ -285,6 +317,17 @@ void AndroidUtils::emitDatePickedSignals(int year, int month, int day)
         }
 
         utils->emitDatePicked(year, month, day);
+    }
+}
+
+void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitTimePicked(hourOfDay, minute);
     }
 }
 

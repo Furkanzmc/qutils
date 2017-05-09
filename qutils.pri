@@ -9,7 +9,8 @@ android {
         $$PWD/android/src/org/zmc/qutils/notification/CppCallbacks.java \
         $$PWD/android/src/org/zmc/qutils/QutilsActivity.java \
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java \
-        $$PWD/android/src/org/zmc/qutils/DatePickerFragment.java
+        $$PWD/android/src/org/zmc/qutils/DatePickerFragment.java \
+        $$PWD/android/src/org/zmc/qutils/TimePickerFragment.java
 
     HEADERS += \
         $$PWD/include/qutils/android/Notification_Android.h \

@@ -30,6 +30,8 @@ public:
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
     Q_INVOKABLE void showDatePicker();
 
+    Q_INVOKABLE void showTimePicker();
+
 signals:
     void backButtonPressed();
     void menuButtonPressed();
@@ -38,6 +40,9 @@ signals:
     void alertDialogCancelled();
     void datePicked(int year, int month, int day);
     void datePickerCancelled();
+
+    void timePicked(int hourOfDay, int minute);
+    void timePickerCancelled();
 
 private:
 #ifdef Q_OS_ANDROID
