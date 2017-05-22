@@ -1,6 +1,15 @@
 CONFIG += c++11
 QT += sql
 
+contains(CONFIG, QUTILS_NO_MULTIMEDIA) {
+    message("[qutils] Multimedia is disabled in qutils")
+    QUTILS_NO_MULTIMEDIA=false
+}
+else {
+    QUTILS_NO_MULTIMEDIA=true
+    QT += multimedia
+}
+
 android {
     QT += androidextras
     OTHER_FILES += \
@@ -52,5 +61,12 @@ SOURCES += \
     $$PWD/src/Network/DownloadManager.cpp \
     $$PWD/src/JsonUtils.cpp
 
+if (!QUTILS_NO_MULTIMEDIA) {
+    HEADERS += \
+        $$PWD/include/qutils/AudioRecorder.h
+
+    SOURCES += \
+        $$PWD/src/AudioRecorder.cpp
+}
 
 INCLUDEPATH += $$PWD/include
