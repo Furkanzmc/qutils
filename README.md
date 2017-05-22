@@ -103,3 +103,11 @@ Window {
     }
 }
 ```
+
+# Disable Multimedia
+
+If you want to disable multimedia functions, just put the following in your project's `pro` file.
+
+```
+CONFIG += QUTILS_NO_MULTIMEDIA
+```
