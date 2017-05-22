@@ -3,7 +3,6 @@
 #include <QLocale>
 #include <QStandardPaths>
 #include <QList>
-
 #include <QDir>
 // qutils
 #include "qutils/Macros.h"
@@ -29,6 +28,12 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
 {
     m_Instances.append(this);
     m_InstanceLastIndex++;
+
+    // Create the app data location folder if it doesn't exist.
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    if (dir.exists() == false) {
+        dir.mkpath(dir.path());
+    }
 }
 
 SettingsManager::~SettingsManager()
