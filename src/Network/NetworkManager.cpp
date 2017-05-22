@@ -2,6 +2,9 @@
 // Qt
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QHttpPart>
+#include <QFile>
+#include <QMimeDatabase>
 // qutils
 #include "qutils/Macros.h"
 
@@ -82,8 +85,64 @@ void NetworkManager::sendPut(const QString &url, const QString &data, RequestCal
     insertCallback(threadIndex, std::move(callback));
 }
 
+void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+{
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    QMimeDatabase db;
+
+    for (auto it = files.constBegin(); it != files.constEnd(); it++) {
+        QString filePath = it.value();
+        if (filePath.contains("file:///")) {
+            filePath.remove("file:///");
+        }
+
+        QFile *file = new QFile(filePath);
+        if (file->exists() == false) {
+            continue;
+        }
+        const QString contentType = db.mimeTypeForFile(filePath).name();
+        QHttpPart filePart;
+        filePart.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
+        const QString contentDisposition = QString("form-data; name=\"%1\"; filename=\"%2\"").arg(it.key()).arg(file->fileName());
+        filePart.setHeader(QNetworkRequest::ContentDispositionHeader, contentDisposition);
+
+        file->open(QIODevice::ReadOnly);
+        filePart.setBodyDevice(file);
+        filePart.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
+        // We cannot delete the file now, so delete it with the multiPart
+        file->setParent(multiPart);
+
+        multiPart->append(filePart);
+    }
+
+    for (auto it = textParams.constBegin(); it != textParams.constEnd(); it++) {
+        QHttpPart textPart;
+        const QString contentDisposition = QString("form-data; name=\"%1\";").arg(it.key());
+        textPart.setHeader(QNetworkRequest::ContentDispositionHeader, contentDisposition);
+        textPart.setBody(it.value().toUtf8());
+        multiPart->append(textPart);
+    }
+
+    const QUrl qurl = QUrl(url);
+    QNetworkRequest request(qurl);
+    setHeaders(request);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "multipart/form-data; boundary=" + QString(multiPart->boundary()));
+
+    QNetworkReply *reply = m_Network.post(request, multiPart);
+    // Delete the multiPart with the reply
+    multiPart->setParent(reply);
+
+    const int availableIndex = getAvailableIndex();
+    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    reply->setObjectName(QString::number(threadIndex));
+    insertCallback(threadIndex, std::move(callback));
+
+    connect(reply, &QNetworkReply::uploadProgress, this, &NetworkManager::onUploadProgressChanged);
+}
+
 bool NetworkManager::isConnectedToInternet()
 {
+    // FIXME: Use platform specific code to achieve this.
     return true;
 }
 
@@ -115,6 +174,16 @@ void NetworkManager::onReceivedResponse(const Response &response, int threadInde
     }
 
     m_Callbacks[threadIndex] = nullptr;
+}
+
+void NetworkManager::onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal)
+{
+    float percent = 0.f;
+    if (bytesTotal > 0) {
+        percent = static_cast<float>(bytesSent) / static_cast<float>(bytesTotal);
+    }
+
+    emit uploadProgressChanged(bytesSent, bytesTotal, percent);
 }
 
 int NetworkManager::getAvailableIndex()

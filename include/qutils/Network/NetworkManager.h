@@ -39,10 +39,15 @@ public:
 
     void sendPut(const QString &url, const QString &data, RequestCallback callback);
 
+    /**
+     * @brief Uploads the given files with HTTP multipart.
+     * @param url
+     * @param files QMap<UPLOAD_KEY, UPLOAD_FILE>
+     * @param textParams QMap<UPLOAD_KEY, UPLOAD_VALUE>
+     * @param callback
+     */
+    void uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
     bool isConnectedToInternet();
-
-    void setApiVersion(const QString &version);
-    const QString &getAPIVersion() const;
 
     /**
      * @brief Increases m_RequestCount and returns the resulting ID
@@ -59,6 +64,7 @@ public:
 
     void removeHeader(const QString &headerName);
 
+
 private:
     QNetworkAccessManager m_Network;
     QList<RequestCallback> m_Callbacks;
@@ -66,11 +72,13 @@ private:
 
     static unsigned int m_RequestCount;
 
-private slots:
-    void onRequestFinished(QNetworkReply *reply);
+signals:
+    void uploadProgressChanged(qint64 bytesSent, qint64 bytesTotal, float percent);
 
 private:
+    void onRequestFinished(QNetworkReply *reply);
     void onReceivedResponse(const Response &response, int threadIndex);
+    void onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal);
 
     /**
      * @brief Returns the first nullptr thread index. If none found, returns -1
