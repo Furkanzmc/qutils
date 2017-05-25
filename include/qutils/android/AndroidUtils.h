@@ -62,6 +62,7 @@ public:
 
     Q_INVOKABLE void showDatePicker();
     Q_INVOKABLE void showTimePicker();
+    Q_INVOKABLE void showCamera(const QString &filePath);
 
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
     static void emitAlertDialogClickedSignals(int buttonType, int itemIndex);

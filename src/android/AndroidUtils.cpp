@@ -189,6 +189,21 @@ void AndroidUtils::showTimePicker()
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::showCamera(const QString &filePath)
+{
+    m_IsTimePickerShown = true;
+    auto runnable = [filePath]() {
+        const QAndroidJniObject jniStr = QAndroidJniObject::fromString(filePath);
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "dispatchTakePictureIntent",
+            "(Ljava/lang/String;)V",
+            jniStr.object<jstring>());
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();

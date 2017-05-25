@@ -17,6 +17,12 @@ import android.content.DialogInterface;
 import android.app.DialogFragment;
 
 import java.util.HashMap;
+import android.provider.MediaStore;
+import android.os.Environment;
+
+import android.net.Uri;
+import java.io.File;
+import java.io.IOException;
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
@@ -34,6 +40,17 @@ public class AndroidUtils extends QtActivity
     public AndroidUtils(QutilsActivity mainActivity)
     {
         m_MainContext = mainActivity;
+    }
+
+    public static void dispatchTakePictureIntent(String photoName)
+    {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
+            File file = new File(m_MainContext.getExternalCacheDir() + "/" + photoName);
+            System.out.println(m_MainContext.getExternalCacheDir() + "/" + photoName);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+            m_MainContext.startActivityForResult(takePictureIntent, 1);
+        }
     }
 
     public static void setStatusBarColor(String colorHexStr)

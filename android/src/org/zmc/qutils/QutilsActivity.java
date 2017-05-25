@@ -68,6 +68,18 @@ public class QutilsActivity extends QtActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            System.out.println(extras);
+        }
+
+        System.out.println(requestCode);
+        System.out.println(RESULT_OK);
+        System.out.println(resultCode);
+    }
+
     public static void setImmersiveModeEnabled(boolean enabled)
     {
         m_IsImmersiveModeEnabled = enabled;

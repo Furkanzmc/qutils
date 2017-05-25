@@ -1,6 +1,6 @@
 #include "qutils/NativeUtils.h"
-
-#include <QDebug>
+// Qt
+#include <QStandardPaths>
 
 namespace zmc
 {
@@ -85,6 +85,18 @@ void NativeUtils::showTimePicker()
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->showTimePicker();
 #endif // Q_OS_ANDROID
+}
+
+void NativeUtils::showCamera(const QString &filePath)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->showCamera(filePath);
+#endif // Q_OS_ANDROID
+}
+
+QString NativeUtils::getWritablePath() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
 }
