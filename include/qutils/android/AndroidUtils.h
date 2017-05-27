@@ -69,6 +69,7 @@ public:
     static void emitDatePickedSignals(int year, int month, int day);
 
     static void emitTimePickedSignals(int hourOfDay, int minute);
+    static void emitCameraCapturedSignals(const QString &capturePath);
 
 signals:
     /**
@@ -87,6 +88,8 @@ signals:
     void timePickerCancelled();
     void alertDialogItemClicked(int itemIndex);
 
+    void cameraCaptured(const QString &capturePath);
+
 private:
     static std::vector<AndroidUtils *> m_Instances;
     static int m_LastInstanceID;
@@ -94,7 +97,8 @@ private:
     int m_InstanceID;
     bool m_IsAlertShown,
          m_IsDatePickerShown,
-         m_IsTimePickerShown;
+         m_IsTimePickerShown,
+         m_IsCameraShown;
 
 private:
     void emitBackButtonPressed();
@@ -103,6 +107,7 @@ private:
 
     void emitDatePicked(int year, int month, int day);
     void emitTimePicked(int hourOfDay, int minute);
+    void emitCameraCaptured(const QString &capturePath);
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java. Supported types are:
@@ -154,4 +159,10 @@ static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint
 static void timePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint hourOfDay, jint minute)
 {
     zmc::AndroidUtils::emitTimePickedSignals(hourOfDay, minute);
+}
+
+static void cameraCapturedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring capturePath)
+{
+    QAndroidJniObject jniStr(capturePath);
+    zmc::AndroidUtils::emitCameraCapturedSignals(jniStr.toString());
 }

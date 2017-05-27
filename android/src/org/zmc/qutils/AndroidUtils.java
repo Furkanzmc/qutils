@@ -46,8 +46,10 @@ public class AndroidUtils extends QtActivity
     {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
-            File file = new File(m_MainContext.getExternalCacheDir() + "/" + photoName);
-            System.out.println(m_MainContext.getExternalCacheDir() + "/" + photoName);
+            m_MainContext.setResult(m_MainContext.RESULT_OK, takePictureIntent);
+            String filePath = m_MainContext.getExternalCacheDir() + "/" + photoName;
+            File file = new File(filePath);
+            m_MainContext.setCustomData("capture_save_path", filePath);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
             m_MainContext.startActivityForResult(takePictureIntent, 1);
         }

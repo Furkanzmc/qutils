@@ -10,6 +10,9 @@ import android.view.WindowManager.LayoutParams;
 
 import android.view.View;
 import android.view.KeyEvent;
+import android.provider.MediaStore;
+
+import java.util.HashMap;
 
 import org.zmc.qutils.notification.NotificationClient;
 import org.zmc.qutils.notification.NotificationReceiver;
@@ -28,10 +31,12 @@ public class QutilsActivity extends QtActivity
 
     protected static boolean m_IsImmersiveModeEnabled = false;
     protected static boolean m_IsStatusBarVisible = true;
+    public static HashMap m_CustomData;
 
     public QutilsActivity()
     {
         m_Instance = this;
+        m_CustomData = new HashMap();
     }
 
     @Override
@@ -70,14 +75,12 @@ public class QutilsActivity extends QtActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // TODO: 1 is the request for camera capture. Put this number in a class for easy access.
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            System.out.println(extras);
+            CppCallbacks.cameraCaptured((String)getCustomData("capture_save_path"));
+            removeCustomData("capture_save_path");
         }
-
-        System.out.println(requestCode);
-        System.out.println(RESULT_OK);
-        System.out.println(resultCode);
     }
 
     public static void setImmersiveModeEnabled(boolean enabled)
@@ -102,5 +105,20 @@ public class QutilsActivity extends QtActivity
         }
 
         return super.onKeyUp(keyCode, event);
+    }
+
+    public static void setCustomData(String key, Object value)
+    {
+        m_CustomData.put(key, value);
+    }
+
+    public static Object getCustomData(String key)
+    {
+        return m_CustomData.get(key);
+    }
+
+    public static void removeCustomData(String key)
+    {
+        m_CustomData.remove(key);
     }
 }

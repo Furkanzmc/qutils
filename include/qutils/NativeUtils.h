@@ -32,7 +32,6 @@ public:
 
     Q_INVOKABLE void showTimePicker();
     Q_INVOKABLE void showCamera(const QString &filePath);
-    Q_INVOKABLE QString getWritablePath() const;
 
 signals:
     void backButtonPressed();
@@ -46,6 +45,8 @@ signals:
     void datePickerCancelled();
     void timePicked(int hourOfDay, int minute);
     void timePickerCancelled();
+
+    void cameraCaptured(const QString &capturePath);
 
 private:
 #ifdef Q_OS_ANDROID

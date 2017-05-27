@@ -24,6 +24,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::timePicked, this, &NativeUtils::timePicked);
     connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
+
+    connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
 #endif // Q_OS_ANDROID
 }
 
@@ -92,11 +94,6 @@ void NativeUtils::showCamera(const QString &filePath)
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->showCamera(filePath);
 #endif // Q_OS_ANDROID
-}
-
-QString NativeUtils::getWritablePath() const
-{
-    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
 }

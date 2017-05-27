@@ -37,6 +37,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "timePicked", // const char* function name;
         "(II)V", // const char* function signature
         (void *)timePickedCallback // function pointer
+    },
+    {
+        "cameraCaptured", // const char* function name;
+        "(Ljava/lang/String;)V", // const char* function signature
+        (void *)cameraCapturedCallback // function pointer
     }
 };
 
@@ -77,6 +82,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsAlertShown(false)
     , m_IsDatePickerShown(false)
     , m_IsTimePickerShown(false)
+    , m_IsCameraShown(false)
 {
     m_Instances.push_back(this);
     m_LastInstanceID++;
@@ -191,7 +197,7 @@ void AndroidUtils::showTimePicker()
 
 void AndroidUtils::showCamera(const QString &filePath)
 {
-    m_IsTimePickerShown = true;
+    m_IsCameraShown = true;
     auto runnable = [filePath]() {
         const QAndroidJniObject jniStr = QAndroidJniObject::fromString(filePath);
         QAndroidJniObject::callStaticMethod<void>(
@@ -253,6 +259,14 @@ void AndroidUtils::emitTimePicked(int hourOfDay, int minute)
         else {
             emit timePicked(hourOfDay, minute);
         }
+    }
+}
+
+void AndroidUtils::emitCameraCaptured(const QString &capturePath)
+{
+    if (m_IsCameraShown) {
+        m_IsCameraShown = false;
+        emit cameraCaptured(capturePath);
     }
 }
 
@@ -365,6 +379,17 @@ void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)
         }
 
         utils->emitTimePicked(hourOfDay, minute);
+    }
+}
+
+void AndroidUtils::emitCameraCapturedSignals(const QString &capturePath)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitCameraCaptured(capturePath);
     }
 }
 
