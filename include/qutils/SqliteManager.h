@@ -1,7 +1,10 @@
 #pragma once
+// Qt
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QVariantList>
+// std
+#include <ostream>
 
 namespace zmc
 {

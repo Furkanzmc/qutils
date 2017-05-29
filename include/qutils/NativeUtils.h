@@ -31,7 +31,7 @@ public:
     Q_INVOKABLE void showDatePicker();
 
     Q_INVOKABLE void showTimePicker();
-    Q_INVOKABLE void showCamera(const QString &filePath);
+    Q_INVOKABLE void showCamera(const QString &photoName);
 
 signals:
     void backButtonPressed();

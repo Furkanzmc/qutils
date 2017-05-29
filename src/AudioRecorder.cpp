@@ -1,4 +1,6 @@
 #include "qutils/AudioRecorder.h"
+// std
+#include <cmath>
 // Qt
 #include <QAudioProbe>
 #include <QAudioRecorder>
@@ -194,7 +196,7 @@ void AudioRecorder::onErrorOccurred(QMediaRecorder::Error error)
 void AudioRecorder::onDurationChanged(qint64 duration)
 {
     // FIXME: durationChanged is not emitted to QML. It works when I connect a C++ slot to the signal.
-    const qint64 newDuration = std::floor(static_cast<float>(duration) / 1000.f);
+    const qint64 newDuration = floor(static_cast<float>(duration) / 1000.f);
     if (m_Duration != newDuration) {
         m_Duration = newDuration;
         emit durationChanged();

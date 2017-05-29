@@ -392,7 +392,7 @@ QString SqliteManager::getColumnTypeName(const ColumnTypes &type) const
 
 SqliteManager::ColumnTypes SqliteManager::getColumnType(const QString &typeName) const
 {
-    ColumnTypes type;
+    ColumnTypes type = ColumnTypes::NONE;
     if (typeName == "TEXT") {
         type = ColumnTypes::TEXT;
     }

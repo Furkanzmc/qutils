@@ -195,11 +195,11 @@ void AndroidUtils::showTimePicker()
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
-void AndroidUtils::showCamera(const QString &filePath)
+void AndroidUtils::showCamera(const QString &fileName)
 {
     m_IsCameraShown = true;
-    auto runnable = [filePath]() {
-        const QAndroidJniObject jniStr = QAndroidJniObject::fromString(filePath);
+    auto runnable = [fileName]() {
+        const QAndroidJniObject jniStr = QAndroidJniObject::fromString(fileName);
         QAndroidJniObject::callStaticMethod<void>(
             ANDROID_UTILS_CLASS,
             "dispatchTakePictureIntent",

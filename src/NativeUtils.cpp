@@ -89,10 +89,12 @@ void NativeUtils::showTimePicker()
 #endif // Q_OS_ANDROID
 }
 
-void NativeUtils::showCamera(const QString &filePath)
+void NativeUtils::showCamera(const QString &photoName)
 {
 #ifdef Q_OS_ANDROID
-    m_AndroidUtils->showCamera(filePath);
+    m_AndroidUtils->showCamera(photoName);
+#else
+    Q_UNUSED(filePath);
 #endif // Q_OS_ANDROID
 }
 
