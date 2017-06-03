@@ -92,14 +92,15 @@ void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString
 
     for (auto it = files.constBegin(); it != files.constEnd(); it++) {
         QString filePath = it.value();
-        if (filePath.contains("file:///")) {
-            filePath.remove("file:///");
+        if (filePath.contains("file://")) {
+            filePath.remove("file://");
         }
 
         QFile *file = new QFile(filePath);
         if (file->exists() == false) {
             continue;
         }
+
         const QString contentType = db.mimeTypeForFile(filePath).name();
         QHttpPart filePart;
         filePart.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
