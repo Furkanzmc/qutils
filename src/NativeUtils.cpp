@@ -98,4 +98,14 @@ void NativeUtils::showCamera(const QString &photoName)
 #endif // Q_OS_ANDROID
 }
 
+void NativeUtils::showToast(const QString &text, bool isLongDuration)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->showToast(text, isLongDuration);
+#else
+    Q_UNUSED(text);
+    Q_UNUSED(isLongDuration);
+#endif // Q_OS_ANDROID
+}
+
 }

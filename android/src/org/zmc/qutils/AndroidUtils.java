@@ -16,13 +16,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.app.DialogFragment;
 
-import java.util.HashMap;
 import android.provider.MediaStore;
 import android.os.Environment;
-
 import android.net.Uri;
+
+import android.widget.Toast;
+
+// Java
+import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
+
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
@@ -195,5 +199,16 @@ public class AndroidUtils extends QtActivity
     {
         DialogFragment newFragment = new TimePickerFragment(m_MainContext);
         newFragment.show(m_MainContext.getFragmentManager(), "timePicker");
+    }
+
+    public static void showTaost(String text, boolean isLongDuration)
+    {
+        int duration = Toast.LENGTH_SHORT;
+        if (isLongDuration == true) {
+            duration = Toast.LENGTH_LONG;
+        }
+
+        Toast toast = Toast.makeText(m_MainContext, text, duration);
+        toast.show();
     }
 }

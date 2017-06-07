@@ -33,6 +33,8 @@ public:
     Q_INVOKABLE void showTimePicker();
     Q_INVOKABLE void showCamera(const QString &photoName);
 
+    Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
+
 signals:
     void backButtonPressed();
     void menuButtonPressed();

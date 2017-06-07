@@ -210,6 +210,21 @@ void AndroidUtils::showCamera(const QString &fileName)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::showToast(const QString &text, bool isLongDuration)
+{
+    auto runnable = [text, isLongDuration]() {
+        const QAndroidJniObject jniStr = QAndroidJniObject::fromString(text);
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "showTaost",
+            "(Ljava/lang/String;Z)V",
+            jniStr.object<jstring>(),
+            isLongDuration);
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
