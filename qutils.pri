@@ -15,7 +15,7 @@ android {
     OTHER_FILES += \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationClient.java \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationReceiver.java \
-        $$PWD/android/src/org/zmc/qutils/notification/CppCallbacks.java \
+        $$PWD/android/src/org/zmc/qutils/CppCallbacks.java \
         $$PWD/android/src/org/zmc/qutils/QutilsActivity.java \
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java \
         $$PWD/android/src/org/zmc/qutils/DatePickerFragment.java \
