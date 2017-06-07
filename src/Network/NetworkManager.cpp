@@ -179,6 +179,11 @@ void NetworkManager::onReceivedResponse(const Response &response, int threadInde
 
 void NetworkManager::onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal)
 {
+    // If boths equal 0 do not emit a proggress change as it may mess up the progress tracking.
+    if (bytesSent == 0 && bytesTotal == 0) {
+        return;
+    }
+
     float percent = 0.f;
     if (bytesTotal > 0) {
         percent = static_cast<float>(bytesSent) / static_cast<float>(bytesTotal);
