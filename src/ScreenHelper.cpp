@@ -27,6 +27,7 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
     , m_DesiredHeight(0.f)
     , m_SizeInInches(0.f)
 {
+    // FIXME: These values are only valid for constant device orientation.
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
 #if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
     m_DesiredHeight = qMin(refHeight, QGuiApplication::primaryScreen()->geometry().height() * 0.9f);
