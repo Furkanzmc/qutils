@@ -57,11 +57,10 @@ void AudioRecorder::record(float duration)
 
             QAudioEncoderSettings settings;
             settings.setCodec("");
-            settings.setQuality(QMultimedia::NormalQuality);
+            settings.setQuality(QMultimedia::LowQuality);
             settings.setSampleRate(-1);
             settings.setBitRate(32000);
             settings.setChannelCount(-1);
-            settings.setQuality(QMultimedia::NormalQuality);
             settings.setEncodingMode(QMultimedia::ConstantQualityEncoding);
 
             m_AudioRecorder->setEncodingSettings(settings);
