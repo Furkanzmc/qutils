@@ -97,11 +97,9 @@ public class QutilsActivity extends QtActivity
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             CppCallbacks.backButtonPressed();
-            return true;
         }
         else if (keyCode == KeyEvent.KEYCODE_MENU) {
             CppCallbacks.menuButtonPressed();
-            return true;
         }
 
         return super.onKeyUp(keyCode, event);
