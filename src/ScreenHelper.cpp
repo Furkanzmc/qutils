@@ -5,6 +5,7 @@
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif // QT_DEBUG
+#include <cmath>
 // zmc
 #include "qutils/Macros.h"
 
@@ -13,7 +14,14 @@ namespace zmc
 
 ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const float &refHeight, const float &refSizeInInches, QObject *parent)
     : QObject(parent)
+    , m_ScreenRect(QGuiApplication::primaryScreen()->geometry())
+    , m_RefSize(refWidth, refHeight)
+    , m_RefDPI(refDpi)
+#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    , m_DPI(refDpi)
+#else
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
+#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
     , m_LowDPIValue(120)
     , m_MediumDPIValue(160)
     , m_HighDPIValue(240)
@@ -25,39 +33,23 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
     , m_RatioFont(1.f)
     , m_DesiredWidth(0.f)
     , m_DesiredHeight(0.f)
-    , m_SizeInInches(0.f)
+    , m_SizeInInches(refSizeInInches)
+    , m_Scale(1.f)
 {
-    // FIXME: These values are only valid for constant device orientation.
-    // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
-#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
-    m_DesiredHeight = qMin(refHeight, QGuiApplication::primaryScreen()->geometry().height() * 0.9f);
-    m_DesiredWidth = getAspectRatioWidth(QSize(refWidth, refHeight), m_DesiredHeight);
-    const float dpi = refDpi;
-    const QRect rect(0, 0, m_DesiredWidth, m_DesiredHeight);
-    m_SizeInInches = refSizeInInches;
-#else
-    const QRect rect = QGuiApplication::primaryScreen()->geometry();
-    const float dpi = m_DPI;
-    const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
-    m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
-#endif // Q_OS_DESKTOP
-
-    const float height = qMax(rect.width(), rect.height());
-    const float width = qMin(rect.width(), rect.height());
-    m_Ratio = qMin(height / refHeight, width / refWidth);
-    m_RatioFont = qMin(height * refDpi / (dpi * refHeight), width * refDpi / (dpi * refWidth));
-
+    calculateRatio();
     printScreenInfo();
+
+    connect(QGuiApplication::primaryScreen(), &QScreen::orientationChanged, this, &ScreenHelper::calculateRatio);
 }
 
 qreal ScreenHelper::dp(const qreal &size)
 {
-    return qMax(2, int(size * m_Ratio));
+    return qMax(1, int(size * m_Ratio));
 }
 
-qreal ScreenHelper::fp(const qreal &size)
+qreal ScreenHelper::sp(const qreal &size)
 {
-    return int(size * m_RatioFont);
+    return qMax(1, int(size * m_RatioFont));
 }
 
 QString ScreenHelper::getLowResourceFolderName() const
@@ -229,6 +221,26 @@ bool ScreenHelper::isXLargeSize() const
     return m_SizeInInches >= 6.0f;
 }
 
+void ScreenHelper::calculateRatio()
+{
+    // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
+#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    m_DesiredHeight = qMin((float)m_RefSize.height(), (float)QGuiApplication::primaryScreen()->geometry().height() * 0.8f);
+    m_DesiredWidth = getAspectRatioWidth(m_RefSize, m_DesiredHeight);
+#else
+    const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
+    m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
+#endif // Q_OS_DESKTOP
+
+#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    m_Scale = qMax(m_DesiredWidth / float(m_RefSize.width()), m_DesiredHeight / float(m_RefSize.height()));
+#else
+    m_Scale = 1.f;
+#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    m_Ratio = (m_DPI / 160.f) * m_Scale;
+    m_RatioFont = (m_DPI / 160.f) * m_Scale;
+}
+
 float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const
 {
     // Width Formula: original height / original width * new width = new height
@@ -239,23 +251,22 @@ float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newH
 
 void ScreenHelper::printScreenInfo() const
 {
-    LOG("----- Screen Info -----");
-    LOG("Size in Inches: " << m_SizeInInches);
-    LOG("DPI: " << m_DPI);
-    LOG("isSmallSize: " << isSmallSize());
-    LOG("isNormalSize: " << isNormalSize());
-    LOG("isLargeSize: " << isLargeSize());
-    LOG("isXLargeSize: " << isXLargeSize());
-    LOG("isLDPI: " << isLDPI());
-    LOG("isMDPI: " << isMDPI());
-    LOG("isHDPI: " << isHDPI());
-    LOG("isXHDPI: " << isXHDPI());
-    LOG("isXXHDPI: " << isXXHDPI());
-    LOG("isXXXHDPI: " << isXXXHDPI());
-    LOG("Ratio: " << m_Ratio);
-    LOG("RatioFont: " << m_RatioFont);
-
-    LOG("----- Screen Info End -----");
+    LOG("\n----- Screen Info -----" << "\n"
+        << "Size in Inches: " << m_SizeInInches << "\n"
+        << "DPI: " << m_DPI << "\n"
+        << "isSmallSize: " << isSmallSize() << "\n"
+        << "isNormalSize: " << isNormalSize() << "\n"
+        << "isLargeSize: " << isLargeSize() << "\n"
+        << "isXLargeSize: " << isXLargeSize() << "\n"
+        << "isLDPI: " << isLDPI() << "\n"
+        << "isMDPI: " << isMDPI() << "\n"
+        << "isHDPI: " << isHDPI() << "\n"
+        << "isXHDPI: " << isXHDPI() << "\n"
+        << "isXXHDPI: " << isXXHDPI() << "\n"
+        << "isXXXHDPI: " << isXXXHDPI() << "\n"
+        << "Ratio: " << m_Ratio << "\n"
+        << "RatioFont: " << m_RatioFont << "\n"
+        << "----- Screen Info End -----");
 }
 
 }

@@ -1,5 +1,7 @@
 #pragma once
+// Qt
 #include <QObject>
+#include <QRect>
 
 namespace zmc
 {
@@ -49,11 +51,11 @@ public:
     Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
 
 public:
-    ScreenHelper(const float &refDpi = 386.f, const float &refWidth = 1080.f, const float &refHeight = 1920.f, const float &refSizeInInches = 5.7f,
+    ScreenHelper(const float &refDpi = 386.f, const float &refWidth = 1080.f, const float &refHeight = 1920.f, const float &refSizeInInches = 5.f,
                  QObject *parent = nullptr);
 
     Q_INVOKABLE qreal dp(const qreal &size);
-    Q_INVOKABLE qreal fp(const qreal &size);
+    Q_INVOKABLE qreal sp(const qreal &size);
 
     QString getLowResourceFolderName() const;
     void setLowResourceFolderName(const QString &resourceName);
@@ -88,8 +90,11 @@ public:
     float getSizeInInches() const;
 
 private:
-    const float m_DPI;
-    const float m_LowDPIValue,
+    const QRect m_ScreenRect;
+    const QSize m_RefSize;
+    const float m_RefDPI,
+          m_DPI,
+          m_LowDPIValue,
           m_MediumDPIValue,
           m_HighDPIValue,
           m_XHighDPIValue,
@@ -109,7 +114,8 @@ private:
           m_RatioFont,
           m_DesiredWidth,
           m_DesiredHeight,
-          m_SizeInInches;
+          m_SizeInInches,
+          m_Scale;
 
 private:
     bool isLDPI() const;
@@ -125,6 +131,7 @@ private:
     bool isLargeSize() const;
 
     bool isXLargeSize() const;
+    void calculateRatio();
 
     /**
      * @brief Get the scale that gives a size with preserved aspect ratio.
