@@ -116,6 +116,10 @@ QString ScreenHelper::getResourceFolderName() const
 {
     QString name = "";
 
+#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+    // If we are on the desktop testing for mobile, use the low DPI assets.
+    name = getLowResourceFolderName();
+#else
     if (isLDPI()) {
         name = getLowResourceFolderName();
     }
@@ -147,6 +151,7 @@ QString ScreenHelper::getResourceFolderName() const
     else if (isXXXHDPI()) {
         name = getXXXHighResourceFolderName();
     }
+#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
 
     return name;
 }
