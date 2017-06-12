@@ -16,10 +16,7 @@ public:
 
     /**
      * @brief Shows a native AlertDialog according to the given dialog properties.
-     * `title` and `message` properties are mandatory. And at least one type of button should be given.
-     *
-     * If the property contains the `items` key then the other buttons will be ignored, the item indexes will be reported with the `buttonIndex` variable.
-     * Be careful that when you set the `message` property the `items` will be ignored.
+     * You can mix the properties for both Android and iOS. Only the related properties will be used by this function.
      *
      * **Example**
      * @code
@@ -32,6 +29,16 @@ public:
      *     ]
      * };
      *
+     * // This will have the same effect on both iOS and Android
+     * var properties = {
+     *     "title": "Select An Item",
+     *     "positive": "Button 2",
+     *     "negative": "Button 1",
+     *     "buttons": [
+     *         "Button 1",
+     *         "Button 2"
+     *     ]
+     * };
      * @endcode
      * @param dialogData
      */
