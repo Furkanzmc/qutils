@@ -34,3 +34,13 @@ void iOSNativeUtils::showAlertView(const QString &title, const QString &message,
     UIApplication *app = [UIApplication sharedApplication];
     [[[app keyWindow] rootViewController] presentViewController:alert animated:YES completion:nil];
 }
+
+void iOSNativeUtils::shareText(const QString &text)
+{
+    NSMutableArray *activityItems = [NSMutableArray new];
+    [activityItems addObject:[NSString stringWithUTF8String:text.toStdString().c_str()]];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+
+    UIApplication *app = [UIApplication sharedApplication];
+    [[[app keyWindow] rootViewController] presentViewController:activityVC animated:YES completion:nil];
+}

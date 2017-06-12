@@ -23,4 +23,9 @@ void iOSUtils::showAlertView(const QVariantMap &dialogProperties)
     m_iOSNative->showAlertView(dialogProperties.value("title", "").toString(), dialogProperties.value("message", "").toString(), buttons);
 }
 
+void iOSUtils::shareText(const QString &text)
+{
+    m_iOSNative->shareText(text);
+}
+
 }

@@ -67,7 +67,7 @@ void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
     m_AndroidUtils->shareText(dialogTitle, text);
 #else
     Q_UNUSED(dialogTitle);
-    Q_UNUSED(text);
+    m_iOSUtils->shareText(text);
 #endif // Q_OS_ANDROID
 }
 

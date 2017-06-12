@@ -44,6 +44,12 @@ public:
      */
     Q_INVOKABLE void showAlertView(const QVariantMap &dialogProperties);
 
+    /**
+     * @brief Show the default share dialog on iOS. There's no dialog title on iOS.
+     * @param text
+     */
+    Q_INVOKABLE void shareText(const QString &text);
+
 signals:
     void alertDialogClicked(int buttonIndex);
 

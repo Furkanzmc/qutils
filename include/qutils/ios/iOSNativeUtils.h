@@ -18,4 +18,10 @@ public:
      * @param buttons
      */
     void showAlertView(const QString &title, const QString &message, const QStringList &buttons);
+
+    /**
+     * @brief Share text with the default share dialog.
+     * @param text
+     */
+    void shareText(const QString &text);
 };
