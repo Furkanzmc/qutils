@@ -7,6 +7,9 @@
 // qutils
 #include "qutils/android/AndroidUtils.h"
 #endif // Q_OS_ANDRID
+#ifdef Q_OS_IOS
+#include "qutils/ios/iOSUtils.h"
+#endif // Q_OS_IOS
 
 namespace zmc
 {
@@ -38,22 +41,22 @@ public:
 signals:
     void backButtonPressed();
     void menuButtonPressed();
-    void alertDialogClicked(int buttonType);
+    void alertDialogClicked(int buttonIndex);
 
-    void alertDialogItemClicked(int itemIndex);
-    void alertDialogCancelled();
     void datePicked(int year, int month, int day);
-
     void datePickerCancelled();
     void timePicked(int hourOfDay, int minute);
-    void timePickerCancelled();
 
+    void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
 
 private:
 #ifdef Q_OS_ANDROID
     static AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
+#ifdef Q_OS_IOS
+    static iOSUtils *m_iOSUtils;
+#endif // Q_OS_IOS
 };
 
 }

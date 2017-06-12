@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.ArrayList;
+
 
 // qutils
 import org.zmc.qutils.notification.CppCallbacks;
@@ -137,7 +139,7 @@ public class AndroidUtils extends QtActivity
             public boolean onKey(DialogInterface dialog, int keyCode, android.view.KeyEvent event) {
                 if (keyCode == android.view.KeyEvent.KEYCODE_BACK && event.getAction() == android.view.KeyEvent.ACTION_UP) {
                     dialog.cancel();
-                    CppCallbacks.alertDialogClicked(-2, -1);
+                    CppCallbacks.alertDialogClicked(-2);
                     return false;
                 }
 
@@ -152,7 +154,7 @@ public class AndroidUtils extends QtActivity
             builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(1, -1);
+                    CppCallbacks.alertDialogClicked(1);
                 }
             });
         }
@@ -161,7 +163,7 @@ public class AndroidUtils extends QtActivity
             builder.setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(0, -1);
+                    CppCallbacks.alertDialogClicked(0);
                 }
             });
         }
@@ -170,17 +172,22 @@ public class AndroidUtils extends QtActivity
             builder.setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(-1, -1);
+                    CppCallbacks.alertDialogClicked(-1);
                 }
             });
         }
 
         if (properties.containsKey("items")) {
-            String[] items = (String[])properties.get("items");
+            ArrayList list = (ArrayList)properties.get("items");
+            CharSequence[] items = new CharSequence[list.size()];
+            for (int i = 0; i < items.length; i++) {
+                items[i] = list.get(i).toString();
+            }
+
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    CppCallbacks.alertDialogClicked(-3, which);
+                    CppCallbacks.alertDialogClicked(which);
                 }
             });
         }

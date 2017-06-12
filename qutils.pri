@@ -34,6 +34,20 @@ android {
     INCLUDEPATH += $$PWD/include/android
 }
 
+ios {
+    OBJECTIVE_HEADERS += \
+        $$PWD/include/qutils/ios/iOSNativeUtils.h
+
+    OBJECTIVE_SOURCES += \
+        $$PWD/src/ios/iOSNativeUtils.mm
+
+    HEADERS += \
+        $$PWD/include/qutils/ios/iOSUtils.h
+
+    SOURCES += \
+        $$PWD/src/ios/iOSUtils.cpp
+}
+
 HEADERS += \
     $$PWD/include/qutils/ScreenHelper.h \
     $$PWD/include/qutils/QMLRefresh.h \

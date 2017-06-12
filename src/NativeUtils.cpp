@@ -9,6 +9,10 @@ namespace zmc
 AndroidUtils *NativeUtils::m_AndroidUtils = new AndroidUtils();
 #endif // Q_OS_ANDROID
 
+#ifdef Q_OS_IOS
+iOSUtils *NativeUtils::m_iOSUtils = new iOSUtils();
+#endif // Q_OS_IOS
+
 NativeUtils::NativeUtils(QObject *parent)
     : QObject(parent)
 {
@@ -17,16 +21,17 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::menuButtonPressed);
     connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
 
-    connect(m_AndroidUtils, &AndroidUtils::alertDialogCancelled, this, &NativeUtils::alertDialogCancelled);
-    connect(m_AndroidUtils, &AndroidUtils::alertDialogItemClicked, this, &NativeUtils::alertDialogItemClicked);
     connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::datePicked);
-
     connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::timePicked, this, &NativeUtils::timePicked);
-    connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
 
+    connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
 #endif // Q_OS_ANDROID
+
+#ifdef Q_OS_IOS
+    connect(m_iOSUtils, &iOSUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
+#endif // Q_OS_IOS
 }
 
 void NativeUtils::setStatusBarColor(QColor color)
@@ -68,8 +73,10 @@ void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
 
 void NativeUtils::showAlertDialog(const QVariantMap &dialogProperties)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->showAlertDialog(dialogProperties);
+#elif defined(Q_OS_IOS)
+    m_iOSUtils->showAlertView(dialogProperties);
 #else
     Q_UNUSED(dialogProperties);
 #endif // Q_OS_ANDROID

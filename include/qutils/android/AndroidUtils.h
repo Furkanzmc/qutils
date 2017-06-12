@@ -32,6 +32,9 @@ public:
      * - Neutral Button: 0
      * - Negative Button: -1
      *
+     * If the property contains the `items` key then the other buttons will be ignored, the item indexes will be reported with the `buttonIndex` variable.
+     * Be careful that when you set the `message` property the `items` will be ignored.
+     *
      * **Example**
      * @code
      * // Show an alert sheet with items
@@ -67,7 +70,7 @@ public:
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
-    static void emitAlertDialogClickedSignals(int buttonType, int itemIndex);
+    static void emitAlertDialogClickedSignals(int buttonIndex);
     static void emitDatePickedSignals(int year, int month, int day);
 
     static void emitTimePickedSignals(int hourOfDay, int minute);
@@ -80,16 +83,13 @@ signals:
      */
     void backButtonPressed();
     void menuButtonPressed();
-    void alertDialogClicked(int buttonType);
+    void alertDialogClicked(int buttonIndex);
 
-    void alertDialogCancelled();
     void datePicked(int year, int month, int day);
     void datePickerCancelled();
-
     void timePicked(int hourOfDay, int minute);
-    void timePickerCancelled();
-    void alertDialogItemClicked(int itemIndex);
 
+    void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
 
 private:
@@ -105,7 +105,7 @@ private:
 private:
     void emitBackButtonPressed();
     void emitMenuButtonPressed();
-    void emitAlertDialogClicked(int buttonType, int itemIndex);
+    void emitAlertDialogClicked(int buttonIndex);
 
     void emitDatePicked(int year, int month, int day);
     void emitTimePicked(int hourOfDay, int minute);
@@ -148,9 +148,9 @@ static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
     zmc::AndroidUtils::emitButtonPressedSignals(false, true);
 }
 
-static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonType, jint itemIndex)
+static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonIndex)
 {
-    zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonType, itemIndex);
+    zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonIndex);
 }
 
 static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)

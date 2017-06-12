@@ -4,6 +4,8 @@
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
 #include <QAndroidJniEnvironment>
+// qutils
+#include "qutils/Macros.h"
 
 #define ANDROID_UTILS_CLASS "org/zmc/qutils/AndroidUtils"
 
@@ -25,7 +27,7 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
     },
     {
         "alertDialogClicked", // const char* function name;
-        "(II)V", // const char* function signature
+        "(I)V", // const char* function signature
         (void *)alertDialogClickedCallback // function pointer
     },
     {
@@ -235,19 +237,11 @@ void AndroidUtils::emitMenuButtonPressed()
     emit menuButtonPressed();
 }
 
-void AndroidUtils::emitAlertDialogClicked(int buttonType, int itemIndex)
+void AndroidUtils::emitAlertDialogClicked(int buttonIndex)
 {
     if (m_IsAlertShown) {
         m_IsAlertShown = false;
-        if (buttonType == -2) {
-            emit alertDialogCancelled();
-        }
-        else if ((buttonType == -1 || buttonType == 0 || buttonType == 1) && itemIndex == -1) {
-            emit alertDialogClicked(buttonType);
-        }
-        else {
-            emit alertDialogItemClicked(itemIndex);
-        }
+        emit alertDialogClicked(buttonIndex);
     }
 }
 
@@ -325,23 +319,19 @@ QAndroidJniObject AndroidUtils::getJNIHashMap(const QVariantMap &map) const
                 jniValue.object<jobject>());
         }
         else if (value.type() == QVariant::List) {
-            QAndroidJniEnvironment qjniEnv;
-            jobjectArray jniList = nullptr;
-            QVariantList list = value.toList();
-
-            jniList = qjniEnv->NewObjectArray(list.size(), qjniEnv->FindClass("java/lang/String"), 0);
+            QAndroidJniObject jniList = QAndroidJniObject("java/util/ArrayList");
+            const QVariantList list = value.toList();
 
             for (int i = 0; i < list.size(); i++) {
                 QAndroidJniObject o = QAndroidJniObject::fromString(list.at(i).toString());
-                qjniEnv->SetObjectArrayElement(jniList, i, o.object<jobject>());
+                jniList.callMethod<jboolean>("add", "(Ljava/lang/Object;)Z", o.object<jstring>());
             }
+
             hashMapClass.callObjectMethod(
                 "put",
                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
                 jniKey.object<jstring>(),
-                jniList);
-
-            qjniEnv->DeleteLocalRef(jniList);
+                jniList.object<jobject>());
         }
     }
 
@@ -364,14 +354,14 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 }
 
-void AndroidUtils::emitAlertDialogClickedSignals(int buttonType, int itemIndex)
+void AndroidUtils::emitAlertDialogClickedSignals(int buttonIndex)
 {
     for (AndroidUtils *utils : m_Instances) {
         if (utils == nullptr) {
             continue;
         }
 
-        utils->emitAlertDialogClicked(buttonType, itemIndex);
+        utils->emitAlertDialogClicked(buttonIndex);
     }
 }
 
