@@ -50,8 +50,11 @@ public:
      */
     Q_INVOKABLE void shareText(const QString &text);
 
+    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+
 signals:
     void alertDialogClicked(int buttonIndex);
+    void actionSheetClicked(int buttonIndex);
 
 private:
     iOSNativeUtils *m_iOSNative;

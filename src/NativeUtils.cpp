@@ -31,6 +31,7 @@ NativeUtils::NativeUtils(QObject *parent)
 
 #ifdef Q_OS_IOS
     connect(m_iOSUtils, &iOSUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
+    connect(m_iOSUtils, &iOSUtils::actionSheetClicked, this, &NativeUtils::actionSheetClicked);
 #endif // Q_OS_IOS
 }
 
@@ -113,6 +114,17 @@ void NativeUtils::showToast(const QString &text, bool isLongDuration)
     Q_UNUSED(text);
     Q_UNUSED(isLongDuration);
 #endif // Q_OS_ANDROID
+}
+
+void NativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->showActionSheet(title, message, buttons);
+#else
+    Q_UNUSED(title);
+    Q_UNUSED(message);
+    Q_UNUSED(buttons);
+#endif // Q_OS_IOS
 }
 
 }

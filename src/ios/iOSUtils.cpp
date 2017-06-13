@@ -10,6 +10,7 @@ iOSUtils::iOSUtils(QObject *parent)
     , m_iOSNative(new iOSNativeUtils())
 {
     m_iOSNative->onAlertDialogClicked = std::bind(&iOSUtils::alertDialogClicked, this, std::placeholders::_1);
+    m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
 }
 
 void iOSUtils::showAlertView(const QVariantMap &dialogProperties)
@@ -26,6 +27,11 @@ void iOSUtils::showAlertView(const QVariantMap &dialogProperties)
 void iOSUtils::shareText(const QString &text)
 {
     m_iOSNative->shareText(text);
+}
+
+void iOSUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
+{
+    m_iOSNative->showActionSheet(title, message, buttons);
 }
 
 }
