@@ -114,7 +114,7 @@ void DownloadManager::processFinishedDownload(QNetworkReply *reply)
 
         if (saveToDisk(filePath, reply)) {
             LOG("Download of " << url.toEncoded() << " succeeded. Saved to " << filePath);
-            emit downloadFinished(url.toString(), filePath);
+            emit downloadFinished(url.toEncoded(), filePath);
         }
     }
 
