@@ -74,6 +74,11 @@ public:
      */
     Q_INVOKABLE void openGallery();
 
+    /**
+     * @brief Signals are not emitted if the application state is not Qt::ApplicationActive.
+     * @param isBackButton
+     * @param isMenuButton
+     */
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
     static void emitAlertDialogClickedSignals(int buttonIndex);
     static void emitDatePickedSignals(int year, int month, int day);

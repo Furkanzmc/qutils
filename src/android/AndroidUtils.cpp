@@ -1,6 +1,7 @@
 #include "qutils/android/AndroidUtils.h"
 // Qt
 #include <QDebug>
+#include <QGuiApplication>
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
 #include <QAndroidJniEnvironment>
@@ -393,6 +394,10 @@ QAndroidJniObject AndroidUtils::getJNIHashMap(const QVariantMap &map) const
 
 void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton)
 {
+    if (QGuiApplication::applicationState() != Qt::ApplicationActive) {
+        return;
+    }
+
     for (AndroidUtils *utils : m_Instances) {
         if (utils == nullptr) {
             continue;
