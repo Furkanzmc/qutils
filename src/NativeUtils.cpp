@@ -64,11 +64,14 @@ void NativeUtils::setImmersiveMode(bool visible)
 
 void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->shareText(dialogTitle, text);
-#else
+#elif defined (Q_OS_IOS)
     Q_UNUSED(dialogTitle);
     m_iOSUtils->shareText(text);
+#else
+    Q_UNUSED(dialogTitle);
+    Q_UNUSED(text);
 #endif // Q_OS_ANDROID
 }
 
