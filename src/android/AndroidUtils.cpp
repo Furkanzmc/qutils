@@ -46,9 +46,19 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         (void *)cameraCapturedCallback // function pointer
     },
     {
+        "cameraCaptureCancelled", // const char* function name;
+        "()V", // const char* function signature
+        (void *)cameraCaptureCancelledCallback // function pointer
+    },
+    {
         "fileSelected", // const char* function name;
         "(Ljava/lang/String;)V", // const char* function signature
         (void *)fileSelectedCallback // function pointer
+    },
+    {
+        "fileSelectionCancelled", // const char* function name;
+        "()V", // const char* function signature
+        (void *)fileSelectionCancelledCallback // function pointer
     }
 };
 
@@ -306,6 +316,22 @@ void AndroidUtils::emitFileSelected(const QString &filePath)
     }
 }
 
+void AndroidUtils::emitCameraCaptureCancelled()
+{
+    if (m_IsCameraShown) {
+        m_IsCameraShown = false;
+        emit cameraCaptureCancelled();
+    }
+}
+
+void AndroidUtils::emitFileSelectionCancelled()
+{
+    if (m_IsGalleryShown) {
+        m_IsGalleryShown = false;
+        emit fileSelectionCancelled();
+    }
+}
+
 QAndroidJniObject AndroidUtils::getJNIHashMap(const QVariantMap &map) const
 {
     QAndroidJniObject hashMapClass("java/util/HashMap");
@@ -433,6 +459,28 @@ void AndroidUtils::emitFileSelectedSignals(const QString &filePath)
         }
 
         utils->emitFileSelected(filePath);
+    }
+}
+
+void AndroidUtils::emitCameraCaptureCancelledSignals()
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitCameraCaptureCancelled();
+    }
+}
+
+void AndroidUtils::emitFileSelectionCancelledSignals()
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitFileSelectionCancelled();
     }
 }
 

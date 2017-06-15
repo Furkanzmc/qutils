@@ -97,10 +97,16 @@ public class QutilsActivity extends QtActivity
                 removeCustomData("capture_save_path");
             }
             else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
-                System.out.println(data.getData());
                 String filePath = getRealPathFromURI(getApplicationContext(), data.getData());
-                System.out.println(filePath);
                 CppCallbacks.fileSelected(filePath);
+            }
+        }
+        else {
+            if (requestCode == Constants.CAMERA_CAPTURE_REQUEST_CODE) {
+                CppCallbacks.cameraCaptureCancelled();
+            }
+            else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
+                CppCallbacks.fileSelectionCancelled();
             }
         }
     }

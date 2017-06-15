@@ -82,6 +82,9 @@ public:
     static void emitCameraCapturedSignals(const QString &capturePath);
     static void emitFileSelectedSignals(const QString &filePath);
 
+    static void emitCameraCaptureCancelledSignals();
+    static void emitFileSelectionCancelledSignals();
+
 signals:
     /**
      * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
@@ -97,7 +100,10 @@ signals:
 
     void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
+    void cameraCaptureCancelled();
+
     void fileSelected(const QString &filePath);
+    void fileSelectionCancelled();
 
 private:
     static std::vector<AndroidUtils *> m_Instances;
@@ -119,7 +125,9 @@ private:
     void emitTimePicked(int hourOfDay, int minute);
     void emitCameraCaptured(const QString &capturePath);
 
+    void emitCameraCaptureCancelled();
     void emitFileSelected(const QString &filePath);
+    void emitFileSelectionCancelled();
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java. Supported types are:
@@ -183,4 +191,14 @@ static void fileSelectedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring fileP
 {
     QAndroidJniObject jniStr(filePath);
     zmc::AndroidUtils::emitFileSelectedSignals(jniStr.toString());
+}
+
+static void cameraCaptureCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
+{
+    zmc::AndroidUtils::emitCameraCaptureCancelledSignals();
+}
+
+static void fileSelectionCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
+{
+    zmc::AndroidUtils::emitFileSelectionCancelledSignals();
 }

@@ -51,9 +51,11 @@ signals:
 
     void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
-    void actionSheetClicked(int buttonIndex);
+    void cameraCaptureCancelled();
 
+    void actionSheetClicked(int buttonIndex);
     void fileSelected(const QString &filePath);
+    void fileSelectionCancelled();
 
 private:
 #ifdef Q_OS_ANDROID
