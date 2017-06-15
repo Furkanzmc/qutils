@@ -31,10 +31,12 @@ import java.util.ArrayList;
 
 
 // qutils
-import org.zmc.qutils.notification.CppCallbacks;
+import org.zmc.qutils.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
 import org.zmc.qutils.DatePickerFragment;
+
 import org.zmc.qutils.TimePickerFragment;
+import org.zmc.qutils.Constants;
 
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -57,7 +59,7 @@ public class AndroidUtils extends QtActivity
             File file = new File(filePath);
             m_MainContext.setCustomData("capture_save_path", filePath);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-            m_MainContext.startActivityForResult(takePictureIntent, 1);
+            m_MainContext.startActivityForResult(takePictureIntent, Constants.CAMERA_CAPTURE_REQUEST_CODE);
         }
     }
 
@@ -217,5 +219,12 @@ public class AndroidUtils extends QtActivity
 
         Toast toast = Toast.makeText(m_MainContext, text, duration);
         toast.show();
+    }
+
+    public static void openGallery()
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
     }
 }

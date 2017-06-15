@@ -11,7 +11,7 @@ import android.content.DialogInterface;
 import java.util.Calendar;
 
 // qutils
-import org.zmc.qutils.notification.CppCallbacks;
+import org.zmc.qutils.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {

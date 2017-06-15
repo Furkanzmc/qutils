@@ -1,4 +1,4 @@
-package org.zmc.qutils.notification;
+package org.zmc.qutils;
 
 public class CppCallbacks
 {
@@ -14,4 +14,6 @@ public class CppCallbacks
     public static native void timePicked(int hourOfDay, int minute);
 
     public static native void cameraCaptured(String capturePath);
+    // This is called when user selects an image from the gallery.
+    public static native void fileSelected(String filePath);
 }

@@ -12,11 +12,26 @@ import android.view.View;
 import android.view.KeyEvent;
 import android.provider.MediaStore;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+
+import android.os.Build;
+import android.provider.DocumentsContract;
+import android.os.Environment;
+
+import android.content.ContentUris;
+
+// Java
 import java.util.HashMap;
 
+// qutils
 import org.zmc.qutils.notification.NotificationClient;
 import org.zmc.qutils.notification.NotificationReceiver;
-import org.zmc.qutils.notification.CppCallbacks;
+import org.zmc.qutils.CppCallbacks;
+
+import org.zmc.qutils.Constants;
+
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
 
@@ -76,10 +91,17 @@ public class QutilsActivity extends QtActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // TODO: 1 is the request for camera capture. Put this number in a class for easy access.
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            CppCallbacks.cameraCaptured((String)getCustomData("capture_save_path"));
-            removeCustomData("capture_save_path");
+        if (resultCode == RESULT_OK) {
+            if (requestCode == Constants.CAMERA_CAPTURE_REQUEST_CODE) {
+                CppCallbacks.cameraCaptured((String)getCustomData("capture_save_path"));
+                removeCustomData("capture_save_path");
+            }
+            else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
+                System.out.println(data.getData());
+                String filePath = getRealPathFromURI(getApplicationContext(), data.getData());
+                System.out.println(filePath);
+                CppCallbacks.fileSelected(filePath);
+            }
         }
     }
 
@@ -118,5 +140,67 @@ public class QutilsActivity extends QtActivity
     public static void removeCustomData(String key)
     {
         m_CustomData.remove(key);
+    }
+
+    public static String getRealPathFromURI(Context context, Uri uri) {
+        String selection = null;
+        String[] selectionArgs = null;
+        // Uri is different in versions after KITKAT (Android 4.4), we need to
+        if (Build.VERSION.SDK_INT >= 19 && DocumentsContract.isDocumentUri(context.getApplicationContext(), uri)) {
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                return Environment.getExternalStorageDirectory() + "/" + split[1];
+            } else if (isDownloadsDocument(uri)) {
+                final String id = DocumentsContract.getDocumentId(uri);
+                uri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+            } else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+                if ("image".equals(type)) {
+                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+                selection = "_id=?";
+                selectionArgs = new String[]{
+                        split[1]
+                };
+            }
+        }
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = {
+                    MediaStore.Images.Media.DATA
+            };
+            Cursor cursor = null;
+            try {
+                cursor = context.getContentResolver()
+                        .query(uri, projection, selection, selectionArgs, null);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+            }
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+        return null;
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 }

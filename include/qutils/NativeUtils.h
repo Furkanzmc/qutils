@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+    Q_INVOKABLE void openGallery();
 
 signals:
     void backButtonPressed();
@@ -51,6 +52,8 @@ signals:
     void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
     void actionSheetClicked(int buttonIndex);
+
+    void fileSelected(const QString &filePath);
 
 private:
 #ifdef Q_OS_ANDROID

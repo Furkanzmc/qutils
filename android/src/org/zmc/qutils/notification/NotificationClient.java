@@ -17,6 +17,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.os.Build;
 
+// qutils
+import org.zmc.qutils.CppCallbacks;
+
 public class NotificationClient extends QtActivity
 {
     private static NotificationManager m_MotificationManager;

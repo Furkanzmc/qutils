@@ -7,6 +7,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+// qutils
+import org.zmc.qutils.CppCallbacks;
+
 public class NotificationReceiver extends BroadcastReceiver {
 
     public static String KEY_NOTIFICATION_ID = "notification-id";

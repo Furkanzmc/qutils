@@ -84,3 +84,6 @@ if (!QUTILS_NO_MULTIMEDIA) {
 }
 
 INCLUDEPATH += $$PWD/include
+
+DISTFILES += \
+    $$PWD/android/src/org/zmc/qutils/Constants.java

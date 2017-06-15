@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.text.DateFormat;
 
 // qutils
-import org.zmc.qutils.notification.CppCallbacks;
+import org.zmc.qutils.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {

@@ -44,6 +44,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "cameraCaptured", // const char* function name;
         "(Ljava/lang/String;)V", // const char* function signature
         (void *)cameraCapturedCallback // function pointer
+    },
+    {
+        "fileSelected", // const char* function name;
+        "(Ljava/lang/String;)V", // const char* function signature
+        (void *)fileSelectedCallback // function pointer
     }
 };
 
@@ -57,7 +62,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void * /*reserved*/)
     }
 
     // Search for Java class which declares the native methods
-    jclass javaClass = env->FindClass("org/zmc/qutils/notification/CppCallbacks");
+    jclass javaClass = env->FindClass("org/zmc/qutils/CppCallbacks");
     if (!javaClass) {
         return JNI_ERR;
     }
@@ -85,6 +90,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsDatePickerShown(false)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
+    , m_IsGalleryShown(false)
 {
     m_Instances.push_back(this);
     m_LastInstanceID++;
@@ -227,6 +233,19 @@ void AndroidUtils::showToast(const QString &text, bool isLongDuration)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::openGallery()
+{
+    m_IsGalleryShown = true;
+    auto runnable = []() {
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "openGallery",
+            "()V");
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     emit backButtonPressed();
@@ -276,6 +295,14 @@ void AndroidUtils::emitCameraCaptured(const QString &capturePath)
     if (m_IsCameraShown) {
         m_IsCameraShown = false;
         emit cameraCaptured(capturePath);
+    }
+}
+
+void AndroidUtils::emitFileSelected(const QString &filePath)
+{
+    if (m_IsGalleryShown) {
+        m_IsGalleryShown = false;
+        emit fileSelected(filePath);
     }
 }
 
@@ -395,6 +422,17 @@ void AndroidUtils::emitCameraCapturedSignals(const QString &capturePath)
         }
 
         utils->emitCameraCaptured(capturePath);
+    }
+}
+
+void AndroidUtils::emitFileSelectedSignals(const QString &filePath)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitFileSelected(filePath);
     }
 }
 

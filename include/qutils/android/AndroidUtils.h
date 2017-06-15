@@ -69,12 +69,18 @@ public:
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
+    /**
+     * @brief Opens the gallery for an pick file operation.
+     */
+    Q_INVOKABLE void openGallery();
+
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
     static void emitAlertDialogClickedSignals(int buttonIndex);
     static void emitDatePickedSignals(int year, int month, int day);
 
     static void emitTimePickedSignals(int hourOfDay, int minute);
     static void emitCameraCapturedSignals(const QString &capturePath);
+    static void emitFileSelectedSignals(const QString &filePath);
 
 signals:
     /**
@@ -91,6 +97,7 @@ signals:
 
     void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
+    void fileSelected(const QString &filePath);
 
 private:
     static std::vector<AndroidUtils *> m_Instances;
@@ -100,7 +107,8 @@ private:
     bool m_IsAlertShown,
          m_IsDatePickerShown,
          m_IsTimePickerShown,
-         m_IsCameraShown;
+         m_IsCameraShown,
+         m_IsGalleryShown;
 
 private:
     void emitBackButtonPressed();
@@ -110,6 +118,8 @@ private:
     void emitDatePicked(int year, int month, int day);
     void emitTimePicked(int hourOfDay, int minute);
     void emitCameraCaptured(const QString &capturePath);
+
+    void emitFileSelected(const QString &filePath);
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java. Supported types are:
@@ -167,4 +177,10 @@ static void cameraCapturedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring cap
 {
     QAndroidJniObject jniStr(capturePath);
     zmc::AndroidUtils::emitCameraCapturedSignals(jniStr.toString());
+}
+
+static void fileSelectedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring filePath)
+{
+    QAndroidJniObject jniStr(filePath);
+    zmc::AndroidUtils::emitFileSelectedSignals(jniStr.toString());
 }

@@ -27,6 +27,7 @@ NativeUtils::NativeUtils(QObject *parent)
 
     connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
+    connect(m_AndroidUtils, &AndroidUtils::fileSelected, this, &NativeUtils::fileSelected);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
@@ -128,6 +129,13 @@ void NativeUtils::showActionSheet(const QString &title, const QString &message, 
     Q_UNUSED(message);
     Q_UNUSED(buttons);
 #endif // Q_OS_IOS
+}
+
+void NativeUtils::openGallery()
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->openGallery();
+#endif // Q_OS_ANDROID
 }
 
 }
