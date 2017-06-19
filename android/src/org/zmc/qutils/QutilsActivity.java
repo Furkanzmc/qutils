@@ -64,17 +64,18 @@ public class QutilsActivity extends QtActivity
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
 
-        final Window mRootWindow = m_Instance.getWindow();
-        final View mRootView = mRootWindow.getDecorView().findViewById(android.R.id.content);
-        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(
+        final Window rootWindow = m_Instance.getWindow();
+        final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(
             new ViewTreeObserver.OnGlobalLayoutListener() {
                 public void onGlobalLayout(){
                     Rect r = new Rect();
-                    View view = mRootWindow.getDecorView();
+                    View view = rootWindow.getDecorView();
                     view.getWindowVisibleDisplayFrame(r);
 
-                    int screenHeight = mRootView.getHeight();
+                    int screenHeight = rootView.getHeight();
                     int keyboardHeight = screenHeight - (r.bottom);
+
                     if (keyboardHeight < 0) {
                         keyboardHeight = 0;
                     }
