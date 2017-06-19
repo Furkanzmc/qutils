@@ -60,6 +60,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "fileSelectionCancelled", // const char* function name;
         "()V", // const char* function signature
         (void *)fileSelectionCancelledCallback // function pointer
+    },
+    {
+        "keyboardHeightChanged", // const char* function name;
+        "(I)V", // const char* function signature
+        (void *)keyboardHeightChangedCallback // function pointer
     }
 };
 
@@ -317,19 +322,24 @@ void AndroidUtils::emitFileSelected(const QString &filePath)
     }
 }
 
-void AndroidUtils::emitCameraCaptureCancelled()
-{
-    if (m_IsCameraShown) {
-        m_IsCameraShown = false;
-        emit cameraCaptureCancelled();
-    }
-}
-
 void AndroidUtils::emitFileSelectionCancelled()
 {
     if (m_IsGalleryShown) {
         m_IsGalleryShown = false;
         emit fileSelectionCancelled();
+    }
+}
+
+void AndroidUtils::emitKeyboardHeightChanged(const int &keyboardHeight)
+{
+    emit keyboardHeightChanged(keyboardHeight);
+}
+
+void AndroidUtils::emitCameraCaptureCancelled()
+{
+    if (m_IsCameraShown) {
+        m_IsCameraShown = false;
+        emit cameraCaptureCancelled();
     }
 }
 
@@ -466,6 +476,18 @@ void AndroidUtils::emitFileSelectedSignals(const QString &filePath)
         utils->emitFileSelected(filePath);
     }
 }
+
+void AndroidUtils::emitKeyboardHeightChangedSignals(const int &keyboardHeight)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils == nullptr) {
+            continue;
+        }
+
+        utils->emitKeyboardHeightChanged(keyboardHeight);
+    }
+}
+
 
 void AndroidUtils::emitCameraCaptureCancelledSignals()
 {

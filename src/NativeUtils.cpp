@@ -31,6 +31,7 @@ NativeUtils::NativeUtils(QObject *parent)
 
     connect(m_AndroidUtils, &AndroidUtils::fileSelected, this, &NativeUtils::fileSelected);
     connect(m_AndroidUtils, &AndroidUtils::fileSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
+    connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS

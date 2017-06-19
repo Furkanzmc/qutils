@@ -57,6 +57,8 @@ signals:
     void fileSelected(const QString &filePath);
     void fileSelectionCancelled();
 
+    void keyboardHeightChanged(int keyboardHeight);
+
 private:
 #ifdef Q_OS_ANDROID
     static AndroidUtils *m_AndroidUtils;

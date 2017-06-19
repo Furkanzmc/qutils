@@ -17,5 +17,8 @@ public class CppCallbacks
     public static native void cameraCaptureCancelled();
     // This is called when user selects an image from the gallery.
     public static native void fileSelected(String filePath);
+
     public static native void fileSelectionCancelled();
+    // keyboadrdHeight will be -1 If it si invisible, otherwise it will have a value greater than 0.
+    public static native void keyboardHeightChanged(int keyboardHeight);
 }

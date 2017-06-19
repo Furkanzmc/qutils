@@ -87,6 +87,7 @@ public:
     static void emitCameraCapturedSignals(const QString &capturePath);
     static void emitFileSelectedSignals(const QString &filePath);
 
+    static void emitKeyboardHeightChangedSignals(const int &keyboardHeight);
     static void emitCameraCaptureCancelledSignals();
     static void emitFileSelectionCancelledSignals();
 
@@ -109,6 +110,7 @@ signals:
 
     void fileSelected(const QString &filePath);
     void fileSelectionCancelled();
+    void keyboardHeightChanged(int keyboardHeight);
 
 private:
     static std::vector<AndroidUtils *> m_Instances;
@@ -133,6 +135,8 @@ private:
     void emitCameraCaptureCancelled();
     void emitFileSelected(const QString &filePath);
     void emitFileSelectionCancelled();
+
+    void emitKeyboardHeightChanged(const int &keyboardHeight);
 
     /**
      * @brief Converts a QVariantMap to HashMap in Java. Supported types are:
@@ -206,4 +210,9 @@ static void cameraCaptureCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
 static void fileSelectionCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
 {
     zmc::AndroidUtils::emitFileSelectionCancelledSignals();
+}
+
+static void keyboardHeightChangedCallback(JNIEnv */*env*/, jobject /*obj*/, jint keyboardHeight)
+{
+    zmc::AndroidUtils::emitKeyboardHeightChangedSignals(keyboardHeight);
 }

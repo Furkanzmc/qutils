@@ -21,6 +21,8 @@ import android.provider.DocumentsContract;
 import android.os.Environment;
 
 import android.content.ContentUris;
+import android.graphics.Rect;
+import android.view.ViewTreeObserver;
 
 // Java
 import java.util.HashMap;
@@ -59,6 +61,21 @@ public class QutilsActivity extends QtActivity
         super.onCreate(savedInstanceState);
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
+
+        final Window mRootWindow = m_Instance.getWindow();
+        final View mRootView = mRootWindow.getDecorView().findViewById(android.R.id.content);
+        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+                public void onGlobalLayout(){
+                    Rect r = new Rect();
+                    View view = mRootWindow.getDecorView();
+                    view.getWindowVisibleDisplayFrame(r);
+
+                    int screenHeight = mRootView.getHeight();
+                    int keyboardHeight = screenHeight - (r.bottom);
+                    CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                }
+            });
     }
 
     @Override
