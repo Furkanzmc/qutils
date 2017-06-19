@@ -50,6 +50,8 @@ public class QutilsActivity extends QtActivity
     protected static boolean m_IsStatusBarVisible = true;
     public static HashMap m_CustomData;
 
+    private static int m_PreviousKeyboardHeight = -1;
+
     public QutilsActivity()
     {
         m_Instance = this;
@@ -73,7 +75,18 @@ public class QutilsActivity extends QtActivity
 
                     int screenHeight = mRootView.getHeight();
                     int keyboardHeight = screenHeight - (r.bottom);
-                    CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                    if (keyboardHeight < 0) {
+                        keyboardHeight = 0;
+                    }
+
+                    if (m_PreviousKeyboardHeight == -1) {
+                        m_PreviousKeyboardHeight = keyboardHeight;
+                        CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                    }
+                    else if (m_PreviousKeyboardHeight != keyboardHeight) {
+                        m_PreviousKeyboardHeight = keyboardHeight;
+                        CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                    }
                 }
             });
     }
