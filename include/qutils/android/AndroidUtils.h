@@ -97,6 +97,9 @@ signals:
      * close it yourself. Only the last instance is informed of the back button signal.
      */
     void backButtonPressed();
+    /**
+     * @brief Only the last instance is informed of the menu button signal.
+     */
     void menuButtonPressed();
     void alertDialogClicked(int buttonIndex);
 
