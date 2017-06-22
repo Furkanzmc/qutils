@@ -5,16 +5,15 @@
 namespace zmc
 {
 
-#ifdef Q_OS_ANDROID
-AndroidUtils *NativeUtils::m_AndroidUtils = new AndroidUtils();
-#endif // Q_OS_ANDROID
-
 #ifdef Q_OS_IOS
 iOSUtils *NativeUtils::m_iOSUtils = new iOSUtils();
 #endif // Q_OS_IOS
 
 NativeUtils::NativeUtils(QObject *parent)
     : QObject(parent)
+#ifdef Q_OS_ANDROID
+    , m_AndroidUtils(new AndroidUtils(this))
+#endif // Q_OS_ANDROID
 {
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);

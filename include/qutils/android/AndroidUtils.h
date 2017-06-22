@@ -94,7 +94,7 @@ public:
 signals:
     /**
      * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
-     * close it yourself.
+     * close it yourself. Only the last instance is informed of the back button signal.
      */
     void backButtonPressed();
     void menuButtonPressed();
@@ -113,8 +113,7 @@ signals:
     void keyboardHeightChanged(int keyboardHeight);
 
 private:
-    static std::vector<AndroidUtils *> m_Instances;
-    static int m_LastInstanceID;
+    static QList<AndroidUtils *> m_Instances;
 
     int m_InstanceID;
     bool m_IsAlertShown,

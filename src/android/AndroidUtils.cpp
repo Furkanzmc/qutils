@@ -96,20 +96,18 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void * /*reserved*/)
 namespace zmc
 {
 
-std::vector<AndroidUtils *> AndroidUtils::m_Instances = std::vector<AndroidUtils *>();
-int AndroidUtils::m_LastInstanceID = 0;
+QList<AndroidUtils *> AndroidUtils::m_Instances = QList<AndroidUtils *>();
 
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
-    , m_InstanceID(m_LastInstanceID)
+    , m_InstanceID(m_Instances.size())
     , m_IsAlertShown(false)
     , m_IsDatePickerShown(false)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
 {
-    m_Instances.push_back(this);
-    m_LastInstanceID++;
+    m_Instances.append(this);
 }
 
 AndroidUtils::~AndroidUtils()
@@ -408,17 +406,20 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         return;
     }
 
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
-        }
+    AndroidUtils *utils = nullptr;
 
-        if (isBackButton) {
-            utils->emitBackButtonPressed();
+    for (int i = m_Instances.size() - 1; i > -1; i--) {
+        if (m_Instances.at(i) != nullptr) {
+            utils = m_Instances.at(i);
+            break;
         }
-        else if (isMenuButton) {
-            utils->emitMenuButtonPressed();
-        }
+    }
+
+    if (isBackButton) {
+        utils->emitBackButtonPressed();
+    }
+    else if (isMenuButton) {
+        utils->emitMenuButtonPressed();
     }
 }
 

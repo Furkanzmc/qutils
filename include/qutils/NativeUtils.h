@@ -61,7 +61,7 @@ signals:
 
 private:
 #ifdef Q_OS_ANDROID
-    static AndroidUtils *m_AndroidUtils;
+    AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
 #ifdef Q_OS_IOS
     static iOSUtils *m_iOSUtils;
