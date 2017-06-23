@@ -98,6 +98,7 @@ void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString
 
         QFile *file = new QFile(filePath);
         if (file->exists() == false) {
+            LOG_ERROR(filePath + " doesn't exist! Skipping the upload.");
             continue;
         }
 
