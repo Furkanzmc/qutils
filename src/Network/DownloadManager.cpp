@@ -33,6 +33,11 @@ DownloadManager::~DownloadManager()
 
 void DownloadManager::downloadFile(const QUrl &url, const QString &filePath)
 {
+    if (url.isValid() == false) {
+        LOG_ERROR("Given URL (" << url.toEncoded() << ") is not valid. Aborting download.");
+        return;
+    }
+
     QNetworkRequest request(url);
     QNetworkReply *reply = m_NetworkManager->get(request);
 
