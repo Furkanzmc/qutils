@@ -22,6 +22,8 @@ class NativeUtils : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
+
 public:
     explicit NativeUtils(QObject *parent = 0);
 
@@ -39,6 +41,9 @@ public:
 
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
     Q_INVOKABLE void openGallery();
+
+    bool isButtonEventsEnabled() const;
+    void setButtonEventsEnabled(bool enabled);
 
 signals:
     void backButtonPressed();
@@ -58,6 +63,7 @@ signals:
     void fileSelectionCancelled();
 
     void keyboardHeightChanged(int keyboardHeight);
+    void buttonEventsEnabledChanged();
 
 private:
 #ifdef Q_OS_ANDROID

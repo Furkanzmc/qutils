@@ -106,6 +106,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
+    , m_IsButtonEventsEnabled(true)
 {
     m_Instances.append(this);
 }
@@ -262,12 +263,16 @@ void AndroidUtils::openGallery()
 
 void AndroidUtils::emitBackButtonPressed()
 {
-    emit backButtonPressed();
+    if (m_IsButtonEventsEnabled) {
+        emit backButtonPressed();
+    }
 }
 
 void AndroidUtils::emitMenuButtonPressed()
 {
-    emit menuButtonPressed();
+    if (m_IsButtonEventsEnabled) {
+        emit menuButtonPressed();
+    }
 }
 
 void AndroidUtils::emitAlertDialogClicked(int buttonIndex)
@@ -409,7 +414,7 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     AndroidUtils *utils = nullptr;
 
     for (int i = m_Instances.size() - 1; i > -1; i--) {
-        if (m_Instances.at(i) != nullptr) {
+        if (m_Instances.at(i) != nullptr && m_Instances.at(i)->isButtonEventsEnabled()) {
             utils = m_Instances.at(i);
             break;
         }
@@ -510,6 +515,20 @@ void AndroidUtils::emitFileSelectionCancelledSignals()
 
         utils->emitFileSelectionCancelled();
     }
+}
+
+bool AndroidUtils::isButtonEventsEnabled() const
+{
+    return m_IsButtonEventsEnabled;
+}
+
+void AndroidUtils::setButtonEventsEnabled(bool enabled)
+{
+    if (m_IsButtonEventsEnabled != enabled) {
+        emit buttonEventsEnabledChanged();
+    }
+
+    m_IsButtonEventsEnabled = enabled;
 }
 
 }

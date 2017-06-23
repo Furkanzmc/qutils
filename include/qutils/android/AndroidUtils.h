@@ -14,6 +14,9 @@ namespace zmc
 class AndroidUtils : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
+
 public:
     explicit AndroidUtils(QObject *parent = 0);
     ~AndroidUtils();
@@ -74,6 +77,9 @@ public:
      */
     Q_INVOKABLE void openGallery();
 
+    bool isButtonEventsEnabled() const;
+    void setButtonEventsEnabled(bool enabled);
+
     /**
      * @brief Signals are not emitted if the application state is not Qt::ApplicationActive.
      * @param isBackButton
@@ -97,6 +103,7 @@ signals:
      * close it yourself. Only the last instance is informed of the back button signal.
      */
     void backButtonPressed();
+
     /**
      * @brief Only the last instance is informed of the menu button signal.
      */
@@ -115,6 +122,8 @@ signals:
     void fileSelectionCancelled();
     void keyboardHeightChanged(int keyboardHeight);
 
+    void buttonEventsEnabledChanged();
+
 private:
     static QList<AndroidUtils *> m_Instances;
 
@@ -123,7 +132,8 @@ private:
          m_IsDatePickerShown,
          m_IsTimePickerShown,
          m_IsCameraShown,
-         m_IsGalleryShown;
+         m_IsGalleryShown,
+         m_IsButtonEventsEnabled;
 
 private:
     void emitBackButtonPressed();

@@ -31,6 +31,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::fileSelected, this, &NativeUtils::fileSelected);
     connect(m_AndroidUtils, &AndroidUtils::fileSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
     connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
+
+    connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
@@ -138,6 +140,24 @@ void NativeUtils::openGallery()
 {
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->openGallery();
+#endif // Q_OS_ANDROID
+}
+
+bool NativeUtils::isButtonEventsEnabled() const
+{
+#ifdef Q_OS_ANDROID
+    return m_AndroidUtils->isButtonEventsEnabled();
+#else
+    return false;
+#endif // Q_OS_ANDROID
+}
+
+void NativeUtils::setButtonEventsEnabled(bool enabled)
+{
+#ifdef Q_OS_ANDROID
+    return m_AndroidUtils->setButtonEventsEnabled(enabled);
+#else
+    return false;
 #endif // Q_OS_ANDROID
 }
 
