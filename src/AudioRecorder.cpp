@@ -134,6 +134,16 @@ bool AudioRecorder::hasValidRecording() const
     return file.exists();
 }
 
+QMediaRecorder::State AudioRecorder::getState() const
+{
+    return m_AudioRecorder->state();
+}
+
+QMediaRecorder::Status AudioRecorder::getStatus() const
+{
+    return m_AudioRecorder->status();
+}
+
 void AudioRecorder::onStateChanged(QMediaRecorder::State state)
 {
     if (state == QMediaRecorder::RecordingState) {
@@ -148,6 +158,8 @@ void AudioRecorder::onStateChanged(QMediaRecorder::State state)
         LOG("Stoppped...");
         emit recordingStopped();
     }
+
+    emit stateChanged();
 }
 
 void AudioRecorder::onStatusChanged(QMediaRecorder::Status status)
@@ -176,6 +188,8 @@ void AudioRecorder::onStatusChanged(QMediaRecorder::Status status)
     else if (status == QMediaRecorder::FinalizingStatus) {
         LOG("Recording is stopped with media being finalized.");
     }
+
+    emit statusChanged();
 }
 
 void AudioRecorder::onErrorOccurred(QMediaRecorder::Error error)

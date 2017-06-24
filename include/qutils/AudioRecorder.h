@@ -26,6 +26,11 @@ class AudioRecorder : public QObject
     Q_PROPERTY(QString outputPath READ getOutputPath WRITE setOutputPath NOTIFY outputPathChanged)
 
     Q_PROPERTY(bool hasValidRecording READ hasValidRecording CONSTANT)
+    Q_PROPERTY(QMediaRecorder::State state READ getState NOTIFY stateChanged)
+    Q_PROPERTY(QMediaRecorder::Status status READ getStatus NOTIFY statusChanged)
+
+    Q_ENUM(QMediaRecorder::State)
+    Q_ENUM(QMediaRecorder::Status)
 
 public:
     explicit AudioRecorder(QObject *parent = nullptr);
@@ -57,6 +62,9 @@ public:
      */
     bool hasValidRecording() const;
 
+    QMediaRecorder::State getState() const;
+    QMediaRecorder::Status getStatus() const;
+
 private:
     QAudioRecorder *m_AudioRecorder;
     QAudioProbe *m_Probe;
@@ -78,6 +86,9 @@ signals:
     void durationChanged();
     void outputPathChanged();
     void hasValidRecordingChanged();
+
+    void stateChanged();
+    void statusChanged();
 };
 
 }
