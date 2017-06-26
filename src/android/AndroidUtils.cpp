@@ -420,11 +420,13 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         }
     }
 
-    if (isBackButton) {
-        utils->emitBackButtonPressed();
-    }
-    else if (isMenuButton) {
-        utils->emitMenuButtonPressed();
+    if (utils) {
+        if (isBackButton) {
+            utils->emitBackButtonPressed();
+        }
+        else if (isMenuButton) {
+            utils->emitMenuButtonPressed();
+        }
     }
 }
 
