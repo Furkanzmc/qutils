@@ -23,6 +23,7 @@ class NativeUtils : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
     explicit NativeUtils(QObject *parent = 0);
@@ -45,6 +46,9 @@ public:
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
 
+    bool isEnabled() const;
+    void setEnabled(bool enabled);
+
 signals:
     void backButtonPressed();
     void menuButtonPressed();
@@ -64,6 +68,7 @@ signals:
 
     void keyboardHeightChanged(int keyboardHeight);
     void buttonEventsEnabledChanged();
+    void enabledChanged();
 
 private:
 #ifdef Q_OS_ANDROID

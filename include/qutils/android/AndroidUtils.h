@@ -16,6 +16,7 @@ class AndroidUtils : public QObject
     Q_OBJECT
 
     Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
     explicit AndroidUtils(QObject *parent = 0);
@@ -34,6 +35,8 @@ public:
      * - Positive Button: 1
      * - Neutral Button: 0
      * - Negative Button: -1
+     *
+     * If m_IsEnabled is false, this function will not work.
      *
      * If the property contains the `items` key then the other buttons will be ignored, the item indexes will be reported with the `buttonIndex` variable.
      * Be careful that when you set the `message` property the `items` will be ignored.
@@ -66,19 +69,38 @@ public:
      */
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
+    /**
+     * @brief If m_IsEnabled is false, you cannot use this function.
+     */
     Q_INVOKABLE void showDatePicker();
+
+    /**
+     * @brief If m_IsEnabled is false, you cannot use this function.
+     */
     Q_INVOKABLE void showTimePicker();
+
+    /**
+     * @brief If m_IsEnabled is false, you cannot use this function.
+     */
     Q_INVOKABLE void showCamera(const QString &fileName);
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
     /**
-     * @brief Opens the gallery for an pick file operation.
+     * @brief Opens the gallery for an pick file operation. If m_IsEnabled is false, you cannot use this function.
      */
     Q_INVOKABLE void openGallery();
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
+
+    /**
+     * @brief If m_IsEnabled is set to false, this instance will not receive any signals from the system. So, when m_IsEnabled is false, you cannot show an
+     * alert dialog or show the date picker. Basically, anything that requires a callback back to you cannot be used.
+     * @return
+     */
+    bool isEnabled() const;
+    void setEnabled(bool enabled);
 
     /**
      * @brief Signals are not emitted if the application state is not Qt::ApplicationActive.
@@ -123,6 +145,7 @@ signals:
     void keyboardHeightChanged(int keyboardHeight);
 
     void buttonEventsEnabledChanged();
+    void enabledChanged();
 
 private:
     static QList<AndroidUtils *> m_Instances;

@@ -179,6 +179,10 @@ void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
 
 void AndroidUtils::showAlertDialog(const QVariantMap &dialogProperties)
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_IsAlertShown = true;
     const QAndroidJniObject hashMapClass = getJNIHashMap(dialogProperties);
     auto runnable = [hashMapClass]() {
@@ -194,6 +198,10 @@ void AndroidUtils::showAlertDialog(const QVariantMap &dialogProperties)
 
 void AndroidUtils::showDatePicker()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_IsDatePickerShown = true;
     auto runnable = []() {
         QAndroidJniObject::callStaticMethod<void>(
@@ -207,6 +215,10 @@ void AndroidUtils::showDatePicker()
 
 void AndroidUtils::showTimePicker()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_IsTimePickerShown = true;
     auto runnable = []() {
         QAndroidJniObject::callStaticMethod<void>(
@@ -220,6 +232,10 @@ void AndroidUtils::showTimePicker()
 
 void AndroidUtils::showCamera(const QString &fileName)
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_IsCameraShown = true;
     auto runnable = [fileName]() {
         const QAndroidJniObject jniStr = QAndroidJniObject::fromString(fileName);
@@ -250,6 +266,10 @@ void AndroidUtils::showToast(const QString &text, bool isLongDuration)
 
 void AndroidUtils::openGallery()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_IsGalleryShown = true;
     auto runnable = []() {
         QAndroidJniObject::callStaticMethod<void>(
@@ -531,6 +551,20 @@ void AndroidUtils::setButtonEventsEnabled(bool enabled)
     }
 
     m_IsButtonEventsEnabled = enabled;
+}
+
+bool AndroidUtils::isEnabled() const
+{
+    return this->signalsBlocked();
+}
+
+void AndroidUtils::setEnabled(bool enabled)
+{
+    if (!this->signalsBlocked() != enabled) {
+        emit enabledChanged();
+    }
+
+    this->blockSignals(!enabled);
 }
 
 }

@@ -33,6 +33,7 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 
     connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
+    connect(m_AndroidUtils, &AndroidUtils::enabledChanged, this, &NativeUtils::enabledChanged);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
@@ -156,6 +157,24 @@ void NativeUtils::setButtonEventsEnabled(bool enabled)
 {
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->setButtonEventsEnabled(enabled);
+#else
+    Q_UNUSED(enabled);
+#endif // Q_OS_ANDROID
+}
+
+bool NativeUtils::isEnabled() const
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->isEnabled();
+#else
+
+#endif // Q_OS_ANDROID
+}
+
+void NativeUtils::setEnabled(bool enabled)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->setEnabled(enabled);
 #else
     Q_UNUSED(enabled);
 #endif // Q_OS_ANDROID
