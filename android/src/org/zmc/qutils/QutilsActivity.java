@@ -68,13 +68,13 @@ public class QutilsActivity extends QtActivity
         final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(
             new ViewTreeObserver.OnGlobalLayoutListener() {
-                public void onGlobalLayout(){
-                    Rect r = new Rect();
+                public void onGlobalLayout() {
+                    Rect rect = new Rect();
                     View view = rootWindow.getDecorView();
-                    view.getWindowVisibleDisplayFrame(r);
+                    view.getWindowVisibleDisplayFrame(rect);
 
                     int screenHeight = rootView.getHeight();
-                    int keyboardHeight = screenHeight - (r.bottom);
+                    int keyboardHeight = screenHeight - (rect.bottom);
 
                     if (keyboardHeight < 0) {
                         keyboardHeight = 0;
