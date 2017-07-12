@@ -8,14 +8,20 @@ namespace zmc
 
 DateManager::DateManager(QObject *parent)
     : QObject(parent)
-    , m_Date(QDate::currentDate())
+    , m_DateTime(QDateTime::currentDateTime())
 {
 
 }
 
-void DateManager::addMonths(const unsigned int &months)
+QDate DateManager::addMonths(const unsigned int &months)
 {
-    m_Date = m_Date.addMonths(months);
+    m_DateTime = m_DateTime.addMonths(months);
+    return m_DateTime.date();
+}
+
+QDate DateManager::addDays(QDate from, const unsigned int &days)
+{
+    return from.addDays(days);
 }
 
 QDate DateManager::addMonths(QDate from, const unsigned int &months)
@@ -30,42 +36,73 @@ QDate DateManager::addYears(QDate from, const unsigned int &years)
 
 void DateManager::setDay(const unsigned int &day)
 {
-    m_Date.setDate(m_Date.year(), m_Date.month(), day);
+    const QDate date = m_DateTime.date();
+    m_DateTime.setDate(QDate(date.year(), date.month(), day));
 }
 
 void DateManager::setMonth(const unsigned int &month)
 {
-    m_Date.setDate(m_Date.year(), month, 1);
+    const QDate date = m_DateTime.date();
+    m_DateTime.setDate(QDate(date.year(), month, 1));
 }
 
 void DateManager::setYear(const unsigned int &year)
 {
-    m_Date.setDate(year, m_Date.month(), m_Date.day());
+    const QDate date = m_DateTime.date();
+    m_DateTime.setDate(QDate(year, date.month(), date.day()));
+}
+
+void DateManager::setHour(const unsigned int &hour)
+{
+    const QTime time(hour, m_DateTime.time().minute(), 0);
+    m_DateTime.setTime(time);
+}
+
+void DateManager::setMinute(const unsigned int &minute)
+{
+    const QTime time(m_DateTime.time().hour(), minute, 0);
+    m_DateTime.setTime(time);
+}
+
+void DateManager::setTime(const unsigned int &hour, const unsigned int &minute)
+{
+    const QTime time(hour, minute, 0);
+    m_DateTime.setTime(time);
 }
 
 int DateManager::getYear() const
 {
-    return m_Date.year();
+    return m_DateTime.date().year();
 }
 
 int DateManager::getMonth() const
 {
-    return m_Date.month();
+    return m_DateTime.date().month();
+}
+
+int DateManager::getHour() const
+{
+    return m_DateTime.time().hour();
+}
+
+int DateManager::getMinute() const
+{
+    return m_DateTime.time().minute();
 }
 
 int DateManager::getDay() const
 {
-    return m_Date.day();
+    return m_DateTime.date().day();
 }
 
 void DateManager::setDate(const unsigned int &year, const unsigned int &month, const unsigned int &day)
 {
-    m_Date.setDate(year, month, day);
+    m_DateTime.setDate(QDate(year, month, day));
 }
 
-void DateManager::setDate(const QDate &date)
+void DateManager::setDate(const QDateTime &date)
 {
-    m_Date = date;
+    m_DateTime = date;
 }
 
 int DateManager::getMonthLength(unsigned int year, unsigned int month) const
@@ -83,7 +120,7 @@ int DateManager::getMonthLength(unsigned int year, unsigned int month) const
 
 int DateManager::getCurrentMonthLength() const
 {
-    return getMonthLength(m_Date.year(), m_Date.month());
+    return getMonthLength(m_DateTime.date().year(), m_DateTime.date().month());
 }
 
 int DateManager::getMonthStartIndex() const
@@ -92,7 +129,8 @@ int DateManager::getMonthStartIndex() const
     // NOTE: Always check for en_US locale.
 
     QLocale locale("en_US");
-    const QDate startOfTheMonth(m_Date.year(), m_Date.month(), 1);
+    const QDate date = m_DateTime.date();
+    const QDate startOfTheMonth(date.year(), date.month(), 1);
     const QString shortDayName = locale.toString(startOfTheMonth, "ddd");
 
     if (shortDayName == "Tue") {
@@ -119,13 +157,13 @@ int DateManager::getMonthStartIndex() const
 
 QString DateManager::getMonthName(const unsigned int &month) const
 {
-    QDate date(m_Date.year(), month, 1);
+    QDate date(m_DateTime.date().year(), month, 1);
     return date.toString("MMMM");
 }
 
 QString DateManager::getCurrentMonthName() const
 {
-    return getMonthName(m_Date.month());
+    return getMonthName(m_DateTime.date().month());
 }
 
 QDate DateManager::getDate(int year, int month, int day) const
@@ -135,7 +173,12 @@ QDate DateManager::getDate(int year, int month, int day) const
 
 QDate DateManager::getDate() const
 {
-    return m_Date;
+    return m_DateTime.date();
+}
+
+QDateTime DateManager::getDateTime() const
+{
+    return m_DateTime;
 }
 
 QDate DateManager::getCurrentDate() const
@@ -143,9 +186,23 @@ QDate DateManager::getCurrentDate() const
     return QDate::currentDate();
 }
 
-QString DateManager::getDateString(const QString &format)
+QDateTime DateManager::getCurrentDateTime() const
 {
-    return m_Date.toString(format);
+    return QDateTime::currentDateTime();
+}
+
+QString DateManager::getDateString(const QString &format, QDate date)
+{
+    if (date.isValid()) {
+        return date.toString(format);
+    }
+
+    return m_DateTime.toString(format);
+}
+
+QDate DateManager::fromDateString(const QString &dateStr, const QString &dateFormat) const
+{
+    return QDate::fromString(dateStr, dateFormat);
 }
 
 }

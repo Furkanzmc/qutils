@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <QDate>
+#include <QDateTime>
 
 namespace zmc
 {
@@ -16,7 +16,15 @@ public:
      * @brief Adds the given months to the current date
      * @param months
      */
-    Q_INVOKABLE void addMonths(const unsigned int &months);
+    Q_INVOKABLE QDate addMonths(const unsigned int &months);
+
+    /**
+     * @brief Add days to the given date and returns the new instance
+     * @param from
+     * @param months
+     * @return
+     */
+    Q_INVOKABLE QDate addDays(QDate from, const unsigned int &days);
 
     /**
      * @brief Add months to the given date and returns the new instance
@@ -52,12 +60,19 @@ public:
      */
     Q_INVOKABLE void setYear(const unsigned int &year);
 
+    Q_INVOKABLE void setHour(const unsigned int &hour);
+    Q_INVOKABLE void setMinute(const unsigned int &minute);
+    Q_INVOKABLE void setTime(const unsigned int &hour, const unsigned int &minute);
+
     Q_INVOKABLE int getYear() const;
     Q_INVOKABLE int getDay() const;
     Q_INVOKABLE int getMonth() const;
 
+    Q_INVOKABLE int getHour() const;
+    Q_INVOKABLE int getMinute() const;
+
     Q_INVOKABLE void setDate(const unsigned int &year, const unsigned int &month, const unsigned int &day);
-    Q_INVOKABLE void setDate(const QDate &date);
+    Q_INVOKABLE void setDate(const QDateTime &date);
 
     Q_INVOKABLE int getMonthLength(unsigned int year, unsigned int month) const;
     Q_INVOKABLE int getCurrentMonthLength() const;
@@ -82,15 +97,23 @@ public:
     Q_INVOKABLE QDate getDate() const;
 
     /**
+     * @brief Returns the date time this instance is set to
+     * @return
+     */
+    Q_INVOKABLE QDateTime getDateTime() const;
+
+    /**
      * @brief Returns the current date
      * @return
      */
     Q_INVOKABLE QDate getCurrentDate() const;
+    Q_INVOKABLE QDateTime getCurrentDateTime() const;
 
-    Q_INVOKABLE QString getDateString(const QString &format);
+    Q_INVOKABLE QString getDateString(const QString &format, QDate date = QDate());
+    Q_INVOKABLE QDate fromDateString(const QString &dateStr, const QString &dateFormat) const;
 
 private:
-    QDate m_Date;
+    QDateTime m_DateTime;
 };
 
 }
