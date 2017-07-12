@@ -63,7 +63,8 @@ HEADERS += \
     $$PWD/include/qutils/Network/DownloadManager.h \
     $$PWD/include/qutils/Network/HttpCodes.h \
     $$PWD/include/qutils/JsonUtils.h \
-    $$PWD/include/qutils/SignalManager.h
+    $$PWD/include/qutils/SignalManager.h \
+    $$PWD/include/qutils/DateManager.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -75,7 +76,8 @@ SOURCES += \
     $$PWD/src/Network/NetworkManager.cpp \
     $$PWD/src/Network/DownloadManager.cpp \
     $$PWD/src/JsonUtils.cpp \
-    $$PWD/src/SignalManager.cpp
+    $$PWD/src/SignalManager.cpp \
+    $$PWD/src/DateManager.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \
