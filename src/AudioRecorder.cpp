@@ -155,7 +155,7 @@ void AudioRecorder::onStateChanged(QMediaRecorder::State state)
         emit recordingPaused();
     }
     else if (state == QMediaRecorder::StoppedState) {
-        LOG("Stoppped...");
+        LOG("Stopped...");
         emit recordingStopped();
     }
 
