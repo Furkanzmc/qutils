@@ -2,6 +2,7 @@
 // Qt
 #include <QLocale>
 #include <QDebug>
+#include <QTimeZone>
 
 namespace zmc
 {
@@ -203,6 +204,36 @@ QString DateManager::getDateString(const QString &format, QDate date)
 QDate DateManager::fromDateString(const QString &dateStr, const QString &dateFormat) const
 {
     return QDate::fromString(dateStr, dateFormat);
+}
+
+QDate DateManager::fromDateString(const QString &dateStr, const Qt::DateFormat &dateFormat) const
+{
+    return QDate::fromString(dateStr, dateFormat);
+}
+
+QDateTime DateManager::fromDateTimeString(const QString &dateTimeStr, const QString &dateTimeFormat, bool isUTC) const
+{
+    QDateTime datetime = QDateTime::fromString(dateTimeStr, dateTimeFormat);
+    if (isUTC) {
+        datetime.setTimeZone(QTimeZone::utc());
+    }
+
+    return datetime;
+}
+
+QDateTime DateManager::fromDateTimeString(const QString &dateTimeStr, const Qt::DateFormat &dateTimeFormat, bool isUTC) const
+{
+    QDateTime datetime = QDateTime::fromString(dateTimeStr, dateTimeFormat);
+    if (isUTC) {
+        datetime.setTimeZone(QTimeZone::utc());
+    }
+
+    return datetime;
+}
+
+QDateTime DateManager::convertToLocalDateTime(QDateTime datetime)
+{
+    return datetime.toLocalTime();
 }
 
 }

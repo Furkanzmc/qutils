@@ -111,6 +111,11 @@ public:
 
     Q_INVOKABLE QString getDateString(const QString &format, QDate date = QDate());
     Q_INVOKABLE QDate fromDateString(const QString &dateStr, const QString &dateFormat) const;
+    Q_INVOKABLE QDate fromDateString(const QString &dateStr, const Qt::DateFormat &dateFormat) const;
+
+    Q_INVOKABLE QDateTime fromDateTimeString(const QString &dateTimeStr, const QString &dateTimeFormat, bool isUTC = false) const;
+    Q_INVOKABLE QDateTime fromDateTimeString(const QString &dateTimeStr, const Qt::DateFormat &dateTimeFormat, bool isUTC = false) const;
+    Q_INVOKABLE QDateTime convertToLocalDateTime(QDateTime datetime);
 
 private:
     QDateTime m_DateTime;
