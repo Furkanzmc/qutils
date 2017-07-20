@@ -2,9 +2,7 @@
 // Qt
 #include <QObject>
 #include <QColor>
-#ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
-#endif // Q_OS_ANDROID
 // Local
 #include "qutils/android/NotificationClient_Android.h"
 
@@ -185,69 +183,4 @@ private:
     QAndroidJniObject getJNIHashMap(const QVariantMap &map) const;
 };
 
-}
-
-static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
-{
-    const QString tag = QAndroidJniObject(jtag).toString();
-    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
-    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
-    if (client) {
-        client->emitNotificationReceivedSignal(tag, id);
-    }
-    else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName));
-    }
-}
-
-static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
-{
-    zmc::AndroidUtils::emitButtonPressedSignals(true, false);
-}
-
-static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
-{
-    zmc::AndroidUtils::emitButtonPressedSignals(false, true);
-}
-
-static void alertDialogClickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint buttonIndex)
-{
-    zmc::AndroidUtils::emitAlertDialogClickedSignals(buttonIndex);
-}
-
-static void datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)
-{
-    zmc::AndroidUtils::emitDatePickedSignals(year, month, day);
-}
-
-static void timePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint hourOfDay, jint minute)
-{
-    zmc::AndroidUtils::emitTimePickedSignals(hourOfDay, minute);
-}
-
-static void cameraCapturedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring capturePath)
-{
-    QAndroidJniObject jniStr(capturePath);
-    zmc::AndroidUtils::emitCameraCapturedSignals(jniStr.toString());
-}
-
-static void fileSelectedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring filePath)
-{
-    QAndroidJniObject jniStr(filePath);
-    zmc::AndroidUtils::emitFileSelectedSignals(jniStr.toString());
-}
-
-static void cameraCaptureCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
-{
-    zmc::AndroidUtils::emitCameraCaptureCancelledSignals();
-}
-
-static void fileSelectionCancelledCallback(JNIEnv */*env*/, jobject /*obj*/)
-{
-    zmc::AndroidUtils::emitFileSelectionCancelledSignals();
-}
-
-static void keyboardHeightChangedCallback(JNIEnv */*env*/, jobject /*obj*/, jint keyboardHeight)
-{
-    zmc::AndroidUtils::emitKeyboardHeightChangedSignals(keyboardHeight);
 }

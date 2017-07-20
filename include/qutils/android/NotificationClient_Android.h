@@ -53,6 +53,7 @@ public:
 
 signals:
     void notificationReceived(QString receivedTag, int receivedID);
+    void fcmTokenReceived(const QString &token);
 
 private:
     static int m_NotificationID;

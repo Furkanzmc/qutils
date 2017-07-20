@@ -12,9 +12,13 @@ else {
 
 android {
     QT += androidextras
+
     OTHER_FILES += \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationClient.java \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationReceiver.java \
+        $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
+        $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java \
+        $$PWD/android/src/org/zmc/qutils/notification/QutilsJobService.java \
         $$PWD/android/src/org/zmc/qutils/CppCallbacks.java \
         $$PWD/android/src/org/zmc/qutils/QutilsActivity.java \
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java \
@@ -24,12 +28,14 @@ android {
     HEADERS += \
         $$PWD/include/qutils/android/Notification_Android.h \
         $$PWD/include/qutils/android/NotificationClient_Android.h \
-        $$PWD/include/qutils/android/AndroidUtils.h
+        $$PWD/include/qutils/android/AndroidUtils.h \
+        $$PWD/include/qutils/android/JNICallbacks.h
 
     SOURCES += \
         $$PWD/src/android/Notification_Android.cpp \
         $$PWD/src/android/NotificationClient_Android.cpp \
-        $$PWD/src/android/AndroidUtils.cpp
+        $$PWD/src/android/AndroidUtils.cpp \
+        $$PWD/src/android/JNICallbacks.cpp
 
     INCLUDEPATH += $$PWD/include/android
 }

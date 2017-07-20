@@ -1,4 +1,6 @@
 #include "qutils/android/NotificationClient_Android.h"
+// std
+#include <functional>
 // Qt
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
@@ -8,9 +10,7 @@
 #include <QDateTime>
 // Local
 #include "qutils/android/Notification_Android.h"
-#include "qutils/android/AndroidUtils.h"
-
-#include <functional>
+#include "qutils/android/JNICallbacks.h"
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
@@ -232,10 +232,10 @@ void NotificationClient::processQueue()
 
         if (shouldNotify) {
             m_Clients.push_back(std::make_pair(std::make_pair(std::get<0>(tup), std::get<1>(tup)), this));
-            notificationReceivedCallback(nullptr, nullptr,
-                                         QAndroidJniObject::fromString(tag).object<jstring>(),
-                                         id,
-                                         QAndroidJniObject::fromString(managerName).object<jstring>());
+            JNICallbacks::notificationReceivedCallback(nullptr, nullptr,
+                    QAndroidJniObject::fromString(tag).object<jstring>(),
+                    id,
+                    QAndroidJniObject::fromString(managerName).object<jstring>());
         }
     }
 }

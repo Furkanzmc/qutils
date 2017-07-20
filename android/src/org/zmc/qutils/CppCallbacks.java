@@ -21,4 +21,5 @@ public class CppCallbacks
     public static native void fileSelectionCancelled();
     // keyboadrdHeight will be 0 If it is invisible, otherwise it will have a value greater than 0.
     public static native void keyboardHeightChanged(int keyboardHeight);
+    public static native void fcmTokenReceived(String token);
 }
