@@ -10,8 +10,34 @@ else {
     QT += multimedia
 }
 
+FCM_ENABLED=false
+contains(CONFIG, ENABLE_FCM) {
+    message("[qutils] Firebase Cloud Messageing is enabled.")
+    FCM_ENABLED=true
+}
+
 android {
     QT += androidextras
+
+    isEqual(FCM_ENABLED, true) {
+        DEFINES += FCM_ENABLED=1
+        _PATH_CHECK = $$(FIREBASE_PATH)
+        isEmpty(_PATH_CHECK) {
+            error("FIREBASE_PATH environment variable is not set!");
+        }
+
+        INCLUDEPATH += $$(FIREBASE_PATH)/include
+        LIBS += -L$$(FIREBASE_PATH)/libs/android/armeabi-v7a/c++ -lmessaging -lapp
+
+        HEADERS += \
+            $$PWD/include/qutils/FCMListener.h
+
+        SOURCES += \
+            $$PWD/src/FCMListener.cpp
+    }
+    else {
+        DEFINES += FCM_ENABLED=0
+    }
 
     OTHER_FILES += \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationClient.java \

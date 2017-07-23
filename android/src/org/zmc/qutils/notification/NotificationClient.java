@@ -133,7 +133,7 @@ public class NotificationClient extends QtActivity
                 m_MotificationManager = (NotificationManager)m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
             }
 
-            CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager);
+            CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager, "");
             m_MotificationManager.notify(1, notification);
         }
     }

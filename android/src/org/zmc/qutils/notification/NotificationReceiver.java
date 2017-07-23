@@ -26,7 +26,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         String notificationManagerName = intent.getStringExtra(KEY_NOTIFICATION_MANAGER);
 
         if (NotificationClient.isInitialized()) {
-            CppCallbacks.notificationReceived(tag, id, notificationManagerName);
+            CppCallbacks.notificationReceived(tag, id, notificationManagerName, "");
         }
 
         notificationManager.notify(tag, id, notification);

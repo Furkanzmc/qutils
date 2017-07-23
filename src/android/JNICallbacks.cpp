@@ -8,7 +8,7 @@
 static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
     {
         "notificationReceived", // const char* function name;
-        "(Ljava/lang/String;ILjava/lang/String;)V", // const char* function signature
+        "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;)V", // const char* function signature
         (void *)JNICallbacks::notificationReceivedCallback // function pointer
     },
     {
@@ -96,16 +96,17 @@ JNICallbacks::JNICallbacks()
 
 }
 
-void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName)
+void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload)
 {
     const QString tag = QAndroidJniObject(jtag).toString();
     const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
+    const QString payload = QAndroidJniObject(notificationPayload).toString();
     zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
     if (client) {
-        client->emitNotificationReceivedSignal(tag, id);
+        client->emitNotificationReceivedSignal(tag, id, payload);
     }
     else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName));
+        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload));
     }
 }
 

@@ -41,9 +41,9 @@ public:
      * `objectName` property is empty, then all of the `NotificationManager`s will be signaled when the app finishes loading.
      * @param tup
      */
-    static void addNotifiationQueue(const std::tuple<QString, int, QString> &tup);
+    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup);
 
-    void emitNotificationReceivedSignal(QString receivedTag, int receivedID);
+    void emitNotificationReceivedSignal(QString receivedTag, int receivedID, QString payload);
 
     /**
      * @brief Returns an available ID and increases the m_NotificationID
@@ -52,18 +52,16 @@ public:
     Q_INVOKABLE int getNextID() const;
 
 signals:
-    void notificationReceived(QString receivedTag, int receivedID);
+    void notificationReceived(QString receivedTag, int receivedID, QString payload);
     void fcmTokenReceived(const QString &token);
 
 private:
     static int m_NotificationID;
     static std::vector<std::pair<std::pair<QString, int>, NotificationClient *>> m_Clients;
-    static std::vector<std::tuple<QString, int, QString>> m_NotificationQueue;
+    static std::vector<std::tuple<QString, int, QString, QString>> m_NotificationQueue;
 
 private:
-#ifdef Q_OS_ANDROID
     void setNotificationProperties(const Notification *notification);
-#endif // Q_OS_ANDROID
 
     void processQueue();
 };

@@ -2,23 +2,23 @@
 // std
 #include <functional>
 // Qt
-#ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
-#endif // Q_OS_ANDROID
 #include <QDebug>
 #include <QTimer>
 #include <QDateTime>
 // Local
 #include "qutils/android/Notification_Android.h"
 #include "qutils/android/JNICallbacks.h"
+#if FCM_ENABLED
+#include "qutils/FCMListener.h"
+#endif // FCM_ENABLED
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
-using NotificationQueue = std::vector<std::tuple<QString, int, QString>>;
+using NotificationQueue = std::vector<std::tuple<QString, int, QString, QString>>;
+using NotificationQueueMember = std::tuple<QString, int, QString, QString>;
 
-#ifdef Q_OS_ANDROID
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
-#endif // Q_OS_ANDROID
 
 namespace zmc
 {
@@ -30,14 +30,15 @@ NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
 {
-#ifdef Q_OS_ANDROID
     QTimer::singleShot(100, std::bind(&NotificationClient::processQueue, this));
-#endif // Q_OS_ANDROID
+
+#if FCM_ENABLED
+    FCMListener::getInstance()->initializeMessaging();
+#endif // FCM_ENABLED
 }
 
 void NotificationClient::scheduleNotification(zmc::Notification *notification)
 {
-#ifdef Q_OS_ANDROID
     notification->setNotificationManagerName(this->objectName());
     setNotificationProperties(notification);
 
@@ -59,9 +60,6 @@ void NotificationClient::scheduleNotification(zmc::Notification *notification)
         javaNotification.object<jstring>(),
         javaNotificationTitle.object<jstring>(),
         delay);
-#else
-    Q_UNUSED(notification);
-#endif // Q_OS_ANDROID
 }
 
 void NotificationClient::schedule(QVariantMap data)
@@ -77,7 +75,6 @@ int NotificationClient::getNextID() const
     m_NotificationID++;
     return m_NotificationID;
 }
-
 
 NotificationClient *NotificationClient::getInstance(QString notificationTag, int notificationID)
 {
@@ -99,23 +96,22 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
     return instance;
 }
 
-void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QString> &tup)
+void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 {
-    auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const std::tuple<QString, int, QString> &inTuple) {
+    auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
         return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple) && std::get<2>(tup) == std::get<2>(inTuple);
     });
 
+    // Do not add the same notification twice.
     if (foundIt == m_NotificationQueue.end()) {
         m_NotificationQueue.push_back(tup);
     }
 }
 
-void NotificationClient::emitNotificationReceivedSignal(QString receivedTag, int receivedID)
+void NotificationClient::emitNotificationReceivedSignal(QString receivedTag, int receivedID, QString payload)
 {
-    emit notificationReceived(receivedTag, receivedID);
+    emit notificationReceived(receivedTag, receivedID, payload);
 }
-
-#ifdef Q_OS_ANDROID
 
 void NotificationClient::setNotificationProperties(const Notification *notification)
 {
@@ -205,8 +201,6 @@ void NotificationClient::setNotificationProperties(const Notification *notificat
         jniManagerName.object<jstring>());
 }
 
-#endif // Q_OS_ANDROID
-
 void NotificationClient::processQueue()
 {
     if (m_NotificationQueue.size() == 0) {
@@ -215,8 +209,9 @@ void NotificationClient::processQueue()
 
     QString objectName = this->objectName();
     for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
-        std::tuple<QString, int, QString> tup = m_NotificationQueue.at(index);
+        const NotificationQueueMember tup = m_NotificationQueue.at(index);
         const QString tag = std::get<0>(tup);
+        const QString payload = std::get<3>(tup);
         const int id = std::get<1>(tup);
 
         const QString managerName = std::get<2>(tup);
@@ -235,7 +230,8 @@ void NotificationClient::processQueue()
             JNICallbacks::notificationReceivedCallback(nullptr, nullptr,
                     QAndroidJniObject::fromString(tag).object<jstring>(),
                     id,
-                    QAndroidJniObject::fromString(managerName).object<jstring>());
+                    QAndroidJniObject::fromString(managerName).object<jstring>(),
+                    QAndroidJniObject::fromString(payload).object<jstring>());
         }
     }
 }

@@ -101,7 +101,7 @@ public class QutilsActivity extends QtActivity
         String notificationManagerName = in.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
         int id = in.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
         if (id > -1) {
-            CppCallbacks.notificationReceived(tag, 0, notificationManagerName);
+            CppCallbacks.notificationReceived(tag, 0, notificationManagerName, "");
         }
     }
 

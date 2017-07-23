@@ -7,7 +7,7 @@ class JNICallbacks
 public:
     JNICallbacks();
 
-    static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName);
+    static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload);
     static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
     static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
 
