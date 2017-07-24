@@ -65,6 +65,11 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         "fcmTokenReceived", // const char* function name;
         "(Ljava/lang/String;)V", // const char* function signature
         (void *)JNICallbacks::fcmTokenReceived // function pointer
+    },
+    {
+        "openedWithURL", // const char* function name;
+        "(Ljava/lang/String;)V", // const char* function signature
+        (void *)JNICallbacks::openedWithURL // function pointer
     }
 };
 
@@ -166,4 +171,11 @@ void JNICallbacks::fcmTokenReceived(JNIEnv *, jobject, jstring jniToken)
 {
     const QString token = QAndroidJniObject(jniToken).toString();
     LOG("Token: " << token);
+}
+
+void JNICallbacks::openedWithURL(JNIEnv *, jobject, jstring jniURL)
+{
+    const QString url = QAndroidJniObject(jniURL).toString();
+    zmc::AndroidUtils::emitOpenedWithURLSignals(url);
+
 }

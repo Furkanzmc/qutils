@@ -15,6 +15,9 @@ contains(CONFIG, ENABLE_FCM) {
     message("[qutils] Firebase Cloud Messageing is enabled.")
     FCM_ENABLED=true
 }
+else {
+    message("[qutils] Firebase Cloud Messageing is NOT enabled.")
+}
 
 android {
     QT += androidextras

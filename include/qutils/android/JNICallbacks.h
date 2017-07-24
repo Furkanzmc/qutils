@@ -22,4 +22,6 @@ public:
     static void fileSelectionCancelledCallback(JNIEnv */*env*/, jobject /*obj*/);
     static void keyboardHeightChangedCallback(JNIEnv */*env*/, jobject /*obj*/, jint keyboardHeight);
     static void fcmTokenReceived(JNIEnv */*env*/, jobject /*obj*/, jstring jniToken);
+
+    static void openedWithURL(JNIEnv */*env*/, jobject /*obj*/, jstring jniURL);
 };

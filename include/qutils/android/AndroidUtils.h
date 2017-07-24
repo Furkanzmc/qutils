@@ -117,6 +117,8 @@ public:
     static void emitCameraCaptureCancelledSignals();
     static void emitFileSelectionCancelledSignals();
 
+    static void emitOpenedWithURLSignals(const QString &url);
+
 signals:
     /**
      * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
@@ -145,8 +147,16 @@ signals:
     void buttonEventsEnabledChanged();
     void enabledChanged();
 
+    /**
+     * @brief This signal is emitted when the app is opened with a URL.
+     * Follow this tutorial for how to implement int into your app: https://developer.android.com/training/app-links/index.html
+     * @param url
+     */
+    void openedWithURL(const QString &url);
+
 private:
     static QList<AndroidUtils *> m_Instances;
+    static QString m_URLOpenedWith;
 
     int m_InstanceID;
     bool m_IsAlertShown,

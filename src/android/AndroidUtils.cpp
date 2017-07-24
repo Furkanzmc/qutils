@@ -12,6 +12,7 @@ namespace zmc
 {
 
 QList<AndroidUtils *> AndroidUtils::m_Instances = QList<AndroidUtils *>();
+QString AndroidUtils::m_URLOpenedWith = "";
 
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
@@ -24,6 +25,10 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsButtonEventsEnabled(true)
 {
     m_Instances.append(this);
+    if (m_URLOpenedWith.length() > 0) {
+        emitOpenedWithURLSignals(m_URLOpenedWith);
+        m_URLOpenedWith = "";
+    }
 }
 
 AndroidUtils::~AndroidUtils()
@@ -451,6 +456,22 @@ void AndroidUtils::emitFileSelectionCancelledSignals()
         }
 
         utils->emitFileSelectionCancelled();
+    }
+}
+
+void AndroidUtils::emitOpenedWithURLSignals(const QString &url)
+{
+    if (m_Instances.size() == 0) {
+        m_URLOpenedWith = url;
+    }
+    else {
+        for (AndroidUtils *utils : m_Instances) {
+            if (utils == nullptr) {
+                continue;
+            }
+
+            utils->openedWithURL(url);
+        }
     }
 }
 

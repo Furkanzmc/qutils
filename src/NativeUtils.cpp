@@ -34,6 +34,7 @@ NativeUtils::NativeUtils(QObject *parent)
 
     connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
     connect(m_AndroidUtils, &AndroidUtils::enabledChanged, this, &NativeUtils::enabledChanged);
+    connect(m_AndroidUtils, &AndroidUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS

@@ -69,6 +69,7 @@ signals:
     void keyboardHeightChanged(int keyboardHeight);
     void buttonEventsEnabledChanged();
     void enabledChanged();
+    void openedWithURL(const QString &url);
 
 private:
 #ifdef Q_OS_ANDROID

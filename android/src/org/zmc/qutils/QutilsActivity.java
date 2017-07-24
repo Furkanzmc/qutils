@@ -64,6 +64,13 @@ public class QutilsActivity extends QtActivity
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
 
+        Intent intent = getIntent();
+        String uri = intent.getDataString();
+        if (uri != null) {
+            System.out.println(uri);
+            CppCallbacks.openedWithURL(uri);
+         }
+
         final Window rootWindow = m_Instance.getWindow();
         final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -96,13 +103,31 @@ public class QutilsActivity extends QtActivity
     public void onResume() {
         super.onResume();
 
-        Intent in = getIntent();
-        String tag = in.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
-        String notificationManagerName = in.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
-        int id = in.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
+        Intent intent = getIntent();
+        String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
+        String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
+        int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
         if (id > -1) {
             CppCallbacks.notificationReceived(tag, 0, notificationManagerName, "");
         }
+
+        String uri = intent.getDataString();
+        if (uri != null) {
+            System.out.println(uri);
+            CppCallbacks.openedWithURL(uri);
+         }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+
+      setIntent(intent);
+      String uri = intent.getDataString();
+      if (uri != null) {
+          System.out.println(uri);
+          CppCallbacks.openedWithURL(uri);
+       }
     }
 
     @Override
