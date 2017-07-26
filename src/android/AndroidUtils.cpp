@@ -27,7 +27,10 @@ AndroidUtils::AndroidUtils(QObject *parent)
 {
     m_Instances.append(this);
     if (m_URLOpenedWith.length() > 0) {
-        // This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+        /*
+         * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+         * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
+         */
         QTimer::singleShot(1, std::bind(AndroidUtils::emitOpenedWithURLSignals, m_URLOpenedWith));
         m_URLOpenedWith = "";
     }

@@ -31,7 +31,10 @@ NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
 {
-    // This is to execute the `processQueue` function with the next cycle.
+    /*
+     * This is to execute the `processQueue` function with the next cycle.
+     * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
+     */
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
 
 #if FCM_ENABLED
