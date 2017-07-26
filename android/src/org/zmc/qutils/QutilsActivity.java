@@ -1,31 +1,31 @@
 package org.zmc.qutils;
 
-import android.util.Log;
-import android.os.Bundle;
-import android.content.Intent;
-
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
-
-import android.view.View;
-import android.view.KeyEvent;
-import android.provider.MediaStore;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-
-import android.os.Build;
-import android.provider.DocumentsContract;
-import android.os.Environment;
-
-import android.content.ContentUris;
-import android.graphics.Rect;
-import android.view.ViewTreeObserver;
-
 // Java
 import java.util.HashMap;
+
+// Android
+import android.os.Bundle;
+import android.content.Intent;
+import android.view.Window;
+
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.view.View;
+
+import android.view.KeyEvent;
+import android.provider.MediaStore;
+import android.content.Context;
+
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+
+import android.provider.DocumentsContract;
+import android.os.Environment;
+import android.content.ContentUris;
+
+import android.graphics.Rect;
+import android.view.ViewTreeObserver;
 
 // qutils
 import org.zmc.qutils.notification.NotificationClient;
@@ -64,12 +64,7 @@ public class QutilsActivity extends QtActivity
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
 
-        Intent intent = getIntent();
-        String uri = intent.getDataString();
-        if (uri != null) {
-            System.out.println(uri);
-            CppCallbacks.openedWithURL(uri);
-         }
+        handleAppLink();
 
         final Window rootWindow = m_Instance.getWindow();
         final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
@@ -110,12 +105,6 @@ public class QutilsActivity extends QtActivity
         if (id > -1) {
             CppCallbacks.notificationReceived(tag, 0, notificationManagerName, "");
         }
-
-        String uri = intent.getDataString();
-        if (uri != null) {
-            System.out.println(uri);
-            CppCallbacks.openedWithURL(uri);
-         }
     }
 
     @Override
@@ -123,11 +112,7 @@ public class QutilsActivity extends QtActivity
       super.onNewIntent(intent);
 
       setIntent(intent);
-      String uri = intent.getDataString();
-      if (uri != null) {
-          System.out.println(uri);
-          CppCallbacks.openedWithURL(uri);
-       }
+      handleAppLink();
     }
 
     @Override
@@ -215,44 +200,47 @@ public class QutilsActivity extends QtActivity
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 return Environment.getExternalStorageDirectory() + "/" + split[1];
-            } else if (isDownloadsDocument(uri)) {
+            }
+            else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 uri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            } else if (isMediaDocument(uri)) {
+            }
+            else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
                 if ("image".equals(type)) {
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
+                }
+                else if ("video".equals(type)) {
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
+                }
+                else if ("audio".equals(type)) {
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
                 selection = "_id=?";
-                selectionArgs = new String[]{
-                        split[1]
-                };
+                selectionArgs = new String[]{ split[1] };
             }
         }
+
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = {
-                    MediaStore.Images.Media.DATA
-            };
+            String[] projection = { MediaStore.Images.Media.DATA };
             Cursor cursor = null;
             try {
-                cursor = context.getContentResolver()
-                        .query(uri, projection, selection, selectionArgs, null);
+                cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 if (cursor.moveToFirst()) {
                     return cursor.getString(column_index);
                 }
-            } catch (Exception e) {
             }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            catch (Exception e) {
+            }
+        }
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
+
         return null;
     }
 
@@ -266,5 +254,15 @@ public class QutilsActivity extends QtActivity
 
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    private void handleAppLink() {
+        Intent intent = getIntent();
+        if (intent.getAction() != null) {
+            String uri = intent.getDataString();
+            if (uri != null) {
+                CppCallbacks.openedWithURL(uri);
+            }
+        }
     }
 }

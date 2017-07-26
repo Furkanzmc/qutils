@@ -2,8 +2,14 @@
 // Qt
 #include <QDebug>
 #include <qsystemdetection.h>
+#ifdef Q_OS_ANDROID
+#include <android/log.h>
+#endif // Q_OS_ANDROID
 // std
 #include <iostream>
+
+#define STRINGIFY_(x) #x
+#define STRINGIFY(x) STRINGIFY_(x)
 
 #if (!defined(Q_OS_IOS) && !defined(Q_OS_ANDROID)) && (defined(Q_OS_WIN) || defined(Q_OS_MAC))
 #define Q_OS_DESKTOP
@@ -31,5 +37,13 @@
 #define LOG_ERROR_STD(msg) std::cerr << "[ERROR] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
 #endif // Q_OS_MOBILE
 
-#define STRINGIFY_(x) #x
-#define STRINGIFY(x) STRINGIFY_(x)
+#ifdef Q_OS_ANDROID
+#  ifdef QUTILS_APP_PACKAGE_NAME
+#    define APP_TAG STRINGIFY(QUTILS_APP_PACKAGE_NAME)
+#  else
+#    define APP_TAG "com.zmc.qutils"
+#  endif // QUTILS_APP_PACKAGE_NAME
+#define LOG_JNI(msg) __android_log_write(ANDROID_LOG_INFO, APP_TAG, msg);
+#define LOG_WARNING_JNI(msg) __android_log_write(ANDROID_LOG_WARN, APP_TAG, msg);
+#define LOG_ERROR_JNI(msg) __android_log_write(ANDROID_LOG_ERROR, APP_TAG, msg);
+#endif // Q_OS_ANDROID

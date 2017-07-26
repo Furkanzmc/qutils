@@ -111,3 +111,30 @@ If you want to disable multimedia functions, just put the following in your proj
 ```
 CONFIG += QUTILS_NO_MULTIMEDIA
 ```
+
+# Enable Deep Linking for Android
+
+To get an in-depth look into app linkink, I recommend you read the [official documentation](https://developer.android.com/training/app-links/index.html). All you need to do to enable deep linking with qutils is to add the following intent filter to you `AndroidManifest.xml` file.
+
+```
+<intent-filter>
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="http"/>
+    <data android:scheme="https"/>
+    <data android:host="www.arifname-2000.appspot.com"/>
+</intent-filter>
+```
+
+And then you can respond to app link with the `AndroidUtils::void openedWithURL(const QString &url)` or `NativeUtils::void openedWithURL(const QString &url)` signals.
+
+```
+NativeUtils {
+    id: nativeUtils
+    buttonEventsEnabled: false
+    onOpenedWithURL: {
+        // Do something with the url.
+    }
+}
+```

@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QGuiApplication>
 #include <QtAndroid>
+#include <QTimer>
 // qutils
 #include "qutils/Macros.h"
 
@@ -26,7 +27,8 @@ AndroidUtils::AndroidUtils(QObject *parent)
 {
     m_Instances.append(this);
     if (m_URLOpenedWith.length() > 0) {
-        emitOpenedWithURLSignals(m_URLOpenedWith);
+        // This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+        QTimer::singleShot(1, std::bind(AndroidUtils::emitOpenedWithURLSignals, m_URLOpenedWith));
         m_URLOpenedWith = "";
     }
 }

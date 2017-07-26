@@ -9,6 +9,7 @@
 // Local
 #include "qutils/android/Notification_Android.h"
 #include "qutils/android/JNICallbacks.h"
+#include "qutils/Macros.h"
 #if FCM_ENABLED
 #include "qutils/FCMListener.h"
 #endif // FCM_ENABLED
@@ -30,7 +31,8 @@ NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
 {
-    QTimer::singleShot(100, std::bind(&NotificationClient::processQueue, this));
+    // This is to execute the `processQueue` function with the next cycle.
+    QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
 
 #if FCM_ENABLED
     FCMListener::getInstance()->initializeMessaging();
@@ -89,7 +91,7 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
         m_Clients.erase(foundIt);
     }
     else {
-        qDebug() << "Cannot find the instance for the notification (" << notificationTag << ", " << notificationID << ").";
+        LOG("Cannot find the instance for the notification (" << notificationTag << ", " << notificationID << ").");
 
     }
 
