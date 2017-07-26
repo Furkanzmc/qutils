@@ -176,6 +176,6 @@ void JNICallbacks::fcmTokenReceived(JNIEnv *, jobject, jstring jniToken)
 void JNICallbacks::openedWithURL(JNIEnv *, jobject, jstring jniURL)
 {
     const QString url = QAndroidJniObject(jniURL).toString();
-    zmc::AndroidUtils::emitOpenedWithURLSignals(url);
+    zmc::AndroidUtils::emitOpenedWithURLSignal(url);
 
 }
