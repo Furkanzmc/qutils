@@ -2,6 +2,23 @@
 
 qutils is a set of tools I'm developing to help me with Qt mobile development. Right now, it is only for Android notifications.
 
+# Configuration Definitions
+
+- `QUTILS_APP_NAME`: This is internally used to name the settings and the cache files. If it's not provided, a default one is used. This is used on both mobile and desktop platforms.
+- `QUTILS_APP_PACKAGE_NAME`: This is used only on mobile platforms. This is useful when you are using the `LOG_JNI` macro to log. When logging with JNI, this is added as a tag so you can see the output with `adb logcat | grep <QUTILS_APP_PACKAGE_NAME>`
+- `QUTILS_FOR_MOBILE`: This signfies that you are using the library for mobile development.
+- `ENABLE_FCM`: Add this If you want to use Firebase Cloud Messaging.
+
+## Example Values
+
+```
+DEFINES += QUTILS_APP_NAME="MyApp"
+DEFINES += QUTILS_APP_PACKAGE_NAME="org.myorg.myapp"
+DEFINES += QUTILS_FOR_MOBILE
+CONFIG += ENABLE_FCM
+```
+
+
 # Android Features
 
 ## How to Use in Your Project
