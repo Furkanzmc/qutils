@@ -117,7 +117,17 @@ public:
     static void emitCameraCaptureCancelledSignals();
     static void emitFileSelectionCancelledSignals();
 
-    static void emitOpenedWithURLSignals(const QString &url);
+    /**
+     * @brief Only the first instance will be notified of this.
+     * @param url
+     */
+    static void emitOpenedWithURLSignal(const QString &url);
+
+    /**
+     * @brief Only the first instance will be notified of this.
+     * @param url
+     */
+    static void emitOpenedWithoutURLSignal();
 
 signals:
     /**
@@ -153,6 +163,11 @@ signals:
      * @param url
      */
     void openedWithURL(const QString &url);
+
+    /**
+     * @brief This is also called for the first instance. This is just a complementary signal. This is emitted If an app is not opened from a URL.
+     */
+    void openedWithoutURL();
 
 private:
     static QList<AndroidUtils *> m_Instances;

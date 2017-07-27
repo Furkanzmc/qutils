@@ -34,6 +34,13 @@ AndroidUtils::AndroidUtils(QObject *parent)
         QTimer::singleShot(1, std::bind(AndroidUtils::emitOpenedWithURLSignal, m_URLOpenedWith));
         m_URLOpenedWith = "";
     }
+    else {
+        /*
+         * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+         * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
+         */
+        QTimer::singleShot(1, std::bind(AndroidUtils::emitOpenedWithoutURLSignal));
+    }
 }
 
 AndroidUtils::~AndroidUtils()
@@ -472,6 +479,14 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
     else {
         AndroidUtils *utils = m_Instances.at(0);
         utils->openedWithURL(url);
+    }
+}
+
+void AndroidUtils::emitOpenedWithoutURLSignal()
+{
+    if (m_Instances.size() != 0) {
+        AndroidUtils *utils = m_Instances.at(0);
+        utils->openedWithoutURL();
     }
 }
 
