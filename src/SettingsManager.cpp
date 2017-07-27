@@ -16,18 +16,16 @@ namespace zmc
 {
 
 QList<SettingsManager *> SettingsManager::m_Instances = QList<SettingsManager *>();
-int SettingsManager::m_InstanceLastIndex = 0;
 
 SettingsManager::SettingsManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
-    , m_InstanceIndex(m_InstanceLastIndex)
+    , m_InstanceIndex(m_Instances.size())
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_SettingsTableName(tableName)
     , m_SqlManager()
     , m_Database()
 {
     m_Instances.append(this);
-    m_InstanceLastIndex++;
 
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));

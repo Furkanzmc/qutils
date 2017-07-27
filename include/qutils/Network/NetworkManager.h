@@ -64,13 +64,12 @@ public:
 
     void removeHeader(const QString &headerName);
 
-
 private:
+    static unsigned int m_RequestCount;
+
     QNetworkAccessManager m_Network;
     QList<RequestCallback> m_Callbacks;
     QMap<QByteArray, QByteArray> m_Headers;
-
-    static unsigned int m_RequestCount;
 
 signals:
     void uploadProgressChanged(qint64 bytesSent, qint64 bytesTotal, float percent);
@@ -93,7 +92,6 @@ private:
      * @param request
      */
     void setHeaders(QNetworkRequest &request);
-
 };
 
 }

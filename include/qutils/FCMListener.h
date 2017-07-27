@@ -34,6 +34,8 @@ public:
 private:
     static FCMListener *m_Instance;
 
+    const char *m_MessageType;
+
     firebase::App *m_FirebaseApp;
 #ifdef Q_OS_ANDROID
     QAndroidJniEnvironment m_JNIEnv;

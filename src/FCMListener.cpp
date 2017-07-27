@@ -11,6 +11,8 @@
 #endif // Q_OS_ANDROID
 #include <QDebug>
 
+#include <android/log.h>
+
 #define LOG(msg) qDebug() << "[INFO] " << msg
 
 namespace zmc
@@ -55,19 +57,25 @@ void FCMListener::initializeMessaging()
 {
     LOG("Initializing Firebase module");
     firebase::App *instance = firebase::App::GetInstance();
+    LOG("1_1");
     if (instance) {
+        LOG("1_2");
         LOG("An App instance already exists.");
         m_FirebaseApp = instance;
     }
     else {
+        LOG("1_3");
 #ifdef Q_OS_ANDROID
         QAndroidJniObject jniActivity = QtAndroid::androidActivity();
+        LOG("1_4");
         m_FirebaseApp = firebase::App::Create(m_JNIEnv, jniActivity.object<jobject>());
+        LOG("1_5");
 #else
         m_FirebaseApp = firebase::App::Create();
 #endif // Q_OS_ANDROID
     }
 
+    LOG("1_6");
     std::stringstream ss;
     ss << std::this_thread::get_id();
     LOG(QString::fromStdString(ss.str()));
@@ -86,8 +94,25 @@ void FCMListener::OnTokenReceived(const char *token)
 
 void FCMListener::OnMessage(const firebase::messaging::Message &message)
 {
-    firebase::messaging::Message m(message); // Crashes here.
-    message.data.size(); // But this does not crash.
+    LOG("OnMessage CALLED!!");
+
+    std::lock_guard<std::recursive_mutex> lock(m_Mutex);
+    const firebase::messaging::Message m(message); // Crashes here.
+
+//    std::stringstream ss;
+//    ss << std::this_thread::get_id();
+//    LOG("THREAD ID: " << QString::fromStdString(ss.str()));
+//    LOG("MESSAGE POINTER: " << &message);
+
+    LOG(message.data.size()); // But this does not crash.
+//    LOG("QString::fromStdString(message.error_description");
+//    message.error_description.c_str();
+//    LOG("message.data.begin();");
+//    message.data.begin();
+//    LOG("message.message_type");
+//    m_MessageType = message.message_type.c_str();
+//    LOG("message.message_type 2");
+//    LOG(QString::fromLocal8Bit(m_MessageType));
 }
 
 }

@@ -16,18 +16,16 @@ namespace zmc
 {
 
 QList<CacheManager *> CacheManager::m_Instances = QList<CacheManager *>();
-int CacheManager::m_InstanceLastIndex = 0;
 
 CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
-    , m_InstanceIndex(m_InstanceLastIndex)
+    , m_InstanceIndex(m_Instances.size())
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_CacheTableName(tableName)
     , m_SqlManager()
     , m_Database()
 {
     m_Instances.append(this);
-    m_InstanceLastIndex++;
 }
 
 CacheManager::~CacheManager()

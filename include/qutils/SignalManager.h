@@ -5,6 +5,10 @@
 namespace zmc
 {
 
+/**
+ * @brief The SignalManager class is used to send signals between different parts of the program. You can use this with your QML application to notify a change
+ * from one file to another. The signals are sent to all of the instances unless a specific target is set.
+ */
 class SignalManager : public QObject
 {
     Q_OBJECT
@@ -12,14 +16,18 @@ public:
     explicit SignalManager(QObject *parent = nullptr);
     ~SignalManager();
 
-    Q_INVOKABLE void emitSignal(const QString &signalName);
+    /**
+     * @brief Send a signal to all of the instances. If you set an target object name, only that target is notified of the signal.
+     * @param signalName
+     * @param targetObjectName
+     */
+    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "");
 
 signals:
     void signalReceived(const QString &signalName);
 
 private:
     static QVector<SignalManager *> m_Instances;
-    static unsigned int m_LastInstanceIndex;
 
     const unsigned int m_InstanceIndex;
 

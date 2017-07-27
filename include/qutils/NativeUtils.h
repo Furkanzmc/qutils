@@ -15,7 +15,7 @@ namespace zmc
 {
 
 /**
- * @brief The NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
+ * @brief NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
  * platform, the feature will be disabled but it will also not cause a compilation error.
  */
 class NativeUtils : public QObject
@@ -69,7 +69,9 @@ signals:
     void keyboardHeightChanged(int keyboardHeight);
     void buttonEventsEnabledChanged();
     void enabledChanged();
+
     void openedWithURL(const QString &url);
+    void openedWithoutURL();
 
 private:
 #ifdef Q_OS_ANDROID

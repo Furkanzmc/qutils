@@ -40,38 +40,31 @@ class QMLRefresh : public QObject
     Q_OBJECT
 
 public:
-    explicit QMLRefresh(QQmlApplicationEngine *engine, QObject *parent = 0)
-        : QObject(parent)
-        , m_Engine(engine)
-        , m_Window(nullptr)
-    {
+    explicit QMLRefresh(QQmlApplicationEngine *engine, QObject *parent = nullptr);
 
-    }
+    /**
+     * @brief Reloads the main QML file and refreshes the window. If a delay is given, the window will be refreshed after the delay.
+     * @param delay
+     */
+    Q_INVOKABLE void reload(float delay = 0.f);
 
-    Q_INVOKABLE void reload(float delay = 0.f)
-    {
-        if (delay == 0.f) {
-            reloadCache();
-        }
-        else {
-            QTimer::singleShot(delay * 1000, this, &QMLRefresh::reloadCache);
-        }
-    }
+    /**
+     * @brief Set the main window. You may end up getting multiple windows when you reload If you do not set the main window here.
+     * @param window
+     */
+    Q_INVOKABLE void setWindow(QQuickWindow *window);
 
-    Q_INVOKABLE void setWindow(QQuickWindow *window)
-    {
-        m_Window = window;
-    }
+    /**
+     * @brief Returns the path of the main qml file.
+     * @return
+     */
+    Q_INVOKABLE QString getMainQMLFile() const;
 
-    Q_INVOKABLE QString getMainQMLFile() const
-    {
-        return m_MainQMLFile;
-    }
-
-    Q_INVOKABLE void setMainQMLFile(const QString &file)
-    {
-        m_MainQMLFile = file;
-    }
+    /**
+     * @brief This is the main file that will be loaded when the window is refreshed.
+     * @param file
+     */
+    Q_INVOKABLE void setMainQMLFile(const QString &file);
 
 private:
     QQmlApplicationEngine *m_Engine;
@@ -79,20 +72,7 @@ private:
     QString m_MainQMLFile;
 
 private:
-    void reloadCache()
-    {
-        if (m_MainQMLFile.length() == 0) {
-            qDebug() << "m_MainQMLFile is empty.";
-            return;
-        }
-
-        if (m_Window) {
-            m_Window->close();
-        }
-
-        m_Engine->clearComponentCache();
-        m_Engine->load(QUrl(m_MainQMLFile));
-    }
+    void reloadCache();
 };
 
 }

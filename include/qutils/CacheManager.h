@@ -68,17 +68,16 @@ public:
 
     QString getCacheTableName() const;
     void setCacheTableName(const QString &tableName);
-
     QString getWritableLocation() const;
 
 private:
+    static QList<CacheManager *> m_Instances;
+
     const int m_InstanceIndex;
     QString m_DatabaseName, m_CacheTableName;
     zmc::SqliteManager m_SqlManager;
-    QSqlDatabase m_Database;
 
-    static QList<CacheManager *> m_Instances;
-    static int m_InstanceLastIndex;
+    QSqlDatabase m_Database;
 
 private:
     void createTable();

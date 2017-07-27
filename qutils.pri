@@ -112,7 +112,8 @@ SOURCES += \
     $$PWD/src/Network/DownloadManager.cpp \
     $$PWD/src/JsonUtils.cpp \
     $$PWD/src/SignalManager.cpp \
-    $$PWD/src/DateManager.cpp
+    $$PWD/src/DateManager.cpp \
+    $$PWD/src/QMLRefresh.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \

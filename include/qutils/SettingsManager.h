@@ -16,7 +16,7 @@ namespace zmc
 
 /**
  * @brief The SettingsManager class uses a SqliteManager to store the settings. Settings are saved in QVariant format.
- * When a setting is changed the settingChanged signal is emitted and this signal is emitted in all of the
+ * When a setting is changed the settingChanged signal is emitted and this signal is emitted in all of the instances.
  */
 class SettingsManager : public QObject
 {
@@ -76,13 +76,12 @@ public:
     void setSettingsTableName(const QString &tableName);
 
 private:
+    static QList<SettingsManager *> m_Instances;
+
     const int m_InstanceIndex;
     QString m_DatabaseName, m_SettingsTableName;
     zmc::SqliteManager m_SqlManager;
     QSqlDatabase m_Database;
-
-    static QList<SettingsManager *> m_Instances;
-    static int m_InstanceLastIndex;
 
 private:
     void createTable();

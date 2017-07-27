@@ -54,7 +54,18 @@ public:
     ScreenHelper(const float &refDpi = 386.f, const float &refWidth = 1080.f, const float &refHeight = 1920.f, const float &refSizeInInches = 5.f,
                  QObject *parent = nullptr);
 
+    /**
+     * @brief Use it for item sizes.
+     * @param size
+     * @return
+     */
     Q_INVOKABLE qreal dp(const qreal &size);
+
+    /**
+     * @brief Use it for font sizes. As of now, it is the same as @ref dp() but it will change in the future.
+     * @param size
+     * @return
+     */
     Q_INVOKABLE qreal sp(const qreal &size);
 
     QString getLowResourceFolderName() const;

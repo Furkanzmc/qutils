@@ -53,6 +53,7 @@ void AudioRecorder::record(float duration)
 {
     if (m_AudioRecorder->state() == QMediaRecorder::StoppedState || m_AudioRecorder->state() == QMediaRecorder::PausedState) {
         if (m_AudioRecorder->state() == QMediaRecorder::StoppedState) {
+            m_Duration = 0;
             m_AudioRecorder->setAudioInput(m_AudioRecorder->defaultAudioInput());
 
             QAudioEncoderSettings settings;
@@ -85,7 +86,6 @@ void AudioRecorder::stop()
 {
     if (m_AudioRecorder->state() == QMediaRecorder::RecordingState) {
         m_AudioRecorder->stop();
-        m_Duration = 0;
     }
 }
 

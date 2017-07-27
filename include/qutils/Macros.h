@@ -17,7 +17,7 @@
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 #define Q_OS_MOBILE
-#endif // Desktop Platform
+#endif // Mobile Platform
 
 #ifdef Q_OS_MOBILE
 #define LOG(msg) qDebug() << "[INFO] " << msg

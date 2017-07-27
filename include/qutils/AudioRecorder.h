@@ -37,11 +37,25 @@ public:
     ~AudioRecorder();
 
 public:
+    /**
+     * @brief Sets the output path of the recording. This is the file path that is used to store the recording.
+     * @param location
+     */
     void setOutputPath(QString location);
     QString getOutputPath() const;
     Q_INVOKABLE void pause();
 
+    /**
+     * @brief If the recorder is already recording does nothing. If the recorder is either stopped or paused, it starts the recording again. If the `duration`
+     * is set to any other value than 0, the recording will be automatically stopped when the duration is reached. The duration is reset here.
+     * @param duration The value is in seconds.
+     */
     Q_INVOKABLE void record(float duration = 0.0f);
+
+    /**
+     * @brief The recording is stopped and the file is finalized with the recording. The duration variable stays the same after the recording is stopped.
+     * Duration is reset when a new recording is started.
+     */
     Q_INVOKABLE void stop();
 
     /**
@@ -68,7 +82,10 @@ public:
 private:
     QAudioRecorder *m_AudioRecorder;
     QAudioProbe *m_Probe;
-    // Duration is in seconds.
+
+    /**
+     * @brief Duration is in seconds.
+     */
     int m_Duration;
 
 private:
