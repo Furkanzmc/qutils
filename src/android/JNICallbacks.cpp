@@ -108,7 +108,7 @@ void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/
     const QString payload = QAndroidJniObject(notificationPayload).toString();
     zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
     if (client) {
-        client->emitNotificationReceivedSignal(tag, id, payload);
+        client->emitNotificationReceivedSignal(payload);
     }
     else {
         zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload));

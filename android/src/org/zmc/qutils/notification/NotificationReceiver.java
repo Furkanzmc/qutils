@@ -12,10 +12,12 @@ import org.zmc.qutils.CppCallbacks;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
-    public static String KEY_NOTIFICATION_ID = "notification-id";
-    public static String KEY_NOTIFICATION_TAG = "notification-tag";
-    public static String KEY_NOTIFICATION_MANAGER = "notification-manager-name";
+    public static String KEY_NOTIFICATION_ID = "notification_id";
+    public static String KEY_NOTIFICATION_TAG = "notification_tag";
+    public static String KEY_NOTIFICATION_MANAGER = "notification_manager_name";
+
     public static String KEY_NOTIFICATION = "notification";
+    public static String KEY_PAYLOAD = "payload";
 
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -23,10 +25,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         Notification notification = intent.getParcelableExtra(KEY_NOTIFICATION);
         int id = intent.getIntExtra(KEY_NOTIFICATION_ID, 0);
         String tag = intent.getStringExtra(KEY_NOTIFICATION_TAG);
-        String notificationManagerName = intent.getStringExtra(KEY_NOTIFICATION_MANAGER);
 
         if (NotificationClient.isInitialized()) {
-            CppCallbacks.notificationReceived(tag, id, notificationManagerName, "");
+            NotificationClient.checkForNotification(intent);
         }
 
         notificationManager.notify(tag, id, notification);

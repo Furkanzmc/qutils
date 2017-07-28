@@ -122,28 +122,29 @@ public class NotificationClient extends QtActivity
         m_SmallIcon = icon;
     }
 
-    public static void notify(String text, String title, long delayMilliseconds)
+    public static void notify(String text, String title, String payload, long delayMilliseconds)
     {
-        Notification notification = getNotification(text, title);
+        Notification notification = getNotification(text, title, payload);
         if (delayMilliseconds > 0) {
-            scheduleNotification(notification, delayMilliseconds);
+            scheduleNotification(notification, payload, delayMilliseconds);
         }
         else {
             if (m_MotificationManager == null) {
                 m_MotificationManager = (NotificationManager)m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
             }
 
-            CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager, "");
+            CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager, payload);
             m_MotificationManager.notify(1, notification);
         }
     }
 
-    private static void scheduleNotification(Notification notification, long delay)
+    private static void scheduleNotification(Notification notification, String payload, long delay)
     {
         Intent notificationIntent = new Intent(m_MainContext, NotificationReceiver.class);
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_ID, m_NotificationID);
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION, notification);
+        notificationIntent.putExtra(NotificationReceiver.KEY_PAYLOAD, payload);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(m_MainContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
@@ -151,7 +152,7 @@ public class NotificationClient extends QtActivity
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    private static Notification getNotification(String content, String title)
+    private static Notification getNotification(String content, String title, String payload)
     {
         Notification.Builder builder = new Notification.Builder(m_MainContext);
         builder.setContentTitle(title);
@@ -163,6 +164,7 @@ public class NotificationClient extends QtActivity
         contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_ID, m_NotificationID);
         contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
         contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER, m_TargetNotificationManager);
+        contentIntent.putExtra(NotificationReceiver.KEY_PAYLOAD, payload);
 
         PendingIntent pendingContentIntent = PendingIntent.getActivity(m_MainContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingContentIntent);

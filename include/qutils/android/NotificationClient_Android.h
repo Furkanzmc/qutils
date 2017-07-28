@@ -43,7 +43,7 @@ public:
      */
     static void addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup);
 
-    void emitNotificationReceivedSignal(QString receivedTag, int receivedID, QString payload);
+    void emitNotificationReceivedSignal(QString payload);
 
     /**
      * @brief Returns an available ID and increases the m_NotificationID
@@ -52,7 +52,7 @@ public:
     Q_INVOKABLE int getNextID() const;
 
 signals:
-    void notificationReceived(QString receivedTag, int receivedID, QString payload);
+    void notificationReceived(QString payload);
     void fcmTokenReceived(const QString &token);
 
 private:

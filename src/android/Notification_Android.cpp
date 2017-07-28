@@ -7,12 +7,13 @@ namespace zmc
 
 Notification::Notification(QObject *parent)
     : QObject(parent)
-    , m_PriorityFlag(getPriorityDefault())
+    , m_PriorityFlag(static_cast<int>(Priority::Default))
     , m_Category("")
     , m_Text("")
     , m_Title("")
     , m_NotificationTag("")
     , m_Sound("")
+    , m_Payload("")
     , m_TargetNotificationManagerName("")
     , m_LedColor()
     , m_LedOnMS(0)
@@ -114,6 +115,10 @@ Notification Notification::fromVariantMap(const QVariantMap &data)
 
     if (data.find("notificationManagerName") != data.end()) {
         notification.setNotificationManagerName(data["notificationManagerName"].toString());
+    }
+
+    if (data.find("payload") != data.end()) {
+        notification.setPayload(data["payload"].toString());
     }
 
     return notification;
@@ -376,117 +381,18 @@ QString Notification::getCategoryTransport() const
     return "transport";
 }
 
-//----- Notification Priorities ----- //
-
-int Notification::getPriorityMin() const
+QString Notification::getPayload() const
 {
-    return -2;
+    return m_Payload;
 }
 
-int Notification::getPriorityLow() const
+void Notification::setPayload(const QString &data)
 {
-    return -1;
-}
+    if (m_Payload != data) {
+        emit dataChanged();
+    }
 
-int Notification::getPriorityDefault() const
-{
-    return 0;
-}
-
-int Notification::getPriorityHigh() const
-{
-    return 1;
-}
-
-int Notification::getPriorityMax() const
-{
-    return 2;
-}
-
-//----- Notification Defaults ----- //
-
-int Notification::getDefaultAll() const
-{
-    return -1;
-}
-
-int Notification::getDefaultLights() const
-{
-    return 4;
-}
-
-int Notification::getDefaultSound() const
-{
-    return 1;
-}
-
-int Notification::getDefaultVibrate() const
-{
-    return 2;
-}
-
-//----- Notification Flags ----- //
-
-int Notification::getFlagAutoCancel() const
-{
-    return 16;
-}
-
-int Notification::getFlagForegroundService() const
-{
-    return 64;
-}
-
-int Notification::getFlagGroupSummary() const
-{
-    return 512;
-}
-
-int Notification::getFlagInsistent() const
-{
-    return 4;
-}
-
-int Notification::getFlagLocalOnly() const
-{
-    return 256;
-}
-
-int Notification::getFlagNoClear() const
-{
-    return 32;
-}
-
-int Notification::getFlagOngoingEvent() const
-{
-    return 2;
-}
-
-int Notification::getFlagOnlyAlertOnce() const
-{
-    return 8;
-}
-
-int Notification::getFlagShowLights() const
-{
-    return 1;
-}
-
-//----- Notification Visibility ----- //
-
-int Notification::getVisibilityPrivate() const
-{
-    return 0;
-}
-
-int Notification::getVisibilityPublic() const
-{
-    return 1;
-}
-
-int Notification::getVisibilitySecret() const
-{
-    return -1;
+    m_Payload = data;
 }
 
 }

@@ -31,6 +31,7 @@ class Notification : public QObject
     Q_PROPERTY(int flags READ getFlags WRITE setFlags NOTIFY flagsChanged)
     Q_PROPERTY(int visibility READ getVisibility WRITE setVisibility NOTIFY visibilityChanged)
 
+    Q_PROPERTY(QString payload READ getPayload WRITE setPayload NOTIFY dataChanged)
 
     //----- Notification Categories ----- //
 
@@ -54,40 +55,43 @@ class Notification : public QObject
     Q_PROPERTY(QString CATEGORY_SYSTEM READ getCategorySystem)
     Q_PROPERTY(QString CATEGORY_TRANSPORT READ getCategoryTransport)
 
-    //----- Notification Priorities ----- //
+public:
+    enum class Priority {
+        Minimum = -2,
+        Low = -1,
+        Default = 0,
+        High = 1,
+        Max = 2
+    };
+    Q_ENUM(Priority)
 
-    Q_PROPERTY(int PRIORITY_MIN READ getPriorityMin)
-    Q_PROPERTY(int PRIORITY_LOW READ getPriorityLow)
-    Q_PROPERTY(int PRIORITY_DEFAULT READ getPriorityDefault)
-    Q_PROPERTY(int PRIORITY_HIGH READ getPriorityHigh)
-    Q_PROPERTY(int PRIORITY_MAX READ getPriorityMax)
+    enum class Defaults {
+        DefaultAll = -1,
+        DefaultLights = 4,
+        DefaultSound = 1,
+        DefaultVibrate = 2
+    };
+    Q_ENUM(Defaults)
 
-    //----- Notification Defaults ----- //
+    enum class Flags {
+        AutoCancel = 16,
+        ForegroundService = 64,
+        GroupSummary = 512,
+        Insistent = 4,
+        LocalOnly = 256,
+        NoClear = 32,
+        OngoingEvent = 2,
+        OnlyAlertOnce = 8,
+        ShowLights = 1
+    };
+    Q_ENUM(Flags)
 
-    Q_PROPERTY(int DEFAULT_ALL READ getDefaultAll)
-    Q_PROPERTY(int DEFAULT_LIGHTS READ getDefaultLights)
-    Q_PROPERTY(int DEFAULT_SOUND READ getDefaultSound)
-    Q_PROPERTY(int DEFAULT_VIBRATE READ getDefaultVibrate)
-
-    //----- Notification Flags ----- //
-
-    Q_PROPERTY(int FLAG_AUTO_CANCEL READ getFlagAutoCancel)
-    Q_PROPERTY(int FLAG_FOREGROUND_SERVICE READ getFlagForegroundService)
-    Q_PROPERTY(int FLAG_GROUP_SUMMARY READ getFlagGroupSummary)
-
-    Q_PROPERTY(int FLAG_INSISTENT READ getFlagInsistent)
-    Q_PROPERTY(int FLAG_LOCAL_ONLY READ getFlagLocalOnly)
-    Q_PROPERTY(int FLAG_NO_CLEAR READ getFlagNoClear)
-
-    Q_PROPERTY(int FLAG_ONGOING_EVENT READ getFlagOngoingEvent)
-    Q_PROPERTY(int FLAG_ONLY_ALERT_ONCE READ getFlagOnlyAlertOnce)
-    Q_PROPERTY(int FLAG_SHOW_LIGHTS READ getFlagShowLights)
-
-    //----- Notification Visibility ----- //
-
-    Q_PROPERTY(int VISIBILITY_PRIVATE READ getVisibilityPrivate)
-    Q_PROPERTY(int VISIBILITY_PUBLIC READ getVisibilityPublic)
-    Q_PROPERTY(int VISIBILITY_SECRET READ getVisibilitySecret)
+    enum class Visibility {
+        Private = 0,
+        Public = 1,
+        Secret = -1
+    };
+    Q_ENUM(Visibility)
 
 public:
     explicit Notification(QObject *parent = nullptr);
@@ -177,42 +181,8 @@ public:
     QString getCategorySystem() const;
     QString getCategoryTransport() const;
 
-    //----- Notification Priorities ----- //
-
-    int getPriorityMin() const;
-    int getPriorityLow() const;
-    int getPriorityDefault() const;
-
-    int getPriorityHigh() const;
-    int getPriorityMax() const;
-
-    //----- Notification Defaults ----- //
-
-    int getDefaultAll() const;
-    int getDefaultLights() const;
-    int getDefaultSound() const;
-
-    int getDefaultVibrate() const;
-
-    //----- Notification Flags ----- //
-
-    int getFlagAutoCancel() const;
-    int getFlagForegroundService() const;
-    int getFlagGroupSummary() const;
-
-    int getFlagInsistent() const;
-    int getFlagLocalOnly() const;
-    int getFlagNoClear() const;
-
-    int getFlagOngoingEvent() const;
-    int getFlagOnlyAlertOnce() const;
-    int getFlagShowLights() const;
-
-    //----- Notification Visibility ----- //
-
-    int getVisibilityPrivate() const;
-    int getVisibilityPublic() const;
-    int getVisibilitySecret() const;
+    QString getPayload() const;
+    void setPayload(const QString &data);
 
 signals:
     void priorityChanged();
@@ -235,6 +205,8 @@ signals:
     void flagsChanged();
     void visibilityChanged();
 
+    void dataChanged();
+
 private:
     /**
      * @brief Acceptable values are:
@@ -253,7 +225,8 @@ private:
     QString m_Text,
             m_Title,
             m_NotificationTag,
-            m_Sound;
+            m_Sound,
+            m_Payload;
     /**
      * @brief Use this to limit the notification to an instance of the NotificationManager. This is used **only** when a scheduled notification is clicked by the
      * user when the app is closed. If this is set to a valid NotificationManager name, then only that manager will be aware of the notification.

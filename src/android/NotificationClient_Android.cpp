@@ -10,9 +10,6 @@
 #include "qutils/android/Notification_Android.h"
 #include "qutils/android/JNICallbacks.h"
 #include "qutils/Macros.h"
-#if FCM_ENABLED
-#include "qutils/FCMListener.h"
-#endif // FCM_ENABLED
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
@@ -36,10 +33,6 @@ NotificationClient::NotificationClient(QObject *parent)
      * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
      */
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
-
-#if FCM_ENABLED
-    FCMListener::getInstance()->initializeMessaging();
-#endif // FCM_ENABLED
 }
 
 void NotificationClient::scheduleNotification(zmc::Notification *notification)
@@ -58,12 +51,14 @@ void NotificationClient::scheduleNotification(zmc::Notification *notification)
 
     QAndroidJniObject javaNotificationTitle = QAndroidJniObject::fromString(notification->getTitle());
     QAndroidJniObject javaNotification = QAndroidJniObject::fromString(notification->getText());
+    QAndroidJniObject javaNotificationData = QAndroidJniObject::fromString(notification->getPayload());
     QAndroidJniObject::callStaticMethod<void>(
         NOTIFICATION_CLIENT_CLASS,
         "notify",
-        "(Ljava/lang/String;Ljava/lang/String;J)V",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
         javaNotification.object<jstring>(),
         javaNotificationTitle.object<jstring>(),
+        javaNotificationData.object<jstring>(),
         delay);
 }
 
@@ -113,9 +108,9 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
     }
 }
 
-void NotificationClient::emitNotificationReceivedSignal(QString receivedTag, int receivedID, QString payload)
+void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
-    emit notificationReceived(receivedTag, receivedID, payload);
+    emit notificationReceived(payload);
 }
 
 void NotificationClient::setNotificationProperties(const Notification *notification)

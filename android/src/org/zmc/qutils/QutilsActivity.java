@@ -2,6 +2,7 @@ package org.zmc.qutils;
 
 // Java
 import java.util.HashMap;
+import java.lang.StringBuilder;
 
 // Android
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.content.ContentUris;
 
 import android.graphics.Rect;
 import android.view.ViewTreeObserver;
+import android.util.Log;
 
 // qutils
 import org.zmc.qutils.notification.NotificationClient;
@@ -64,6 +66,7 @@ public class QutilsActivity extends QtActivity
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
 
+        checkForNotification(getIntent());
         handleAppLink();
 
         final Window rootWindow = m_Instance.getWindow();
@@ -98,13 +101,7 @@ public class QutilsActivity extends QtActivity
     public void onResume() {
         super.onResume();
 
-        Intent intent = getIntent();
-        String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
-        String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
-        int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
-        if (id > -1) {
-            CppCallbacks.notificationReceived(tag, 0, notificationManagerName, "");
-        }
+        checkForNotification(getIntent());
     }
 
     @Override
@@ -148,6 +145,34 @@ public class QutilsActivity extends QtActivity
             }
             else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
                 CppCallbacks.fileSelectionCancelled();
+            }
+        }
+    }
+
+    static public void checkForNotification(Intent intent) {
+        if (intent.getExtras() != null) {
+            Bundle extras = intent.getExtras();
+            int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
+            String messageID = intent.getStringExtra("google.message_id");
+            StringBuilder jsonStr = new StringBuilder();
+            int extrasSize = extras.size();
+            jsonStr.append("{");
+            if (id > -1 || (messageID != null && messageID.length() > 0)) {
+                for (String key : extras.keySet()) {
+                    Object value = extras.get(key);
+                    jsonStr.append("\"" + key + "\":");
+                    jsonStr.append(value);
+                    extrasSize--;
+                    if (extrasSize > 0) {
+                        jsonStr.append(",");
+                    }
+                }
+
+                jsonStr.append("}");
+                String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
+                String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
+
+                CppCallbacks.notificationReceived(tag, 0, notificationManagerName, jsonStr.toString());
             }
         }
     }

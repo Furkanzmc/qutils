@@ -32,11 +32,15 @@ android {
         INCLUDEPATH += $$(FIREBASE_PATH)/include
         LIBS += -L$$(FIREBASE_PATH)/libs/android/armeabi-v7a/c++ -lmessaging -lapp
 
-        HEADERS += \
-            $$PWD/include/qutils/FCMListener.h
+#        HEADERS += \
+#            $$PWD/include/qutils/FCMListener.h
 
-        SOURCES += \
-            $$PWD/src/FCMListener.cpp
+#        SOURCES += \
+#            $$PWD/src/FCMListener.cpp
+
+        OTHER_FILES += \
+            $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
+            $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java
     }
     else {
         DEFINES += FCM_ENABLED=0
@@ -45,9 +49,6 @@ android {
     OTHER_FILES += \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationClient.java \
         $$PWD/android/src/org/zmc/qutils/notification/NotificationReceiver.java \
-        $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
-        $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java \
-        $$PWD/android/src/org/zmc/qutils/notification/QutilsJobService.java \
         $$PWD/android/src/org/zmc/qutils/CppCallbacks.java \
         $$PWD/android/src/org/zmc/qutils/QutilsActivity.java \
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java \
