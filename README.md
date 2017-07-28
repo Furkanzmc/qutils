@@ -155,3 +155,30 @@ NativeUtils {
     }
 }
 ```
+
+# Enable Firebase Cloud Messaging for Android
+
+You just need to add the Firebase SDK dependancy to your `build.gradle` file.
+
+You can follow the official setup [here](https://firebase.google.com/docs/android/setup).
+
+Add the following to your `dependencies`.
+
+```
+dependencies {
+        ...
+        classpath 'com.google.gms:google-services:3.1.0'
+}
+```
+
+Just make sure that these lines are at the bottom of your `build.gradle` file.
+
+```
+dependencies {
+    compile 'com.google.firebase:firebase-core:11.0.2'
+    compile 'com.google.firebase:firebase-messaging:11.0.2'
+    compile 'com.google.android.gms:play-services-base:11.0.2'
+}
+
+apply plugin: 'com.google.gms.google-services'
+```
