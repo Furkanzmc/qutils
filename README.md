@@ -166,8 +166,8 @@ Add the following to your `dependencies`.
 
 ```
 dependencies {
-        ...
-        classpath 'com.google.gms:google-services:3.1.0'
+    ...
+    classpath 'com.google.gms:google-services:3.1.0'
 }
 ```
 
