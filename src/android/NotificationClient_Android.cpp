@@ -13,8 +13,8 @@
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
-using NotificationQueue = std::vector<std::tuple<QString, int, QString, QString>>;
-using NotificationQueueMember = std::tuple<QString, int, QString, QString>;
+using NotificationQueue = std::vector<std::tuple<QString, int, QString, QString, bool>>;
+using NotificationQueueMember = std::tuple<QString, int, QString, QString, bool>;
 
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
 
@@ -119,7 +119,7 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
     return instance;
 }
 
-void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup, bool isTapped)
+void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QString, QString, bool> &tup)
 {
     auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
         return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple) && std::get<2>(tup) == std::get<2>(inTuple);
@@ -153,8 +153,12 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
-    LOG_JNI("NOTIFICATION EMITTED!!!");
     emit notificationReceived(payload);
+}
+
+void NotificationClient::emitNotificationTappedSignal(QString payload)
+{
+    emit notificationTapped(payload);
 }
 
 void NotificationClient::setNotificationProperties(const Notification *notification)
@@ -261,7 +265,12 @@ void NotificationClient::processQueue()
 
         if (shouldNotify) {
             m_NotificationQueue.erase(m_NotificationQueue.begin() + index);
-            emit notificationReceived(payload);
+            if (std::get<4>(tup) == true) {
+                emit notificationTapped(payload);
+            }
+            else {
+                emit notificationReceived(payload);
+            }
         }
     }
 }

@@ -116,7 +116,7 @@ void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/
         client->emitNotificationReceivedSignal(payload);
     }
     else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload));
+        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload, false));
     }
 }
 
@@ -127,10 +127,10 @@ void JNICallbacks::notificationTappedCallback(JNIEnv */*env*/, jobject /*obj*/, 
     const QString payload = QAndroidJniObject(notificationPayload).toString();
     zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
     if (client) {
-        client->emitNotificationReceivedSignal(payload);
+        client->emitNotificationTappedSignal(payload);
     }
     else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload), true);
+        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload, true));
     }
 }
 

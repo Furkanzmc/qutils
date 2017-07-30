@@ -159,7 +159,7 @@ public class QutilsActivity extends QtActivity
                 String payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
 
                 m_LastHandledNotificationID = id;
-                CppCallbacks.notificationReceived(tag, 0, notificationManagerName, payload);
+                CppCallbacks.notificationTapped(tag, 0, notificationManagerName, payload);
             }
         }
     }

@@ -42,11 +42,12 @@ public:
      * `objectName` property is empty, then all of the `NotificationManager`s will be signaled when the app finishes loading.
      * @param tup
      */
-    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup, bool isTapped = false);
+    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString, bool> &tup);
 
     static void emitFCMTokenReceivedSignal(const QString &token);
 
     void emitNotificationReceivedSignal(QString payload);
+    void emitNotificationTappedSignal(QString payload);
 
     /**
      * @brief Returns an available ID and increases the m_NotificationID
@@ -62,7 +63,7 @@ signals:
 private:
     static int m_NotificationID;
     static std::vector<std::pair<std::pair<QString, int>, NotificationClient *>> m_Clients;
-    static std::vector<std::tuple<QString, int, QString, QString>> m_NotificationQueue;
+    static std::vector<std::tuple<QString, int, QString, QString, bool>> m_NotificationQueue;
 
     static QList<NotificationClient *> m_Instances;
 #if FCM_ENABLED == 1
