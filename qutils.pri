@@ -100,7 +100,8 @@ HEADERS += \
     $$PWD/include/qutils/Network/HttpCodes.h \
     $$PWD/include/qutils/JsonUtils.h \
     $$PWD/include/qutils/SignalManager.h \
-    $$PWD/include/qutils/DateManager.h
+    $$PWD/include/qutils/DateManager.h \
+    $$PWD/include/qutils/QutilsLog.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -114,7 +115,8 @@ SOURCES += \
     $$PWD/src/JsonUtils.cpp \
     $$PWD/src/SignalManager.cpp \
     $$PWD/src/DateManager.cpp \
-    $$PWD/src/QMLRefresh.cpp
+    $$PWD/src/QMLRefresh.cpp \
+    $$PWD/src/QutilsLog.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \

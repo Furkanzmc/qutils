@@ -44,6 +44,10 @@
 #    define APP_TAG "com.zmc.qutils"
 #  endif // QUTILS_APP_PACKAGE_NAME
 #define LOG_JNI(msg) __android_log_write(ANDROID_LOG_INFO, APP_TAG, msg);
-#define LOG_WARNING_JNI(msg) __android_log_write(ANDROID_LOG_WARN, APP_TAG, msg);
-#define LOG_ERROR_JNI(msg) __android_log_write(ANDROID_LOG_ERROR, APP_TAG, msg);
+#define LOG_WARNING_JNI(msg) __android_log_write(ANDROID_LOG_WARN, APP_TAG, msg)
+#define LOG_ERROR_JNI(msg) __android_log_write(ANDROID_LOG_ERROR, APP_TAG, msg)
+#else
+#define LOG_JNI(msg) void(0)
+#define LOG_WARNING_JNI(msg) void(0)
+#define LOG_ERROR_JNI(msg) void(0)
 #endif // Q_OS_ANDROID

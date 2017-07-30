@@ -3,6 +3,7 @@ package org.zmc.qutils.notification;
 import java.lang.StringBuilder;
 import java.util.Map;
 // Android
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -45,49 +46,47 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
 
-        CppCallbacks.notificationReceived("", 0, "", convertRemoteMessageToJsonString(remoteMessage));
+        sendNotification(remoteMessage);
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
-        Log.d(TAG, convertRemoteMessageToJsonString(remoteMessage));
     }
     // [END receive_message]
-
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     */
-    private void handleNow() {
-        Log.d(TAG, "Short lived task is done.");
-    }
 
     private String convertRemoteMessageToJsonString(RemoteMessage remoteMessage) {
         StringBuilder jsonStr = new StringBuilder();
         jsonStr.append("{");
         // Append collapse key
-        jsonStr.append("\"collapse_key\":\"");
-        jsonStr.append(remoteMessage.getCollapseKey());
-        jsonStr.append("\",");
+        jsonStr.append("\"collapse_key\":");
+        String value = remoteMessage.getCollapseKey();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append from
-        jsonStr.append("\"from\":\"");
-        jsonStr.append(remoteMessage.getFrom());
-        jsonStr.append("\",");
+        jsonStr.append("\"from\":");
+        value = remoteMessage.getFrom();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append to
-        jsonStr.append("\"to\":\"");
-        jsonStr.append(remoteMessage.getTo() == null ? "null" : remoteMessage.getTo());
-        jsonStr.append("\",");
+        jsonStr.append("\"to\":");
+        value = remoteMessage.getTo();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append message ID
-        jsonStr.append("\"message_id\":\"");
-        jsonStr.append(remoteMessage.getMessageId());
-        jsonStr.append("\",");
+        jsonStr.append("\"message_id\":");
+        value = remoteMessage.getMessageId();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append message type
         jsonStr.append("\"message_type\":");
-        jsonStr.append(remoteMessage.getMessageType() != null ? "\"" + remoteMessage.getMessageType() + "\"" : "null");
+        value = remoteMessage.getMessageType();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
         jsonStr.append(",");
         // Append sent time
         jsonStr.append("\"sent_time\":");
         jsonStr.append(remoteMessage.getSentTime());
         jsonStr.append(",");
         // Append ttl
-        jsonStr.append("\"ttl\":" + String.valueOf(remoteMessage.getTtl()));
+        jsonStr.append("\"ttl\":");
+        jsonStr.append(remoteMessage.getTtl());
         jsonStr.append(",");
 
         // Append data
@@ -97,7 +96,8 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
             int dataIndex = 0;
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 jsonStr.append("\"" + entry.getKey() + "\": ");
-                jsonStr.append(entry.getValue() != null ? "\"" + entry.getValue() + "\"": "null");
+                value = entry.getValue();
+                jsonStr.append(value == null ? "null" : "\"" + value + "\"");
                 if (dataIndex < data.size() - 1) {
                     jsonStr.append(",");
                 }
@@ -120,37 +120,44 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
         StringBuilder jsonStr = new StringBuilder();
         jsonStr.append("\"notification\": {");
         // Append body
-        jsonStr.append("\"body\":\"");
-        jsonStr.append(notification.getBody());
-        jsonStr.append("\",");
+        jsonStr.append("\"body\":");
+        String value = notification.getBody();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append click action
-        jsonStr.append("\"click_action\":\"");
-        jsonStr.append(notification.getClickAction());
-        jsonStr.append("\",");
+        jsonStr.append("\"click_action\":");
+        value = notification.getClickAction();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append color
-        jsonStr.append("\"color\":\"");
-        jsonStr.append(notification.getColor());
-        jsonStr.append("\",");
+        jsonStr.append("\"color\":");
+        value = notification.getColor();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append icon
-        jsonStr.append("\"icon\":\"");
-        jsonStr.append(notification.getIcon());
-        jsonStr.append("\",");
+        jsonStr.append("\"icon\":");
+        value = notification.getIcon();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append sound
-        jsonStr.append("\"sound\":\"");
-        jsonStr.append(notification.getSound());
-        jsonStr.append("\",");
+        jsonStr.append("\"sound\":");
+        value = notification.getSound();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append link
-        jsonStr.append("\"link\":\"");
-        jsonStr.append(notification.getLink() != null ? notification.getLink().toString() : "null");
-        jsonStr.append("\",");
+        jsonStr.append("\"link\":");
+        value = notification.getLink() != null ? notification.getLink().toString() : null;
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append tag
-        jsonStr.append("\"tag\":\"");
-        jsonStr.append(notification.getTag());
-        jsonStr.append("\",");
+        jsonStr.append("\"tag\":");
+        value = notification.getTag();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
+        jsonStr.append(",");
         // Append title
-        jsonStr.append("\"title\":\"");
-        jsonStr.append(notification.getTitle());
-        jsonStr.append("\"");
+        jsonStr.append("\"title\":");
+        value = notification.getTitle();
+        jsonStr.append(value == null ? "null" : "\"" + value + "\"");
 
         jsonStr.append("}");
 
@@ -162,24 +169,17 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, NotificationReceiver.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+    private void sendNotification(RemoteMessage remoteMessage) {
 
-        // .setSmallIcon(R.drawable.ic_stat_ic_notification)
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+        NotificationClient.resetProperties();
+        NotificationClient.setFlags(Notification.FLAG_AUTO_CANCEL);
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        String title = "Notification", message = "Message";
+        if (notification != null) {
+            title = notification.getTitle();
+            message = notification.getBody();
+        }
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        NotificationClient.notify(title, message, convertRemoteMessageToJsonString(remoteMessage), 0);
     }
 }

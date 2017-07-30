@@ -2,15 +2,12 @@ package org.zmc.qutils;
 
 // Java
 import java.util.HashMap;
-import java.lang.StringBuilder;
 
 // Android
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.Window;
 
-import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
 import android.view.View;
 
 import android.view.KeyEvent;
@@ -27,14 +24,10 @@ import android.content.ContentUris;
 
 import android.graphics.Rect;
 import android.view.ViewTreeObserver;
-import android.util.Log;
 
 // qutils
 import org.zmc.qutils.notification.NotificationClient;
 import org.zmc.qutils.notification.NotificationReceiver;
-import org.zmc.qutils.CppCallbacks;
-
-import org.zmc.qutils.Constants;
 
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -53,6 +46,7 @@ public class QutilsActivity extends QtActivity
     public static HashMap m_CustomData;
 
     private static int m_PreviousKeyboardHeight = -1;
+    private static int m_LastHandledNotificationID = -1;
 
     public QutilsActivity()
     {
@@ -72,29 +66,29 @@ public class QutilsActivity extends QtActivity
         final Window rootWindow = m_Instance.getWindow();
         final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-                public void onGlobalLayout() {
-                    Rect rect = new Rect();
-                    View view = rootWindow.getDecorView();
-                    view.getWindowVisibleDisplayFrame(rect);
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    public void onGlobalLayout() {
+                        Rect rect = new Rect();
+                        View view = rootWindow.getDecorView();
+                        view.getWindowVisibleDisplayFrame(rect);
 
-                    int screenHeight = rootView.getHeight();
-                    int keyboardHeight = screenHeight - (rect.bottom);
+                        int screenHeight = rootView.getHeight();
+                        int keyboardHeight = screenHeight - (rect.bottom);
 
-                    if (keyboardHeight < 0) {
-                        keyboardHeight = 0;
-                    }
+                        if (keyboardHeight < 0) {
+                            keyboardHeight = 0;
+                        }
 
-                    if (m_PreviousKeyboardHeight == -1) {
-                        m_PreviousKeyboardHeight = keyboardHeight;
-                        CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                        if (m_PreviousKeyboardHeight == -1) {
+                            m_PreviousKeyboardHeight = keyboardHeight;
+                            CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                        }
+                        else if (m_PreviousKeyboardHeight != keyboardHeight) {
+                            m_PreviousKeyboardHeight = keyboardHeight;
+                            CppCallbacks.keyboardHeightChanged(keyboardHeight);
+                        }
                     }
-                    else if (m_PreviousKeyboardHeight != keyboardHeight) {
-                        m_PreviousKeyboardHeight = keyboardHeight;
-                        CppCallbacks.keyboardHeightChanged(keyboardHeight);
-                    }
-                }
-            });
+                });
     }
 
     @Override
@@ -106,10 +100,11 @@ public class QutilsActivity extends QtActivity
 
     @Override
     public void onNewIntent(Intent intent) {
-      super.onNewIntent(intent);
+        super.onNewIntent(intent);
 
-      setIntent(intent);
-      handleAppLink();
+        setIntent(intent);
+        handleAppLink();
+        checkForNotification(intent);
     }
 
     @Override
@@ -151,28 +146,20 @@ public class QutilsActivity extends QtActivity
 
     static public void checkForNotification(Intent intent) {
         if (intent.getExtras() != null) {
-            Bundle extras = intent.getExtras();
             int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
-            String messageID = intent.getStringExtra("google.message_id");
-            StringBuilder jsonStr = new StringBuilder();
-            int extrasSize = extras.size();
-            jsonStr.append("{");
-            if (id > -1 || (messageID != null && messageID.length() > 0)) {
-                for (String key : extras.keySet()) {
-                    Object value = extras.get(key);
-                    jsonStr.append("\"" + key + "\":");
-                    jsonStr.append(value);
-                    extrasSize--;
-                    if (extrasSize > 0) {
-                        jsonStr.append(",");
-                    }
-                }
+            if (m_LastHandledNotificationID == id) {
+                return;
+            }
 
-                jsonStr.append("}");
+            String messageID = intent.getStringExtra("google.message_id");
+
+            if (id > -1 || (messageID == null && messageID.length() > 0)) {
                 String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
                 String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
+                String payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
 
-                CppCallbacks.notificationReceived(tag, 0, notificationManagerName, jsonStr.toString());
+                m_LastHandledNotificationID = id;
+                CppCallbacks.notificationReceived(tag, 0, notificationManagerName, payload);
             }
         }
     }

@@ -25,14 +25,32 @@ int NotificationClient::m_NotificationID = -1;
 ClientsList NotificationClient::m_Clients = ClientsList();
 NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 
+QList<NotificationClient *> NotificationClient::m_Instances = QList<NotificationClient *>();
+#if FCM_ENABLED == 1
+QString NotificationClient::m_FCMToken = "";
+#endif // FCM_ENABLED == 1
+
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
+    , m_InstanceIndex(m_Instances.size())
 {
     /*
      * This is to execute the `processQueue` function with the next cycle.
      * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
      */
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
+
+    m_Instances.push_back(this);
+
+    if (m_FCMToken.length() > 0) {
+        QTimer::singleShot(1, std::bind(NotificationClient::emitFCMTokenReceivedSignal, m_FCMToken));
+        m_FCMToken = "";
+    }
+}
+
+NotificationClient::~NotificationClient()
+{
+    m_Instances[m_InstanceIndex] = nullptr;
 }
 
 void NotificationClient::scheduleNotification(zmc::Notification *notification)
@@ -47,7 +65,12 @@ void NotificationClient::scheduleNotification(zmc::Notification *notification)
         delay = current.msecsTo(date);
     }
 
-    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notification->getNotificationID()), this));
+    int notificationID = QAndroidJniObject::callStaticMethod<jint>(
+                             NOTIFICATION_CLIENT_CLASS,
+                             "getLastNotificationID",
+                             "()I");
+
+    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notificationID), this));
 
     QAndroidJniObject javaNotificationTitle = QAndroidJniObject::fromString(notification->getTitle());
     QAndroidJniObject javaNotification = QAndroidJniObject::fromString(notification->getText());
@@ -96,7 +119,7 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
     return instance;
 }
 
-void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
+void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup, bool isTapped)
 {
     auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
         return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple) && std::get<2>(tup) == std::get<2>(inTuple);
@@ -106,10 +129,31 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
     if (foundIt == m_NotificationQueue.end()) {
         m_NotificationQueue.push_back(tup);
     }
+
+    if (m_Instances.size() > 0) {
+        for (NotificationClient *client : m_Instances) {
+            client->processQueue();
+        }
+    }
+}
+
+void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
+{
+    if (m_Instances.size() > 0) {
+        for (NotificationClient *client : m_Instances) {
+            if (client) {
+                client->fcmTokenReceived(token);
+            }
+        }
+    }
+    else {
+        m_FCMToken = token;
+    }
 }
 
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
+    LOG_JNI("NOTIFICATION EMITTED!!!");
     emit notificationReceived(payload);
 }
 
@@ -185,13 +229,6 @@ void NotificationClient::setNotificationProperties(const Notification *notificat
         "(Ljava/lang/String;)V",
         jniNotTag.object<jstring>());
 
-    // Set notification ID
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setNotificationID",
-        "(I)V",
-        notification->getNotificationID());
-
     // Set target manager
     QAndroidJniObject jniManagerName = QAndroidJniObject::fromString(notification->getNotificationManagerName());
     QAndroidJniObject::callStaticMethod<void>(
@@ -210,15 +247,12 @@ void NotificationClient::processQueue()
     QString objectName = this->objectName();
     for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
         const NotificationQueueMember tup = m_NotificationQueue.at(index);
-        const QString tag = std::get<0>(tup);
         const QString payload = std::get<3>(tup);
-        const int id = std::get<1>(tup);
 
         const QString managerName = std::get<2>(tup);
         bool shouldNotify = false;
 
         if ((objectName.length() > 0 && objectName == managerName)) {
-            m_NotificationQueue.erase(m_NotificationQueue.begin() + index);
             shouldNotify = true;
         }
         else if (managerName.length() == 0) {
@@ -226,12 +260,8 @@ void NotificationClient::processQueue()
         }
 
         if (shouldNotify) {
-            m_Clients.push_back(std::make_pair(std::make_pair(std::get<0>(tup), std::get<1>(tup)), this));
-            JNICallbacks::notificationReceivedCallback(nullptr, nullptr,
-                    QAndroidJniObject::fromString(tag).object<jstring>(),
-                    id,
-                    QAndroidJniObject::fromString(managerName).object<jstring>(),
-                    QAndroidJniObject::fromString(payload).object<jstring>());
+            m_NotificationQueue.erase(m_NotificationQueue.begin() + index);
+            emit notificationReceived(payload);
         }
     }
 }

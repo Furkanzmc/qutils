@@ -22,7 +22,6 @@ Notification::Notification(QObject *parent)
     , m_Defaults(-1)
     , m_Flags(-1)
     , m_Visibility(-2)
-    , m_NotificationID(0)
     , m_Date()
 {
 }
@@ -42,7 +41,6 @@ Notification::Notification(Notification &&other)
     , m_Defaults(other.getDefaults())
     , m_Flags(other.getFlags())
     , m_Visibility(other.getVisibility())
-    , m_NotificationID(other.getNotificationID())
     , m_Date(other.getDate())
 {
 
@@ -95,10 +93,6 @@ Notification Notification::fromVariantMap(const QVariantMap &data)
 
     if (data.find("notificationTag") != data.end()) {
         notification.setNotificationTag(data["notificationTag"].toString());
-    }
-
-    if (data.find("notificationID") != data.end()) {
-        notification.setNotificationID(data["notificationID"].toInt());
     }
 
     if (data.find("sound") != data.end()) {
@@ -237,17 +231,6 @@ void Notification::setNotificationTag(QString tag)
 QString Notification::getNotificationTag() const
 {
     return m_NotificationTag;
-}
-
-void Notification::setNotificationID(int id)
-{
-    m_NotificationID = id;
-    emit notificationIDChanged();
-}
-
-int Notification::getNotificationID() const
-{
-    return m_NotificationID;
 }
 
 void Notification::setSound(QString sound)

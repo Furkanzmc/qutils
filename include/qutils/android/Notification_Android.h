@@ -24,13 +24,11 @@ class Notification : public QObject
     Q_PROPERTY(QDateTime date READ getDate WRITE setDate NOTIFY dateChanged)
 
     Q_PROPERTY(QString notificationTag READ getNotificationTag WRITE setNotificationTag NOTIFY notificationTagChanged)
-    Q_PROPERTY(int notificationID READ getNotificationID WRITE setNotificationID NOTIFY notificationIDChanged)
     Q_PROPERTY(QString sound READ getSound WRITE setSound NOTIFY soundChanged)
-
     Q_PROPERTY(int defaults READ getDefaults WRITE setDefaults NOTIFY defaultsChanged)
+
     Q_PROPERTY(int flags READ getFlags WRITE setFlags NOTIFY flagsChanged)
     Q_PROPERTY(int visibility READ getVisibility WRITE setVisibility NOTIFY visibilityChanged)
-
     Q_PROPERTY(QString payload READ getPayload WRITE setPayload NOTIFY dataChanged)
 
     //----- Notification Categories ----- //
@@ -141,9 +139,6 @@ public:
     void setNotificationTag(QString tag);
     QString getNotificationTag() const;
 
-    int getNotificationID() const;
-    void setNotificationID(int id);
-
     void setSound(QString sound);
     QString getSound() const;
 
@@ -198,7 +193,6 @@ signals:
     void dateChanged();
 
     void notificationTagChanged();
-    void notificationIDChanged();
     void soundChanged();
 
     void defaultsChanged();
@@ -242,8 +236,7 @@ private:
 
     int m_Defaults,
         m_Flags,
-        m_Visibility,
-        m_NotificationID;
+        m_Visibility;
 
     QDateTime m_Date;
 };

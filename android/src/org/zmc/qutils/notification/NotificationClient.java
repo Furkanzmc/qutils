@@ -10,11 +10,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 
 import android.graphics.Color;
-import android.app.Activity;
 import android.os.SystemClock;
 
 import android.net.Uri;
-import android.util.Log;
 import android.os.Build;
 
 // qutils
@@ -22,7 +20,7 @@ import org.zmc.qutils.CppCallbacks;
 
 public class NotificationClient extends QtActivity
 {
-    private static NotificationManager m_MotificationManager;
+    private static NotificationManager m_NotificationManager;
 
     // This is the main launcher context of the app
     private static QtActivity m_MainContext;
@@ -47,6 +45,23 @@ public class NotificationClient extends QtActivity
 
     private static int m_SmallIcon = -1;
 
+    public static void resetProperties() {
+        m_Priority = Notification.PRIORITY_DEFAULT;
+        m_Category = "";
+        m_LedColor = "";
+
+        m_LedOnMS = -1;
+        m_LedOffMS = -1;
+        m_Sound = "";
+
+        m_Defaults = -1;
+        m_Flags = -1;
+        m_Visibility = -2;
+
+        m_NotificationTag = "";
+        m_TargetNotificationManager = "";
+    }
+
     public NotificationClient(QtActivity mainActivity)
     {
         m_MainContext = mainActivity;
@@ -55,6 +70,10 @@ public class NotificationClient extends QtActivity
     public static boolean isInitialized()
     {
         return m_MainContext != null;
+    }
+
+    public static int getLastNotificationID() {
+        return m_NotificationID;
     }
 
     public static void setPriority(int priority)
@@ -107,11 +126,6 @@ public class NotificationClient extends QtActivity
         m_NotificationTag = tag;
     }
 
-    public static void setNotificationID(int notificationID)
-    {
-        m_NotificationID = notificationID;
-    }
-
     public static void setTargetNotificationManager(String target)
     {
         m_TargetNotificationManager = target;
@@ -129,22 +143,28 @@ public class NotificationClient extends QtActivity
             scheduleNotification(notification, payload, delayMilliseconds);
         }
         else {
-            if (m_MotificationManager == null) {
-                m_MotificationManager = (NotificationManager)m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (m_NotificationManager == null) {
+                m_NotificationManager = (NotificationManager)m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
             }
 
             CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager, payload);
-            m_MotificationManager.notify(1, notification);
+            m_NotificationManager.notify(m_NotificationID, notification);
         }
+
+        m_NotificationID++;
     }
 
     private static void scheduleNotification(Notification notification, String payload, long delay)
     {
         Intent notificationIntent = new Intent(m_MainContext, NotificationReceiver.class);
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_ID, m_NotificationID);
-        notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
+        if (m_NotificationTag.length() > 0) {
+            notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
+        }
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION, notification);
-        notificationIntent.putExtra(NotificationReceiver.KEY_PAYLOAD, payload);
+        if (payload.length() > 0) {
+            notificationIntent.putExtra(NotificationReceiver.KEY_PAYLOAD, payload);
+        }
         PendingIntent pendingIntent = PendingIntent.getBroadcast(m_MainContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
@@ -162,8 +182,12 @@ public class NotificationClient extends QtActivity
         String packageName = m_MainContext.getPackageName();
         Intent contentIntent = m_MainContext.getPackageManager().getLaunchIntentForPackage(packageName);
         contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_ID, m_NotificationID);
-        contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
-        contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER, m_TargetNotificationManager);
+        if (m_NotificationTag.length() > 0) {
+            contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_TAG, m_NotificationTag);
+        }
+        if (m_TargetNotificationManager.length() > 0) {
+            contentIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER, m_TargetNotificationManager);
+        }
         contentIntent.putExtra(NotificationReceiver.KEY_PAYLOAD, payload);
 
         PendingIntent pendingContentIntent = PendingIntent.getActivity(m_MainContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);

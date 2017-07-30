@@ -13,6 +13,7 @@ class NotificationClient : public QObject
 
 public:
     explicit NotificationClient(QObject *parent = 0);
+    ~NotificationClient();
 
     /**
      * @brief Schedule notification with a Notification object.
@@ -41,7 +42,9 @@ public:
      * `objectName` property is empty, then all of the `NotificationManager`s will be signaled when the app finishes loading.
      * @param tup
      */
-    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup);
+    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString> &tup, bool isTapped = false);
+
+    static void emitFCMTokenReceivedSignal(const QString &token);
 
     void emitNotificationReceivedSignal(QString payload);
 
@@ -52,13 +55,21 @@ public:
     Q_INVOKABLE int getNextID() const;
 
 signals:
-    void notificationReceived(QString payload);
+    void notificationReceived(const QString &payload);
+    void notificationTapped(const QString &payload);
     void fcmTokenReceived(const QString &token);
 
 private:
     static int m_NotificationID;
     static std::vector<std::pair<std::pair<QString, int>, NotificationClient *>> m_Clients;
     static std::vector<std::tuple<QString, int, QString, QString>> m_NotificationQueue;
+
+    static QList<NotificationClient *> m_Instances;
+#if FCM_ENABLED == 1
+    static QString m_FCMToken;
+#endif // FCM_ENABLED == 1
+
+    const unsigned int m_InstanceIndex;
 
 private:
     void setNotificationProperties(const Notification *notification);

@@ -8,6 +8,7 @@ public:
     JNICallbacks();
 
     static void notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload);
+    static void notificationTappedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload);
     static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
     static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
 

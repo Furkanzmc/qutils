@@ -9,6 +9,7 @@ import android.content.Intent;
 
 // qutils
 import org.zmc.qutils.CppCallbacks;
+import org.zmc.qutils.QutilsActivity;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -27,7 +28,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         String tag = intent.getStringExtra(KEY_NOTIFICATION_TAG);
 
         if (NotificationClient.isInitialized()) {
-            NotificationClient.checkForNotification(intent);
+            QutilsActivity.checkForNotification(intent);
         }
 
         notificationManager.notify(tag, id, notification);

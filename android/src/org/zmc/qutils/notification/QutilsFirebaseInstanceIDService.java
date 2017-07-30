@@ -21,8 +21,6 @@ public class QutilsFirebaseInstanceIDService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, refreshedToken);
-        CppCallbacks.fcmTokenReceived(refreshedToken);
+        CppCallbacks.fcmTokenReceived(FirebaseInstanceId.getInstance().getToken());
     }
 }
