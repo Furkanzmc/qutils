@@ -179,6 +179,6 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
             message = notification.getBody();
         }
 
-        NotificationClient.notify(title, message, convertRemoteMessageToJsonString(remoteMessage), 0);
+        NotificationClient.notify(message, title, convertRemoteMessageToJsonString(remoteMessage), 0);
     }
 }
