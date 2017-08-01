@@ -170,7 +170,6 @@ public class QutilsFirebaseMessagingService extends FirebaseMessagingService {
      * @param messageBody FCM message body received.
      */
     private void sendNotification(RemoteMessage remoteMessage) {
-
         NotificationClient.resetProperties();
         NotificationClient.setFlags(Notification.FLAG_AUTO_CANCEL);
         RemoteMessage.Notification notification = remoteMessage.getNotification();

@@ -2,6 +2,8 @@ package org.zmc.qutils;
 
 // Java
 import java.util.HashMap;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 // Android
 import android.os.Bundle;
@@ -9,21 +11,22 @@ import android.content.Intent;
 import android.view.Window;
 
 import android.view.View;
-
 import android.view.KeyEvent;
 import android.provider.MediaStore;
-import android.content.Context;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 
+import android.os.Build;
 import android.provider.DocumentsContract;
 import android.os.Environment;
-import android.content.ContentUris;
 
+import android.content.ContentUris;
 import android.graphics.Rect;
 import android.view.ViewTreeObserver;
+
+import android.util.Log;
 
 // qutils
 import org.zmc.qutils.notification.NotificationClient;
@@ -47,6 +50,7 @@ public class QutilsActivity extends QtActivity
 
     private static int m_PreviousKeyboardHeight = -1;
     private static int m_LastHandledNotificationID = -1;
+    private static String m_LastHandledFCMMessageID = "";
 
     public QutilsActivity()
     {
@@ -59,9 +63,6 @@ public class QutilsActivity extends QtActivity
         super.onCreate(savedInstanceState);
         m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
-
-        checkForNotification(getIntent());
-        handleAppLink();
 
         final Window rootWindow = m_Instance.getWindow();
         final View rootView = rootWindow.getDecorView().findViewById(android.R.id.content);
@@ -95,7 +96,9 @@ public class QutilsActivity extends QtActivity
     public void onResume() {
         super.onResume();
 
-        checkForNotification(getIntent());
+        Intent intent = getIntent();
+        checkForNotification(intent);
+        handleAppLink(intent);
     }
 
     @Override
@@ -103,8 +106,8 @@ public class QutilsActivity extends QtActivity
         super.onNewIntent(intent);
 
         setIntent(intent);
-        handleAppLink();
         checkForNotification(intent);
+        handleAppLink(intent);
     }
 
     @Override
@@ -147,19 +150,72 @@ public class QutilsActivity extends QtActivity
     static public void checkForNotification(Intent intent) {
         if (intent.getExtras() != null) {
             int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
-            if (m_LastHandledNotificationID == id) {
-                return;
-            }
-
             String messageID = intent.getStringExtra("google.message_id");
+            boolean isFCMNotification = messageID != null && messageID.length() > 0;
 
-            if (id > -1 || (messageID == null && messageID.length() > 0)) {
+            if (id > -1 || isFCMNotification) {
+                if (isFCMNotification == false && m_LastHandledNotificationID == id) {
+                    return;
+                }
+
+                if (isFCMNotification && m_LastHandledFCMMessageID == messageID) {
+                    return;
+                }
+
                 String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
                 String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
-                String payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
+                String payload;
 
-                m_LastHandledNotificationID = id;
-                CppCallbacks.notificationTapped(tag, 0, notificationManagerName, payload);
+                if (isFCMNotification == false) {
+                    payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
+                    m_LastHandledNotificationID = id;
+                }
+                else {
+                    m_LastHandledFCMMessageID = messageID;
+                    Bundle extras = intent.getExtras();
+                    Set<String> keySet = extras.keySet();
+                    /**
+                     * Here's the payload data that comes from the created notification by the Firebase SDK.
+                     * {
+                     *     "google.sent_time": 1501533936476,
+                     *     "from": "353277717468",
+                     *     "google.message_id": "0:1501533936482206%8fe8bb7f8fe8bb7f",
+                     *     "collapse_key": "org.edmoware.arifname"
+                     * }
+                     */
+                    StringBuilder jsonBuilder = new StringBuilder();
+                    jsonBuilder.append("{");
+                    int extrasSize = extras.size();
+                    for (String key : keySet) {
+                        extrasSize--;
+
+                        if (key.equals("google.sent_time")) {
+                            jsonBuilder.append("\"sent_time\":");
+                        }
+                        else if (key.equals("google.message_id")) {
+                            jsonBuilder.append("\"message_id\":");
+                        }
+                        else {
+                            jsonBuilder.append("\"" + key + "\":");
+                        }
+
+                        Object value = extras.get(key);
+                        if (value.getClass().equals(String.class)) {
+                            jsonBuilder.append("\"" + value + "\"");
+                        }
+                        else {
+                            jsonBuilder.append(value);
+                        }
+
+                        if (extrasSize > 0) {
+                            jsonBuilder.append(",");
+                        }
+                    }
+                    jsonBuilder.append("}");
+                    payload = jsonBuilder.toString();
+                }
+
+                CppCallbacks.notificationTapped(tag, id, notificationManagerName, payload);
             }
         }
     }
@@ -268,8 +324,7 @@ public class QutilsActivity extends QtActivity
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
-    private void handleAppLink() {
-        Intent intent = getIntent();
+    private void handleAppLink(Intent intent) {
         if (intent.getAction() != null) {
             String uri = intent.getDataString();
             if (uri != null) {

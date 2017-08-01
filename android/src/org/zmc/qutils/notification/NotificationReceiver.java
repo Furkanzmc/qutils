@@ -24,7 +24,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Notification notification = intent.getParcelableExtra(KEY_NOTIFICATION);
-        int id = intent.getIntExtra(KEY_NOTIFICATION_ID, 0);
+        int id = intent.getIntExtra(KEY_NOTIFICATION_ID, -1);
         String tag = intent.getStringExtra(KEY_NOTIFICATION_TAG);
 
         if (NotificationClient.isInitialized()) {

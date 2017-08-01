@@ -6,6 +6,8 @@ namespace zmc
 {
 
 class Notification;
+using NotificationQueueMember = std::tuple<QString/*tag*/, int/*id*/, QString/*managerName*/, QString/*payload*/, bool/*isTapped*/>;
+using NotificationQueue = std::vector<NotificationQueueMember>;
 
 class NotificationClient : public QObject
 {
@@ -42,7 +44,7 @@ public:
      * `objectName` property is empty, then all of the `NotificationManager`s will be signaled when the app finishes loading.
      * @param tup
      */
-    static void addNotifiationQueue(const std::tuple<QString, int, QString, QString, bool> &tup);
+    static void addNotifiationQueue(const NotificationQueueMember &tup);
 
     static void emitFCMTokenReceivedSignal(const QString &token);
 
@@ -57,13 +59,13 @@ public:
 
 signals:
     void notificationReceived(const QString &payload);
-    void notificationTapped(const QString &payload);
+    void notificationTapped(QString payload);
     void fcmTokenReceived(const QString &token);
 
 private:
     static int m_NotificationID;
     static std::vector<std::pair<std::pair<QString, int>, NotificationClient *>> m_Clients;
-    static std::vector<std::tuple<QString, int, QString, QString, bool>> m_NotificationQueue;
+    static NotificationQueue m_NotificationQueue;
 
     static QList<NotificationClient *> m_Instances;
 #if FCM_ENABLED == 1
@@ -74,7 +76,6 @@ private:
 
 private:
     void setNotificationProperties(const Notification *notification);
-
     void processQueue();
 };
 

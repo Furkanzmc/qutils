@@ -3,9 +3,11 @@
 #include <functional>
 // Qt
 #include <QtAndroidExtras/QAndroidJniObject>
-#include <QDebug>
+#include <QGuiApplication>
+#include <QThread>
 #include <QTimer>
 #include <QDateTime>
+#include <QMetaMethod>
 // Local
 #include "qutils/android/Notification_Android.h"
 #include "qutils/android/JNICallbacks.h"
@@ -13,8 +15,6 @@
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
-using NotificationQueue = std::vector<std::tuple<QString, int, QString, QString, bool>>;
-using NotificationQueueMember = std::tuple<QString, int, QString, QString, bool>;
 
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
 
@@ -34,18 +34,15 @@ NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
 {
-    /*
-     * This is to execute the `processQueue` function with the next cycle.
-     * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
-     */
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
-
     m_Instances.push_back(this);
 
+#if FCM_ENABLED == 1
     if (m_FCMToken.length() > 0) {
         QTimer::singleShot(1, std::bind(NotificationClient::emitFCMTokenReceivedSignal, m_FCMToken));
         m_FCMToken = "";
     }
+#endif // FCM_ENABLED == 1
 }
 
 NotificationClient::~NotificationClient()
@@ -119,10 +116,11 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
     return instance;
 }
 
-void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QString, QString, bool> &tup)
+void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 {
     auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
-        return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple) && std::get<2>(tup) == std::get<2>(inTuple);
+        return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple)
+               && std::get<2>(tup) == std::get<2>(inTuple) && std::get<4>(tup) == std::get<4>(inTuple);
     });
 
     // Do not add the same notification twice.
@@ -130,10 +128,13 @@ void NotificationClient::addNotifiationQueue(const std::tuple<QString, int, QStr
         m_NotificationQueue.push_back(tup);
     }
 
+    // Let every instance process and then remove the tuple from the queue.
     if (m_Instances.size() > 0) {
         for (NotificationClient *client : m_Instances) {
             client->processQueue();
         }
+
+        m_NotificationQueue.pop_back();
     }
 }
 
@@ -146,9 +147,11 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
             }
         }
     }
+#if FCM_ENABLED == 1
     else {
         m_FCMToken = token;
     }
+#endif // FCM_ENABLED == 1
 }
 
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
@@ -250,7 +253,7 @@ void NotificationClient::processQueue()
 
     QString objectName = this->objectName();
     for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
-        const NotificationQueueMember tup = m_NotificationQueue.at(index);
+        const NotificationQueueMember &tup = m_NotificationQueue[index];
         const QString payload = std::get<3>(tup);
 
         const QString managerName = std::get<2>(tup);
@@ -264,7 +267,6 @@ void NotificationClient::processQueue()
         }
 
         if (shouldNotify) {
-            m_NotificationQueue.erase(m_NotificationQueue.begin() + index);
             if (std::get<4>(tup) == true) {
                 emit notificationTapped(payload);
             }
