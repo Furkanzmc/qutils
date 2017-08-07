@@ -24,20 +24,6 @@ android {
 
     isEqual(FCM_ENABLED, true) {
         DEFINES += FCM_ENABLED=1
-        _PATH_CHECK = $$(FIREBASE_PATH)
-        isEmpty(_PATH_CHECK) {
-            error("FIREBASE_PATH environment variable is not set!");
-        }
-
-        INCLUDEPATH += $$(FIREBASE_PATH)/include
-        LIBS += -L$$(FIREBASE_PATH)/libs/android/armeabi-v7a/c++ -lmessaging -lapp
-
-#        HEADERS += \
-#            $$PWD/include/qutils/FCMListener.h
-
-#        SOURCES += \
-#            $$PWD/src/FCMListener.cpp
-
         OTHER_FILES += \
             $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
             $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java
