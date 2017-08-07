@@ -19,11 +19,9 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     private static QutilsActivity m_MainContext;
 
-    public TimePickerFragment(QutilsActivity mainActivity)
-    {
+    public TimePickerFragment(QutilsActivity mainActivity) {
         m_MainContext = mainActivity;
     }
-
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

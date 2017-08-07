@@ -1,5 +1,6 @@
 package org.zmc.qutils.notification;
 // Android
+
 import android.util.Log;
 // Firebase
 import com.google.firebase.iid.FirebaseInstanceId;

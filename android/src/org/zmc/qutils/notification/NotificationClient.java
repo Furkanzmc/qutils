@@ -1,6 +1,7 @@
 package org.zmc.qutils.notification;
 
 import org.qtproject.qt5.android.bindings.QtActivity;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -18,8 +19,7 @@ import android.os.Build;
 // qutils
 import org.zmc.qutils.CppCallbacks;
 
-public class NotificationClient extends QtActivity
-{
+public class NotificationClient extends QtActivity {
     private static NotificationManager m_NotificationManager;
 
     // This is the main launcher context of the app
@@ -62,13 +62,11 @@ public class NotificationClient extends QtActivity
         m_TargetNotificationManager = "";
     }
 
-    public NotificationClient(QtActivity mainActivity)
-    {
+    public NotificationClient(QtActivity mainActivity) {
         m_MainContext = mainActivity;
     }
 
-    public static boolean isInitialized()
-    {
+    public static boolean isInitialized() {
         return m_MainContext != null;
     }
 
@@ -76,75 +74,61 @@ public class NotificationClient extends QtActivity
         return m_NotificationID;
     }
 
-    public static void setPriority(int priority)
-    {
+    public static void setPriority(int priority) {
         m_Priority = priority;
     }
 
-    public static void setCategory(String category)
-    {
+    public static void setCategory(String category) {
         m_Category = category;
     }
 
-    public static void setLedColor(String color)
-    {
+    public static void setLedColor(String color) {
         m_LedColor = color;
     }
 
-    public static void setLedOnMS(int ms)
-    {
+    public static void setLedOnMS(int ms) {
         m_LedOnMS = ms;
     }
 
-    public static void setLedOffMS(int ms)
-    {
+    public static void setLedOffMS(int ms) {
         m_LedOffMS = ms;
     }
 
-    public static void setSound(String sound)
-    {
+    public static void setSound(String sound) {
         m_Sound = sound;
     }
 
-    public static void setDefaults(int defaults)
-    {
+    public static void setDefaults(int defaults) {
         m_Defaults = defaults;
     }
 
-    public static void setFlags(int flags)
-    {
+    public static void setFlags(int flags) {
         m_Flags = flags;
     }
 
-    public static void setVisibility(int visibility)
-    {
+    public static void setVisibility(int visibility) {
         m_Visibility = visibility;
     }
 
-    public static void setNotificationTag(String tag)
-    {
+    public static void setNotificationTag(String tag) {
         m_NotificationTag = tag;
     }
 
-    public static void setTargetNotificationManager(String target)
-    {
+    public static void setTargetNotificationManager(String target) {
         m_TargetNotificationManager = target;
     }
 
-    public static void setSmallIcon(int icon)
-    {
+    public static void setSmallIcon(int icon) {
         m_SmallIcon = icon;
     }
 
-    public static void notify(String text, String title, String payload, long delayMilliseconds)
-    {
+    public static void notify(String text, String title, String payload, long delayMilliseconds) {
         Notification notification = getNotification(text, title, payload);
         if (delayMilliseconds > 0) {
             scheduleNotification(notification, payload, delayMilliseconds);
-        }
-        else {
+        } else {
             if (m_NotificationManager == null) {
-                m_NotificationManager = (NotificationManager)m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                m_NotificationManager = (NotificationManager) m_MainContext.getSystemService(Context.NOTIFICATION_SERVICE);
             }
 
             CppCallbacks.notificationReceived(m_NotificationTag, m_NotificationID, m_TargetNotificationManager, payload);
@@ -154,8 +138,7 @@ public class NotificationClient extends QtActivity
         m_NotificationID++;
     }
 
-    private static void scheduleNotification(Notification notification, String payload, long delay)
-    {
+    private static void scheduleNotification(Notification notification, String payload, long delay) {
         Intent notificationIntent = new Intent(m_MainContext, NotificationReceiver.class);
         notificationIntent.putExtra(NotificationReceiver.KEY_NOTIFICATION_ID, m_NotificationID);
         if (m_NotificationTag.length() > 0) {
@@ -168,12 +151,11 @@ public class NotificationClient extends QtActivity
         PendingIntent pendingIntent = PendingIntent.getBroadcast(m_MainContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
-        AlarmManager alarmManager = (AlarmManager)m_MainContext.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) m_MainContext.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    private static Notification getNotification(String content, String title, String payload)
-    {
+    private static Notification getNotification(String content, String title, String payload) {
         Notification.Builder builder = new Notification.Builder(m_MainContext);
         builder.setContentTitle(title);
         builder.setContentText(content);

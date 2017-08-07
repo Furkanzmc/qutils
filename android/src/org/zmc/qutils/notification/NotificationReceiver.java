@@ -21,7 +21,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     public static String KEY_PAYLOAD = "payload";
 
     public void onReceive(Context context, Intent intent) {
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Notification notification = intent.getParcelableExtra(KEY_NOTIFICATION);
         int id = intent.getIntExtra(KEY_NOTIFICATION_ID, -1);

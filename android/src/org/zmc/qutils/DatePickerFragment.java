@@ -18,8 +18,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     private static QutilsActivity m_MainContext;
 
-    public DatePickerFragment(QutilsActivity mainActivity)
-    {
+    public DatePickerFragment(QutilsActivity mainActivity) {
         m_MainContext = mainActivity;
     }
 

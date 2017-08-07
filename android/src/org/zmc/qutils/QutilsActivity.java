@@ -1,6 +1,7 @@
 package org.zmc.qutils;
 
 // Java
+
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -38,8 +39,7 @@ import org.qtproject.qt5.android.bindings.QtActivity;
 /**
  * This is the main acitivity used throughout the QtUtils. Either extend this in your main activity of your app, or initialize it.
  */
-public class QutilsActivity extends QtActivity
-{
+public class QutilsActivity extends QtActivity {
     private static QutilsActivity m_Instance;
     protected static NotificationClient m_NotificationClient;
     protected static AndroidUtils m_AndroidUtils;
@@ -52,8 +52,7 @@ public class QutilsActivity extends QtActivity
     private static int m_LastHandledNotificationID = -1;
     private static String m_LastHandledFCMMessageID = "";
 
-    public QutilsActivity()
-    {
+    public QutilsActivity() {
         m_Instance = this;
         m_CustomData = new HashMap();
     }
@@ -83,8 +82,7 @@ public class QutilsActivity extends QtActivity
                         if (m_PreviousKeyboardHeight == -1) {
                             m_PreviousKeyboardHeight = keyboardHeight;
                             CppCallbacks.keyboardHeightChanged(keyboardHeight);
-                        }
-                        else if (m_PreviousKeyboardHeight != keyboardHeight) {
+                        } else if (m_PreviousKeyboardHeight != keyboardHeight) {
                             m_PreviousKeyboardHeight = keyboardHeight;
                             CppCallbacks.keyboardHeightChanged(keyboardHeight);
                         }
@@ -129,19 +127,16 @@ public class QutilsActivity extends QtActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == Constants.CAMERA_CAPTURE_REQUEST_CODE) {
-                CppCallbacks.cameraCaptured((String)getCustomData("capture_save_path"));
+                CppCallbacks.cameraCaptured((String) getCustomData("capture_save_path"));
                 removeCustomData("capture_save_path");
-            }
-            else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
+            } else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
                 String filePath = getRealPathFromURI(getApplicationContext(), data.getData());
                 CppCallbacks.fileSelected(filePath);
             }
-        }
-        else {
+        } else {
             if (requestCode == Constants.CAMERA_CAPTURE_REQUEST_CODE) {
                 CppCallbacks.cameraCaptureCancelled();
-            }
-            else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
+            } else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
                 CppCallbacks.fileSelectionCancelled();
             }
         }
@@ -169,8 +164,7 @@ public class QutilsActivity extends QtActivity
                 if (isFCMNotification == false) {
                     payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
                     m_LastHandledNotificationID = id;
-                }
-                else {
+                } else {
                     m_LastHandledFCMMessageID = messageID;
                     Bundle extras = intent.getExtras();
                     Set<String> keySet = extras.keySet();
@@ -191,19 +185,16 @@ public class QutilsActivity extends QtActivity
 
                         if (key.equals("google.sent_time")) {
                             jsonBuilder.append("\"sent_time\":");
-                        }
-                        else if (key.equals("google.message_id")) {
+                        } else if (key.equals("google.message_id")) {
                             jsonBuilder.append("\"message_id\":");
-                        }
-                        else {
+                        } else {
                             jsonBuilder.append("\"" + key + "\":");
                         }
 
                         Object value = extras.get(key);
                         if (value.getClass().equals(String.class)) {
                             jsonBuilder.append("\"" + value + "\"");
-                        }
-                        else {
+                        } else {
                             jsonBuilder.append(value);
                         }
 
@@ -220,13 +211,11 @@ public class QutilsActivity extends QtActivity
         }
     }
 
-    public static void setImmersiveModeEnabled(boolean enabled)
-    {
+    public static void setImmersiveModeEnabled(boolean enabled) {
         m_IsImmersiveModeEnabled = enabled;
     }
 
-    public static void setStatusBarVisible(boolean visible)
-    {
+    public static void setStatusBarVisible(boolean visible) {
         m_IsStatusBarVisible = visible;
     }
 
@@ -235,8 +224,7 @@ public class QutilsActivity extends QtActivity
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             CppCallbacks.backButtonPressed();
             return true;
-        }
-        else if (keyCode == KeyEvent.KEYCODE_MENU) {
+        } else if (keyCode == KeyEvent.KEYCODE_MENU) {
             CppCallbacks.menuButtonPressed();
             return true;
         }
@@ -244,18 +232,15 @@ public class QutilsActivity extends QtActivity
         return super.onKeyUp(keyCode, event);
     }
 
-    public static void setCustomData(String key, Object value)
-    {
+    public static void setCustomData(String key, Object value) {
         m_CustomData.put(key, value);
     }
 
-    public static Object getCustomData(String key)
-    {
+    public static Object getCustomData(String key) {
         return m_CustomData.get(key);
     }
 
-    public static void removeCustomData(String key)
-    {
+    public static void removeCustomData(String key) {
         m_CustomData.remove(key);
     }
 
@@ -268,32 +253,28 @@ public class QutilsActivity extends QtActivity
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 return Environment.getExternalStorageDirectory() + "/" + split[1];
-            }
-            else if (isDownloadsDocument(uri)) {
+            } else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 uri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-            }
-            else if (isMediaDocument(uri)) {
+            } else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
                 if ("image".equals(type)) {
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                }
-                else if ("video".equals(type)) {
+                } else if ("video".equals(type)) {
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                }
-                else if ("audio".equals(type)) {
+                } else if ("audio".equals(type)) {
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
                 selection = "_id=?";
-                selectionArgs = new String[]{ split[1] };
+                selectionArgs = new String[]{split[1]};
             }
         }
 
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { MediaStore.Images.Media.DATA };
+            String[] projection = {MediaStore.Images.Media.DATA};
             Cursor cursor = null;
             try {
                 cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
@@ -301,11 +282,9 @@ public class QutilsActivity extends QtActivity
                 if (cursor.moveToFirst()) {
                     return cursor.getString(column_index);
                 }
+            } catch (Exception e) {
             }
-            catch (Exception e) {
-            }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
 

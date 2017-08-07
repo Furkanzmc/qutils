@@ -41,17 +41,14 @@ import org.zmc.qutils.Constants;
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
 
-public class AndroidUtils extends QtActivity
-{
+public class AndroidUtils extends QtActivity {
     private static QutilsActivity m_MainContext;
 
-    public AndroidUtils(QutilsActivity mainActivity)
-    {
+    public AndroidUtils(QutilsActivity mainActivity) {
         m_MainContext = mainActivity;
     }
 
-    public static void dispatchTakePictureIntent(String photoName)
-    {
+    public static void dispatchTakePictureIntent(String photoName) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
             m_MainContext.setResult(m_MainContext.RESULT_OK, takePictureIntent);
@@ -63,8 +60,7 @@ public class AndroidUtils extends QtActivity
         }
     }
 
-    public static void setStatusBarColor(String colorHexStr)
-    {
+    public static void setStatusBarColor(String colorHexStr) {
         if (Build.VERSION.SDK_INT >= 21) {
             if (m_MainContext != null) {
                 Window window = m_MainContext.getWindow();
@@ -80,50 +76,44 @@ public class AndroidUtils extends QtActivity
         }
     }
 
-    public static void setStatusBarVisible(boolean visible)
-    {
+    public static void setStatusBarVisible(boolean visible) {
         if (Build.VERSION.SDK_INT < 16) {
             m_MainContext.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        else {
+        } else {
             View decorView = m_MainContext.getWindow().getDecorView();
             m_MainContext.setStatusBarVisible(visible);
             // Hide the status bar.
             if (visible == false) {
                 decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            }
-            else {
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            } else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
     }
 
-    public static void setImmersiveMode(boolean enabled)
-    {
+    public static void setImmersiveMode(boolean enabled) {
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = m_MainContext.getWindow().getDecorView();
             m_MainContext.setImmersiveModeEnabled(enabled);
             // Hide the status bar.
             if (enabled) {
                 decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            }
-            else {
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            } else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
     }
 
-    public static void shareText(String dialogTitle, String text)
-    {
+    public static void shareText(String dialogTitle, String text) {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -131,13 +121,12 @@ public class AndroidUtils extends QtActivity
         m_MainContext.startActivity(Intent.createChooser(sendIntent, dialogTitle));
     }
 
-    public static void showAlertDialog(HashMap properties)
-    {
+    public static void showAlertDialog(HashMap properties) {
         AlertDialog.Builder builder = new AlertDialog.Builder(m_MainContext);
         builder.setCancelable(false);
-        builder.setTitle((String)properties.get("title"));
+        builder.setTitle((String) properties.get("title"));
         if (properties.containsKey("message")) {
-            builder.setMessage((String)properties.get("message"));
+            builder.setMessage((String) properties.get("message"));
         }
 
         builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -156,7 +145,7 @@ public class AndroidUtils extends QtActivity
         String buttonText = "";
 
         if (properties.containsKey("positive")) {
-            buttonText = (String)properties.get("positive");
+            buttonText = (String) properties.get("positive");
             builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
@@ -165,7 +154,7 @@ public class AndroidUtils extends QtActivity
             });
         }
         if (properties.containsKey("neutral")) {
-            buttonText = (String)properties.get("neutral");
+            buttonText = (String) properties.get("neutral");
             builder.setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
@@ -174,7 +163,7 @@ public class AndroidUtils extends QtActivity
             });
         }
         if (properties.containsKey("negative")) {
-            buttonText = (String)properties.get("negative");
+            buttonText = (String) properties.get("negative");
             builder.setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
@@ -184,7 +173,7 @@ public class AndroidUtils extends QtActivity
         }
 
         if (properties.containsKey("items")) {
-            ArrayList list = (ArrayList)properties.get("items");
+            ArrayList list = (ArrayList) properties.get("items");
             CharSequence[] items = new CharSequence[list.size()];
             for (int i = 0; i < items.length; i++) {
                 items[i] = list.get(i).toString();
@@ -202,20 +191,17 @@ public class AndroidUtils extends QtActivity
         dialog.show();
     }
 
-    public static void showDatePicker()
-    {
+    public static void showDatePicker() {
         DialogFragment newFragment = new DatePickerFragment(m_MainContext);
         newFragment.show(m_MainContext.getFragmentManager(), "datePicker");
     }
 
-    public static void showTimePicker()
-    {
+    public static void showTimePicker() {
         DialogFragment newFragment = new TimePickerFragment(m_MainContext);
         newFragment.show(m_MainContext.getFragmentManager(), "timePicker");
     }
 
-    public static void showTaost(String text, boolean isLongDuration)
-    {
+    public static void showTaost(String text, boolean isLongDuration) {
         int duration = Toast.LENGTH_SHORT;
         if (isLongDuration == true) {
             duration = Toast.LENGTH_LONG;
@@ -225,8 +211,7 @@ public class AndroidUtils extends QtActivity
         toast.show();
     }
 
-    public static void openGallery()
-    {
+    public static void openGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);

@@ -1,5 +1,6 @@
 package org.zmc.qutils.notification;
 // Java
+
 import java.lang.StringBuilder;
 import java.util.Map;
 // Android
