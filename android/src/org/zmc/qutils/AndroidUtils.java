@@ -43,6 +43,7 @@ import org.qtproject.qt5.android.bindings.QtActivity;
 
 public class AndroidUtils extends QtActivity {
     private static QutilsActivity m_MainContext;
+    private static String m_LastStatusBarColor;
 
     public AndroidUtils(QutilsActivity mainActivity) {
         m_MainContext = mainActivity;
@@ -65,6 +66,7 @@ public class AndroidUtils extends QtActivity {
             if (m_MainContext != null) {
                 Window window = m_MainContext.getWindow();
                 if (window != null) {
+                    m_LastStatusBarColor = colorHexStr;
                     // clear FLAG_TRANSLUCENT_STATUS flag:
                     window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                     // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
@@ -215,5 +217,9 @@ public class AndroidUtils extends QtActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
+    }
+
+    public static String getStatusBarColor() {
+        return m_LastStatusBarColor;
     }
 }

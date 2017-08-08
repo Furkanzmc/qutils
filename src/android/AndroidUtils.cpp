@@ -66,6 +66,12 @@ void AndroidUtils::setStatusBarColor(QColor color)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+QString AndroidUtils::getStatusBarColor()
+{
+    const QAndroidJniObject color = QAndroidJniObject::callStaticObjectMethod(ANDROID_UTILS_CLASS, "getStatusBarColor", "()Ljava/lang/String;");
+    return color.toString();
+}
+
 void AndroidUtils::setStatusBarVisible(bool visible)
 {
     auto runnable = [visible]() {

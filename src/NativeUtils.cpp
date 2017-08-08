@@ -54,6 +54,16 @@ void NativeUtils::setStatusBarColor(QColor color)
 #endif // Q_OS_ANDROID
 }
 
+QString NativeUtils::getStatusBarColor()
+{
+    QString color = "black";
+#ifdef Q_OS_ANDROID
+    color = m_AndroidUtils->getStatusBarColor();
+#endif // Q_OS_ANDROID
+
+    return color;
+}
+
 void NativeUtils::setStatusBarVisible(bool visible)
 {
 #ifdef Q_OS_ANDROID

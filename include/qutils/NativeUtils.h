@@ -29,17 +29,18 @@ public:
     explicit NativeUtils(QObject *parent = 0);
 
     Q_INVOKABLE void setStatusBarColor(QColor color);
+    Q_INVOKABLE QString getStatusBarColor();
     Q_INVOKABLE void setStatusBarVisible(bool visible);
-    Q_INVOKABLE void setImmersiveMode(bool visible);
 
+    Q_INVOKABLE void setImmersiveMode(bool visible);
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
-    Q_INVOKABLE void showDatePicker();
 
+    Q_INVOKABLE void showDatePicker();
     Q_INVOKABLE void showTimePicker();
     Q_INVOKABLE void showCamera(const QString &photoName);
-    Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
+    Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
     Q_INVOKABLE void openGallery();
 
