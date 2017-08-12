@@ -12,15 +12,17 @@ namespace Network
 {
 
 struct Response {
-    Response(QString _data, unsigned int _httpCode)
+    Response(QString _data, unsigned int _httpCode, QNetworkReply::NetworkError error)
         : data(_data)
         , httpCode(_httpCode)
+        , networkError(error)
     {
 
     }
 
     QString data;
     unsigned int httpCode;
+    QNetworkReply::NetworkError networkError;
 };
 
 using RequestCallback = std::function<void(const Response &)>;

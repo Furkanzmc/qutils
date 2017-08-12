@@ -231,7 +231,7 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
                   "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
     }
 
-    const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+    const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->error());
 
     bool intConversionOk = false;
     int callbackIndex = reply->objectName().toInt(&intConversionOk);
