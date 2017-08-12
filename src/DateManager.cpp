@@ -236,4 +236,24 @@ QDateTime DateManager::convertToLocalDateTime(QDateTime datetime)
     return datetime.toLocalTime();
 }
 
+qint64 DateManager::dayDifference(QDateTime from, QDateTime to)
+{
+    return from.daysTo(to);
+}
+
+qint64 DateManager::secondDifference(QDateTime from, QDateTime to)
+{
+    return from.secsTo(to);
+}
+
+float DateManager::minuteDifference(QDateTime from, QDateTime to)
+{
+    return from.secsTo(to) / 60.f;
+}
+
+float DateManager::hourDifference(QDateTime from, QDateTime to)
+{
+    return minuteDifference(from, to) / 60.f;
+}
+
 }

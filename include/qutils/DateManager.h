@@ -117,6 +117,11 @@ public:
     Q_INVOKABLE QDateTime fromDateTimeString(const QString &dateTimeStr, const Qt::DateFormat &dateTimeFormat, bool isUTC = false) const;
     Q_INVOKABLE QDateTime convertToLocalDateTime(QDateTime datetime);
 
+    Q_INVOKABLE qint64 dayDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE qint64 secondDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE float minuteDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE float hourDifference(QDateTime from, QDateTime to);
+
 private:
     QDateTime m_DateTime;
 };
