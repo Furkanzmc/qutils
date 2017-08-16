@@ -128,7 +128,6 @@ int DateManager::getMonthStartIndex() const
 {
     int index = 0;
     // NOTE: Always check for en_US locale.
-
     QLocale locale("en_US");
     const QDate date = m_DateTime.date();
     const QDate startOfTheMonth(date.year(), date.month(), 1);
@@ -254,6 +253,16 @@ float DateManager::minuteDifference(QDateTime from, QDateTime to)
 float DateManager::hourDifference(QDateTime from, QDateTime to)
 {
     return minuteDifference(from, to) / 60.f;
+}
+
+bool DateManager::isEarlier(const QDateTime &from, const QDateTime &to)
+{
+    return from < to;
+}
+
+bool DateManager::isLater(const QDateTime &from, const QDateTime &to)
+{
+    return from > to;
 }
 
 }
