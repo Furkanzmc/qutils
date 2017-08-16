@@ -191,7 +191,7 @@ QDateTime DateManager::getCurrentDateTime() const
     return QDateTime::currentDateTime();
 }
 
-QString DateManager::getDateString(const QString &format, QDate date)
+QString DateManager::getDateString(const QString &format, QDate date) const
 {
     if (date.isValid()) {
         return date.toString(format);
