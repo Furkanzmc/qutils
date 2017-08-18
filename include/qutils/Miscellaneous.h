@@ -61,6 +61,7 @@ public:
      * - fileName
      * - size
      * - absoluteDirPath: The result of fileInfo.absoluteDir().absolutePath()
+     * - exists: If this is false, all the other fields will be missing.
      * You can access them with the same names using the JSON dictionary. (e.g result.fileName)
      * @param filePath
      * @return

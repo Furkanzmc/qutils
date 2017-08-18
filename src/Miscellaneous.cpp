@@ -70,19 +70,20 @@ QVariantMap Miscellaneous::getFileInfo(QString filePath)
     QVariantMap info;
     const QFileInfo fileInfo(filePath);
     if (fileInfo.exists() == false) {
-        LOG_ERROR(filePath << " does not exist!");
+        info["exists"] = fileInfo.exists();
     }
+    else {
+        info["absoluteFilePath"] = fileInfo.absoluteFilePath();
+        info["baseName"] = fileInfo.baseName();
+        info["completeBaseName"] = fileInfo.completeBaseName();
 
-    info["absoluteFilePath"] = fileInfo.absoluteFilePath();
-    info["baseName"] = fileInfo.baseName();
-    info["completeBaseName"] = fileInfo.completeBaseName();
+        info["completeSuffix"] = fileInfo.completeSuffix();
+        info["created"] = fileInfo.created().toString(Qt::DateFormat::ISODate);
+        info["fileName"] = fileInfo.fileName();
 
-    info["completeSuffix"] = fileInfo.completeSuffix();
-    info["created"] = fileInfo.created().toString(Qt::DateFormat::ISODate);
-    info["fileName"] = fileInfo.fileName();
-
-    info["size"] = fileInfo.size();
-    info["absoluteDirPath"] = fileInfo.absoluteDir().absolutePath();
+        info["size"] = fileInfo.size();
+        info["absoluteDirPath"] = fileInfo.absoluteDir().absolutePath();
+    }
 
     return info;
 }
