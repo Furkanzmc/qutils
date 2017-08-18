@@ -87,7 +87,8 @@ HEADERS += \
     $$PWD/include/qutils/JsonUtils.h \
     $$PWD/include/qutils/SignalManager.h \
     $$PWD/include/qutils/DateManager.h \
-    $$PWD/include/qutils/QutilsLog.h
+    $$PWD/include/qutils/QutilsLog.h \
+    $$PWD/include/qutils/Miscellaneous.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -102,7 +103,8 @@ SOURCES += \
     $$PWD/src/SignalManager.cpp \
     $$PWD/src/DateManager.cpp \
     $$PWD/src/QMLRefresh.cpp \
-    $$PWD/src/QutilsLog.cpp
+    $$PWD/src/QutilsLog.cpp \
+    $$PWD/src/Miscellaneous.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \
