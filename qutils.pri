@@ -88,7 +88,8 @@ HEADERS += \
     $$PWD/include/qutils/SignalManager.h \
     $$PWD/include/qutils/DateManager.h \
     $$PWD/include/qutils/QutilsLog.h \
-    $$PWD/include/qutils/Miscellaneous.h
+    $$PWD/include/qutils/Miscellaneous.h \
+    $$PWD/include/qutils/CppTypes.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
