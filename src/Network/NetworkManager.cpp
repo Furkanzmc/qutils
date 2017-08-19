@@ -228,7 +228,8 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         LOG_ERROR("Network error occured for URL (" << reply->request().url().toString() << ")."
                   "\nError string: " << reply->errorString() <<
-                  "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+                  "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() <<
+                  "\nNetwork Error code: " << reply->error());
     }
 
     const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->error());
