@@ -180,7 +180,7 @@ bool NativeUtils::isEnabled() const
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->isEnabled();
 #else
-
+    return true;
 #endif // Q_OS_ANDROID
 }
 
