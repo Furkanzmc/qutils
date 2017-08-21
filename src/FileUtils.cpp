@@ -1,4 +1,4 @@
-#include "qutils/Miscellaneous.h"
+#include "qutils/FileUtils.h"
 // Qt
 #include <QFile>
 #include <QDir>
@@ -38,15 +38,15 @@ void ImageQualityWorkerThread::run()
     emit resultReady(sucess, m_NewPath);
 }
 
-// ----- Miscellaneous ----- //
+// ----- FileUtils ----- //
 
-Miscellaneous::Miscellaneous(QObject *parent)
+FileUtils::FileUtils(QObject *parent)
     : QObject(parent)
 {
 
 }
 
-void Miscellaneous::changeImageQuality(QString imagePath, QString newPath, const int &quality)
+void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int &quality)
 {
     if (imagePath.contains("file://")) {
         imagePath.remove("file://");
@@ -57,11 +57,11 @@ void Miscellaneous::changeImageQuality(QString imagePath, QString newPath, const
     }
 
     ImageQualityWorkerThread *workerThread = new ImageQualityWorkerThread(imagePath, quality, newPath, this);
-    connect(workerThread, &ImageQualityWorkerThread::resultReady, this, &Miscellaneous::imageQualityChanged);
+    connect(workerThread, &ImageQualityWorkerThread::resultReady, this, &FileUtils::imageQualityChanged);
     workerThread->start();
 }
 
-QVariantMap Miscellaneous::getFileInfo(QString filePath)
+QVariantMap FileUtils::getFileInfo(QString filePath)
 {
     if (filePath.contains("file://")) {
         filePath.remove("file://");

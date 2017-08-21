@@ -30,15 +30,15 @@ private:
 };
 
 /**
- * @brief The Miscellaneous class
- * This is where different kinds of utility functions that do not fit any category or don't have enough value to be categorized yet will be stored.
+ * @brief The FileUtils class
+ * This class holds functionality that is commonly used for files.
  */
-class Miscellaneous : public QObject
+class FileUtils : public QObject
 {
     Q_OBJECT
 
 public:
-    Miscellaneous(QObject *parent = nullptr);
+    FileUtils(QObject *parent = nullptr);
 
     /**
      * @brief Changes the image quality without altering the image size. The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small

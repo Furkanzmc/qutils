@@ -88,7 +88,7 @@ HEADERS += \
     $$PWD/include/qutils/SignalManager.h \
     $$PWD/include/qutils/DateManager.h \
     $$PWD/include/qutils/QutilsLog.h \
-    $$PWD/include/qutils/Miscellaneous.h \
+    $$PWD/include/qutils/FileUtils.h \
     $$PWD/include/qutils/CppTypes.h
 
 SOURCES += \
@@ -105,7 +105,7 @@ SOURCES += \
     $$PWD/src/DateManager.cpp \
     $$PWD/src/QMLRefresh.cpp \
     $$PWD/src/QutilsLog.cpp \
-    $$PWD/src/Miscellaneous.cpp
+    $$PWD/src/FileUtils.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \
