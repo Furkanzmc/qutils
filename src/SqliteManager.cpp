@@ -135,6 +135,33 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
     return successful;
 }
 
+bool SqliteManager::clearTable(QSqlDatabase &database, const QString &tableName)
+{
+    bool successful = false;
+    if (database.isOpen() == false) {
+        LOG_ERROR("Given database is not open!");
+        return successful;
+    }
+
+    if (isTableExist(database, tableName) == false) {
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
+        return successful;
+    }
+
+    const QString sqlQueryStr = "DELETE FROM " + tableName;
+    QSqlQuery query(database);
+    bool successfull = query.exec(sqlQueryStr);
+    if (successfull == false) {
+        updateError(database, sqlQueryStr);
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+    }
+    else {
+        successful = true;
+    }
+
+    return successful;
+}
+
 QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint> &values)
 {
     QString query = "WHERE ";

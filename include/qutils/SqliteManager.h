@@ -140,6 +140,14 @@ public:
     bool dropTable(QSqlDatabase &database, const QString &tableName);
 
     /**
+     * @brief Clears the contents of the given table from the given database.
+     * @param database
+     * @param tableName
+     * @return bool
+     */
+    bool clearTable(QSqlDatabase &database, const QString &tableName);
+
+    /**
      * @brief Constructs a string for the WHERE queries.
      * @param values - It's a tuple where item:
      *                 #1 is column name
