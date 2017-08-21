@@ -58,6 +58,12 @@ public:
      */
     Q_INVOKABLE bool exists(const QString &key);
 
+    /**
+     * @brief Clears the cache.
+     * @return bool Returns true If the operation succeeds.
+     */
+    Q_INVOKABLE bool clear();
+
     QString getDatabaseName() const;
 
     /**

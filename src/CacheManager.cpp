@@ -106,6 +106,11 @@ bool CacheManager::exists(const QString &key)
     return m_SqlManager.exists(m_Database, m_CacheTableName, constraints);
 }
 
+bool CacheManager::clear()
+{
+    return m_SqlManager.clearTable(m_Database, m_CacheTableName);
+}
+
 QString CacheManager::getDatabaseName() const
 {
     return m_DatabaseName;
