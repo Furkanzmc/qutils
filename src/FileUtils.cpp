@@ -88,4 +88,42 @@ QVariantMap FileUtils::getFileInfo(QString filePath)
     return info;
 }
 
+bool FileUtils::remove(QString filePath)
+{
+    if (filePath.contains("file://")) {
+        filePath.remove("file://");
+    }
+
+    bool succeeded = false;
+    QFile file(filePath);
+    if (file.exists()) {
+        succeeded = file.remove();
+    }
+
+    return succeeded;
+}
+
+bool FileUtils::exists(QString filePath)
+{
+    if (filePath.contains("file://")) {
+        filePath.remove("file://");
+    }
+
+    QFile file(filePath);
+    return file.exists();
+}
+
+bool FileUtils::copy(QString filePath, QString newFilePath)
+{
+    if (filePath.contains("file://")) {
+        filePath.remove("file://");
+    }
+
+    if (newFilePath.contains("file://")) {
+        newFilePath.remove("file://");
+    }
+
+    return QFile::copy(filePath, newFilePath);
+}
+
 }

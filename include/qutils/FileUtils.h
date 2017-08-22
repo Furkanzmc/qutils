@@ -46,7 +46,7 @@ public:
      * overwritten If newPath variable is not set. But for any reason the newPath cannot opened for writing, the operation will be terminated.
      * @param imagePath
      * @param quality
-     * @return bool
+     * @return void
      */
     Q_INVOKABLE void changeImageQuality(QString imagePath, QString newPath, const int &quality);
 
@@ -64,9 +64,30 @@ public:
      * - exists: If this is false, all the other fields will be missing.
      * You can access them with the same names using the JSON dictionary. (e.g result.fileName)
      * @param filePath
-     * @return
+     * @return QVariantMap
      */
     Q_INVOKABLE QVariantMap getFileInfo(QString filePath);
+
+    /**
+     * @brief Deletes the given file from the file systen and returns true if succeeds.
+     * @param filePath
+     * @return bool
+     */
+    Q_INVOKABLE bool remove(QString filePath);
+
+    /**
+     * @brief Returns true if the file exists.
+     * @param filePath
+     * @return bool
+     */
+    Q_INVOKABLE bool exists(QString filePath);
+
+    /**
+     * @brief Copies the given file to given location.
+     * @param filePath
+     * @return bool
+     */
+    Q_INVOKABLE bool copy(QString filePath, QString newFilePath);
 
 signals:
     void imageQualityChanged(bool sucess, const QString &savedPath);
