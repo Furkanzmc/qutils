@@ -22,7 +22,7 @@ ImageQualityWorkerThread::ImageQualityWorkerThread(const QString &imagePath, con
 
 void ImageQualityWorkerThread::run()
 {
-    bool sucess = false;
+    bool success = false;
     QFile file(m_NewPath);
 
     if (file.open(QIODevice::OpenModeFlag::WriteOnly) == false) {
@@ -32,10 +32,10 @@ void ImageQualityWorkerThread::run()
         QImage img(m_ImagePath);
         img.save(&file, nullptr, m_Quality);
         file.close();
-        sucess = true;
+        success = true;
     }
 
-    emit resultReady(sucess, m_NewPath);
+    emit resultReady(success, m_NewPath);
 }
 
 // ----- FileUtils ----- //

@@ -21,7 +21,7 @@ public:
     void setNewPath(const QString &NewPath);
 
 signals:
-    void resultReady(bool sucess, const QString &savedPath);
+    void resultReady(bool success, const QString &savedPath);
 
 private:
     QString m_ImagePath;
@@ -90,7 +90,7 @@ public:
     Q_INVOKABLE bool copy(QString filePath, QString newFilePath);
 
 signals:
-    void imageQualityChanged(bool sucess, const QString &savedPath);
+    void imageQualityChanged(bool success, const QString &savedPath);
 
 private:
     void showImage(int num);
