@@ -492,7 +492,9 @@ void AndroidUtils::emitOpenedWithoutURLSignal()
 {
     if (m_Instances.size() != 0) {
         AndroidUtils *utils = m_Instances.at(0);
-        utils->openedWithoutURL();
+        if (utils) {
+            emit utils->openedWithoutURL();
+        }
     }
 }
 
