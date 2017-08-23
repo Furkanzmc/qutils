@@ -182,3 +182,11 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 ```
+
+If you don't want to use Firebase in your project, you can use the following code in your `build.gradle` file to exclude the Firebase related files.
+
+```
+java {
+    exclude "**/notification/QutilsFirebase**"
+}
+```
