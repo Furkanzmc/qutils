@@ -5,7 +5,7 @@
 #include "android/NotificationClient_Android.h"
 #endif // Q_OS_ANDROID
 
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS)
+#if !defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 namespace zmc
 {
 
