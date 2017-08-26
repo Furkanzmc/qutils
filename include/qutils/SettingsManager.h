@@ -64,6 +64,12 @@ public:
      */
     Q_INVOKABLE bool exists(const QString &key);
 
+    /**
+     * @brief Clears the whole settings.
+     * @return bool
+     */
+    Q_INVOKABLE bool clear();
+
     QString getDatabaseName() const;
 
     /**

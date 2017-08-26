@@ -119,6 +119,11 @@ bool SettingsManager::exists(const QString &key)
     return m_SqlManager.exists(m_Database, m_SettingsTableName, constraints);
 }
 
+bool SettingsManager::clear()
+{
+    return m_SqlManager.clearTable(m_Database, m_SettingsTableName);
+}
+
 QString SettingsManager::getDatabaseName() const
 {
     return m_DatabaseName;
