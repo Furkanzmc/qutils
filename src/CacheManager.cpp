@@ -108,6 +108,8 @@ bool CacheManager::exists(const QString &key)
 
 bool CacheManager::clear()
 {
+    DATABASE_CHECK();
+
     return m_SqlManager.clearTable(m_Database, m_CacheTableName);
 }
 
