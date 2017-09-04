@@ -32,7 +32,7 @@ class NetworkManager : public QObject
     Q_OBJECT
 
 public:
-    NetworkManager();
+    explicit NetworkManager(QObject *parent = nullptr);
     ~NetworkManager();
 
     void sendGet(const QString &url, RequestCallback callback);

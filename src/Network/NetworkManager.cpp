@@ -16,8 +16,8 @@ namespace Network
 
 unsigned int NetworkManager::m_RequestCount = 0;
 
-NetworkManager::NetworkManager()
-    : QObject(nullptr)
+NetworkManager::NetworkManager(QObject *parent)
+    : QObject(parent)
 {
     connect(&m_Network, &QNetworkAccessManager::finished, this, &NetworkManager::onRequestFinished);
 }
