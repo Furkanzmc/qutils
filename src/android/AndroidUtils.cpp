@@ -50,20 +50,25 @@ AndroidUtils::~AndroidUtils()
 
 void AndroidUtils::setStatusBarColor(QColor color)
 {
-    auto runnable = [color]() {
-        QString ledColor = "";
-        if (color.isValid()) {
-            ledColor = color.name(QColor::NameFormat::HexArgb);
-        }
-        QAndroidJniObject jniColor = QAndroidJniObject::fromString(ledColor);
-        QAndroidJniObject::callStaticMethod<void>(
-            ANDROID_UTILS_CLASS,
-            "setStatusBarColor",
-            "(Ljava/lang/String;)V",
-            jniColor.object<jstring>());
-    };
+    if (color.isValid()) {
+        auto runnable = [color]() {
+            QString ledColor = "";
+            if (color.isValid()) {
+                ledColor = color.name(QColor::NameFormat::HexArgb);
+            }
+            QAndroidJniObject jniColor = QAndroidJniObject::fromString(ledColor);
+            QAndroidJniObject::callStaticMethod<void>(
+                ANDROID_UTILS_CLASS,
+                "setStatusBarColor",
+                "(Ljava/lang/String;)V",
+                jniColor.object<jstring>());
+        };
 
-    QtAndroid::runOnAndroidThreadSync(runnable);
+        QtAndroid::runOnAndroidThreadSync(runnable);
+    }
+    else {
+        LOG_ERROR("Given color is not valid!");
+    }
 }
 
 QString AndroidUtils::getStatusBarColor()
