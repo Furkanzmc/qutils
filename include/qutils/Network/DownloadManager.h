@@ -28,7 +28,7 @@ class DownloadManager: public QObject
     Q_OBJECT
 
 public:
-    DownloadManager(QObject *parent = nullptr);
+    explicit DownloadManager(QObject *parent = nullptr);
     ~DownloadManager();
 
     /**
