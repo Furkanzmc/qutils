@@ -102,7 +102,9 @@ public:
     void setEnabled(bool enabled);
 
     /**
-     * @brief Signals are not emitted if the application state is not Qt::ApplicationActive.
+     * @brief Signals are not emitted if the application state is not Qt::ApplicationActive. AndroidUtils starts from the latest created AndroidUtils instance
+     * and works its way down to the bottom. And the loop is broken when we hit the first instance who has the buttonEventsEnabled property true. The default
+     * value of the property is false.
      * @param isBackButton
      * @param isMenuButton
      */
@@ -174,13 +176,17 @@ private:
     static QList<AndroidUtils *> m_Instances;
     static QString m_URLOpenedWith;
 
-    int m_InstanceID;
+    const int m_InstanceID;
     bool m_IsAlertShown,
          m_IsDatePickerShown,
          m_IsTimePickerShown,
          m_IsCameraShown,
-         m_IsGalleryShown,
-         m_IsButtonEventsEnabled;
+         m_IsGalleryShown;
+
+    /**
+     * @brief The default value is false. This is used to determine which instance to send the backButtonPressed signal.
+     */
+    bool m_IsButtonEventsEnabled;
 
 private:
     void emitBackButtonPressed();
