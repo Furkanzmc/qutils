@@ -102,8 +102,9 @@ private:
      */
     void restartDatabase();
 
-    void emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
+    static void emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
     void emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
+    static void emitClearedSignals();
 
 signals:
     /**
@@ -118,6 +119,7 @@ signals:
 
     void databaseOpened();
     void databaseClosed();
+    void cleared();
 
 public slots:
 };

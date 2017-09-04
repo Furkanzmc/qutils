@@ -121,7 +121,14 @@ bool SettingsManager::exists(const QString &key)
 
 bool SettingsManager::clear()
 {
-    return m_SqlManager.clearTable(m_Database, m_SettingsTableName);
+    DATABASE_CHECK();
+
+    bool successful = m_SqlManager.clearTable(m_Database, m_SettingsTableName);
+    if (successful) {
+        emitClearedSignals();
+    }
+
+    return successful;
 }
 
 QString SettingsManager::getDatabaseName() const
@@ -203,6 +210,15 @@ void SettingsManager::emitSettingChangedInAllInstances(const QString &settingNam
 void SettingsManager::emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
 {
     emit settingChanged(settingName, oldSettingValue, newSettingValue);
+}
+
+void SettingsManager::emitClearedSignals()
+{
+    for (SettingsManager *man : m_Instances) {
+        if (man) {
+            man->cleared();
+        }
+    }
 }
 
 }
