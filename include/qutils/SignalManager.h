@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QVector>
+#include <QVariant>
 
 namespace zmc
 {
@@ -21,10 +22,15 @@ public:
      * @param signalName
      * @param targetObjectName
      */
-    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "");
+    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "", const QVariant data = QVariant());
 
 signals:
-    void signalReceived(const QString &signalName);
+    /**
+     * @brief If there was no data passed to the signal, it will be null.
+     * @param signalName
+     * @param data
+     */
+    void signalReceived(const QString &signalName, QVariant data);
 
 private:
     static QVector<SignalManager *> m_Instances;
@@ -32,7 +38,7 @@ private:
     const unsigned int m_InstanceIndex;
 
 private:
-    void emitSignalPrivate(const QString &signalName);
+    void emitSignalPrivate(const QString &signalName, const QVariant data);
 };
 
 }
