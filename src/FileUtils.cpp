@@ -5,6 +5,8 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QDateTime>
+#include <QCryptographicHash>
+#include <QUrl>
 // Local
 #include "qutils/Macros.h"
 
@@ -124,6 +126,41 @@ bool FileUtils::copy(QString filePath, QString newFilePath)
     }
 
     return QFile::copy(filePath, newFilePath);
+}
+
+QString FileUtils::getFileChecksum(const QString &filePath)
+{
+    QString hashData = "";
+    QFile file(filePath);
+
+    if (file.exists()) {
+        if (file.open(QFile::ReadOnly)) {
+            QCryptographicHash hash(QCryptographicHash::Algorithm::Md5);
+            if (hash.addData(&file)) {
+                hashData = QString(hash.result().toHex());
+            }
+        }
+        else {
+            LOG_ERROR(filePath << " cannot be opened for reading. " << file.errorString());
+        }
+    }
+    else {
+        LOG_ERROR(filePath << " does not exist!");
+    }
+
+    return hashData;
+}
+
+bool FileUtils::isValidURL(const QString &url) const
+{
+    QUrl urlObject(url);
+    return urlObject.isValid();
+}
+
+bool FileUtils::isLocalFile(const QString &url) const
+{
+    QUrl urlObject(url);
+    return urlObject.isLocalFile();
 }
 
 }

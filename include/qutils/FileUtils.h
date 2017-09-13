@@ -44,6 +44,8 @@ public:
      * @brief Changes the image quality without altering the image size. The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small
      * compressed files, 100 for large uncompressed files, and -1 (the default) to use the default settings. After changing the quality, the image is
      * overwritten If newPath variable is not set. But for any reason the newPath cannot opened for writing, the operation will be terminated.
+     * The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small compressed files, 100 for large uncompressed files, and -1
+     * (the default) to use the default settings.
      * @param imagePath
      * @param quality
      * @return void
@@ -88,6 +90,27 @@ public:
      * @return bool
      */
     Q_INVOKABLE bool copy(QString filePath, QString newFilePath);
+
+    /**
+     * @brief Returns a checksum of the file using MD5 algorithm.
+     * @param filePath
+     * @return QString
+     */
+    Q_INVOKABLE QString getFileChecksum(const QString &filePath);
+
+    /**
+     * @brief Returns true if the URL is non-empty and valid; otherwise returns false. Calls the QUrl::isValid.
+     * @param url
+     * @return bool
+     */
+    Q_INVOKABLE bool isValidURL(const QString &url) const;
+
+    /**
+     * @brief Returns true if this URL is pointing to a local file path. A URL is a local file path if the scheme is "file". Calls the QUrl::isLocalFile.
+     * @param url
+     * @return bool
+     */
+    Q_INVOKABLE bool isLocalFile(const QString &url) const;
 
 signals:
     void imageQualityChanged(bool success, const QString &savedPath);
