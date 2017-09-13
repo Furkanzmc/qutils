@@ -85,7 +85,9 @@ void NetworkManager::sendPut(const QString &url, const QString &data, RequestCal
     insertCallback(threadIndex, std::move(callback));
 }
 
-void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
+        RequestCallback callback,
+        bool usePutRequest)
 {
     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
     QMimeDatabase db;
@@ -130,7 +132,14 @@ void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString
     setHeaders(request);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "multipart/form-data; boundary=" + QString(multiPart->boundary()));
 
-    QNetworkReply *reply = m_Network.post(request, multiPart);
+    QNetworkReply *reply = nullptr;
+    if (usePutRequest) {
+        reply = m_Network.put(request, multiPart);
+    }
+    else {
+        reply = m_Network.post(request, multiPart);
+    }
+
     // Delete the multiPart with the reply
     multiPart->setParent(reply);
 
@@ -140,6 +149,21 @@ void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString
     insertCallback(threadIndex, std::move(callback));
 
     connect(reply, &QNetworkReply::uploadProgress, this, &NetworkManager::onUploadProgressChanged);
+}
+
+void NetworkManager::sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+{
+    sendMultipartRequest(url, files, textParams, callback, false);
+}
+
+void NetworkManager::sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+{
+    sendMultipartRequest(url, files, textParams, callback, true);
+}
+
+void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+{
+    sendMultipartRequest(url, files, textParams, callback, false);
 }
 
 bool NetworkManager::isConnectedToInternet()

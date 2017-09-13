@@ -35,10 +35,34 @@ public:
     explicit NetworkManager(QObject *parent = nullptr);
     ~NetworkManager();
 
+    /**
+     * @brief Sends a get request. When the request is finished, the callback is called.
+     * @param url
+     * @param callback
+     */
     void sendGet(const QString &url, RequestCallback callback);
+
+    /**
+     * @brief Sends a delete request. When the request is finished, the callback is called.
+     * @param url
+     * @param callback
+     */
     void sendDelete(const QString &url, RequestCallback callback);
+
+    /**
+     * @brief Sends a post request. When the request is finished, the callback is called.
+     * @param url
+     * @param data
+     * @param callback
+     */
     void sendPost(const QString &url, const QString &data, RequestCallback callback);
 
+    /**
+     * @brief Sends a put request. When the request is finished, the callback is called.
+     * @param url
+     * @param data
+     * @param callback
+     */
     void sendPut(const QString &url, const QString &data, RequestCallback callback);
 
     /**
@@ -48,7 +72,25 @@ public:
      * @param textParams QMap<UPLOAD_KEY, UPLOAD_VALUE>
      * @param callback
      */
+    void sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
+                              bool usePutRequest = false);
+    void sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
+    void sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
+
+    /**
+     * @brief Uses the sendMultipartRequest to upload the given files.
+     * @param url
+     * @param files
+     * @param textParams
+     * @param callback
+     */
     void uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
+
+    /**
+     * @brief Returns true if connected to internet.
+     * @todo Fix this function. Currently it always returns true.
+     * @return bool
+     */
     bool isConnectedToInternet();
 
     /**
@@ -64,6 +106,10 @@ public:
      */
     void setHeader(const QString &headerName, const QString &headerValue);
 
+    /**
+     * @brief Removes the header with the given name.
+     * @param headerName
+     */
     void removeHeader(const QString &headerName);
 
 private:
