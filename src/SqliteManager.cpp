@@ -268,7 +268,19 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
 
     // Now bind the values
     for (auto it = row.constBegin(); it != row.constEnd(); it++) {
-        query.bindValue(":" + it.key(), it.value());
+        if (it.value().type() == QVariant::Type::String) {
+            QString str = it.value().toString();
+            if (str.length() == 0) {
+                str = "\"\"";
+                query.bindValue(":" + it.key(), str);
+            }
+            else {
+                query.bindValue(":" + it.key(), str);
+            }
+        }
+        else {
+            query.bindValue(":" + it.key(), it.value());
+        }
     }
 
     if (query.exec() == false) {
@@ -308,12 +320,24 @@ bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableNa
     query.prepare(sqlQueryStr);
     // Now bind the values
     for (auto it = row.constBegin(); it != row.constEnd(); it++) {
-        query.bindValue(":" + it.key(), it.value());
+        if (it.value().type() == QVariant::Type::String) {
+            QString str = it.value().toString();
+            if (str.length() == 0) {
+                str = "\"\"";
+                query.bindValue(":" + it.key(), str);
+            }
+            else {
+                query.bindValue(":" + it.key(), str);
+            }
+        }
+        else {
+            query.bindValue(":" + it.key(), it.value());
+        }
     }
 
     if (query.exec() == false) {
         updateError(database, sqlQueryStr);
-        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+        LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << query.executedQuery());
     }
     else {
         successful = true;
