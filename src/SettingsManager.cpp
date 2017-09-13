@@ -1,4 +1,5 @@
 #include "qutils/SettingsManager.h"
+#include "qutils/JsonUtils.h"
 // Qt
 #include <QLocale>
 #include <QStandardPaths>
@@ -59,7 +60,17 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
     const bool exists = existingData.size() > 0;
     QMap<QString, QVariant> newMap;
     newMap[COL_SETTING_NAME] = key;
-    newMap[COL_SETTING_VALUE] = value.toByteArray();
+    const int dataTypeID = value.type();
+    if (dataTypeID == QVariant::Type::List || dataTypeID == QVariant::Type::StringList) {
+        newMap[COL_SETTING_VALUE] = JsonUtils::toJsonString(value.toList());
+    }
+    else if (dataTypeID == QVariant::Type::Map) {
+        newMap[COL_SETTING_VALUE] = JsonUtils::toJsonString(value.toMap());
+    }
+    else {
+        newMap[COL_SETTING_VALUE] = value;
+    }
+
     newMap[COL_SETTING_TYPE] = QVariant::fromValue<int>(value.type());
 
     if (exists) {
@@ -91,7 +102,16 @@ QVariant SettingsManager::read(const QString &key)
     const bool exists = existingData.size() > 0;
     if (exists) {
         value = existingData.at(0)[COL_SETTING_VALUE];
-        value.convert(existingData.at(0)[COL_SETTING_TYPE].toInt());
+        const int dataTypeID = existingData.at(0)[COL_SETTING_TYPE].toInt();
+        if (dataTypeID == QVariant::Type::List || dataTypeID == QVariant::Type::StringList) {
+            value = JsonUtils::toVariantList(value.toString());
+        }
+        else if (dataTypeID == QVariant::Type::Map) {
+            value = JsonUtils::toVariantMap(value.toString());
+        }
+        else {
+            value.convert(dataTypeID);
+        }
     }
 
     return value;
