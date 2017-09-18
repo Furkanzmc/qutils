@@ -77,7 +77,7 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
         const QVariantMap oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(m_Database, m_SettingsTableName, newMap, values);
         QVariant oldValue = oldMap[COL_SETTING_VALUE];
-        oldValue.convert(oldMap[COL_SETTING_VALUE].toInt());
+        oldValue.convert(oldMap[COL_SETTING_TYPE].toInt());
 
         emitSettingChangedInAllInstances(key, oldValue, value);
     }
