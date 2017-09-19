@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 // Android
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.Display;
 import android.view.Window;
 
 import android.view.View;
@@ -68,13 +69,16 @@ public class QutilsActivity extends QtActivity {
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     public void onGlobalLayout() {
+                        Display display = getWindowManager().getDefaultDisplay();
+                        android.graphics.Point outSize = new android.graphics.Point();
+                        display.getSize(outSize);
+
                         Rect rect = new Rect();
                         View view = rootWindow.getDecorView();
                         view.getWindowVisibleDisplayFrame(rect);
 
-                        int screenHeight = rootView.getHeight();
+                        int screenHeight = outSize.y;
                         int keyboardHeight = screenHeight - (rect.bottom);
-
                         if (keyboardHeight < 0) {
                             keyboardHeight = 0;
                         }
