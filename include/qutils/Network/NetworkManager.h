@@ -36,11 +36,13 @@ public:
     ~NetworkManager();
 
     /**
-     * @brief Sends a get request. When the request is finished, the callback is called.
+     * @brief Sends a get request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
+     * appended to the end of the URL.
      * @param url
+     * @param queryParams
      * @param callback
      */
-    void sendGet(const QString &url, RequestCallback callback);
+    void sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams = QVariantMap());
 
     /**
      * @brief Sends a delete request. When the request is finished, the callback is called.

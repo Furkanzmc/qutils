@@ -5,6 +5,7 @@
 #include <QHttpPart>
 #include <QFile>
 #include <QMimeDatabase>
+#include <QUrlQuery>
 // qutils
 #include "qutils/Macros.h"
 
@@ -27,11 +28,21 @@ NetworkManager::~NetworkManager()
 
 }
 
-void NetworkManager::sendGet(const QString &url, RequestCallback callback)
+void NetworkManager::sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams)
 {
     const int availableIndex = getAvailableIndex();
     const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
-    const QUrl qurl = QUrl(url);
+    QUrl qurl = QUrl(url);
+
+    if (queryParams.size() > 0) {
+        QUrlQuery query;
+        for (auto it = queryParams.constBegin(); it != queryParams.constEnd(); it++) {
+            query.addQueryItem(it.key(), it.value().toString());
+        }
+
+        qurl.setQuery(query);
+    }
+
     QNetworkRequest request(qurl);
     setHeaders(request);
     QNetworkReply *reply = m_Network.get(request);
