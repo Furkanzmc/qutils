@@ -2,6 +2,7 @@
 // Qt
 #include <QGuiApplication>
 #include <QScreen>
+#include <QFile>
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif // QT_DEBUG
@@ -112,6 +113,16 @@ void ScreenHelper::setXXXHighResourceFolderName(const QString &resourceName)
     m_XXXHighResourceName = resourceName;
 }
 
+void ScreenHelper::setCommonAssetFolder(const QString &path)
+{
+    m_CommonAssetFolder = path;
+}
+
+QString ScreenHelper::getCommonAssetFolder() const
+{
+    return m_CommonAssetFolder;
+}
+
 QString ScreenHelper::getResourceFolderName() const
 {
     QString name = "";
@@ -158,7 +169,16 @@ QString ScreenHelper::getResourceFolderName() const
 
 QString ScreenHelper::getResource(const QString &fileName) const
 {
-    return getResourceFolderName() + "/" + fileName;
+    QString path = getResourceFolderName() + "/" + fileName;
+    // Remove the qrc prefix.
+    QString pathTemp = path;
+    pathTemp.replace("qrc", "");
+
+    if (QFile::exists(pathTemp) == false) {
+        path = getCommonAssetFolder() + "/" + fileName;
+    }
+
+    return path;
 }
 
 float ScreenHelper::getDesiredHeight() const

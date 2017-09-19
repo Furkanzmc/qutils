@@ -86,6 +86,14 @@ public:
     QString getXXXHighResourceFolderName() const;
     void setXXXHighResourceFolderName(const QString &resourceName);
 
+    /**
+     * @brief This folder is used when the asset cannot be found from the other folders.
+     * @param path
+     * @return void
+     */
+    void setCommonAssetFolder(const QString &path);
+    QString getCommonAssetFolder() const;
+
     Q_INVOKABLE QString getResourceFolderName() const;
 
     /**
@@ -119,7 +127,8 @@ private:
             m_HighResourceName,
             m_XHighResourceName,
             m_XXHighResourceName,
-            m_XXXHighResourceName;
+            m_XXXHighResourceName,
+            m_CommonAssetFolder;
 
     float m_Ratio,
           m_RatioFont,
