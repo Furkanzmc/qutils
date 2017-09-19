@@ -68,6 +68,10 @@ You can check out the `qutils_demo` app source code or the app on [Play Store](h
 When you send an instant notification, only the `NonitificationManager` that sent the notification will receive `notificationReceived` signal. But this behavior changes when you send a scheduled notification. Scheduled notifications emit the signals according to the `objectName` of the `NotificationManager` that sent it. If a `NotificationManager` has an empty `objectName`, then when the app is opened by tapping on the scheduled notification all of the `NotificationManager` instances are notified about the `Notification`.
 But if `NotificationManager` has an `objectName` only that `NotificationManager` will be signaled.
 
+### Note
+
+You need to set the notification icon by using `m_NotificationClient.setSmallIcon(R.drawable.icon);`. Otherwise you'll get a `android.app.RemoteServiceException: Bad notification posted from package` error when the notification arrives.
+
 
 # Common
 
@@ -189,4 +193,20 @@ If you don't want to use Firebase in your project, you can use the following cod
 java {
     exclude "**/notification/QutilsFirebase**"
 }
+```
+
+And add these to your `AndroidManifest.xml` file after the `activity` tag.
+
+```
+<receiver android:name="org.zmc.qutils.notification.NotificationReceiver"/>
+<service android:name="org.zmc.qutils.notification.QutilsFirebaseMessagingService">
+    <intent-filter>
+      <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+    </intent-filter>
+</service>
+<service android:name="org.zmc.qutils.notification.QutilsFirebaseInstanceIDService">
+    <intent-filter>
+        <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+    </intent-filter>
+</service>
 ```
