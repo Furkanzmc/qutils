@@ -72,6 +72,8 @@ But if `NotificationManager` has an `objectName` only that `NotificationManager`
 
 You need to set the notification icon by using `m_NotificationClient.setSmallIcon(R.drawable.icon);`. Otherwise you'll get a `android.app.RemoteServiceException: Bad notification posted from package` error when the notification arrives.
 
+Also, when tapping on the notification Android's navigation system messes with Qt window so you should change the `android:launchMode="singleTop"` to `android:launchMode="singleInstance"`
+
 
 # Common
 
