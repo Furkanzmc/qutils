@@ -22,7 +22,7 @@ public:
      * @param signalName
      * @param targetObjectName
      */
-    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "", const QVariant data = QVariant());
+    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "", const QVariantMap data = QVariantMap());
 
 signals:
     /**
@@ -30,7 +30,7 @@ signals:
      * @param signalName
      * @param data
      */
-    void signalReceived(const QString &signalName, QVariant data);
+    void signalReceived(const QString &signalName, QVariantMap data);
 
 private:
     static QVector<SignalManager *> m_Instances;
@@ -38,7 +38,7 @@ private:
     const unsigned int m_InstanceIndex;
 
 private:
-    void emitSignalPrivate(const QString &signalName, const QVariant data);
+    void emitSignalPrivate(const QString &signalName, const QVariantMap data);
 };
 
 }
