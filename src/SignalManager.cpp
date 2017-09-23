@@ -17,7 +17,7 @@ SignalManager::~SignalManager()
     m_Instances[m_InstanceIndex] = nullptr;
 }
 
-void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariantMap data)
+void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariant data)
 {
     for (SignalManager *instance : m_Instances) {
         if (instance) {
@@ -33,9 +33,14 @@ void SignalManager::emitSignal(const QString &signalName, const QString &targetO
     }
 }
 
-void SignalManager::emitSignalPrivate(const QString &signalName, const QVariantMap data)
+void SignalManager::emitSignalPrivate(const QString &signalName, const QVariant data)
 {
-    emit signalReceived(signalName, data);
+    if (data.isValid()) {
+        emit signalReceived(signalName, data);
+    }
+    else {
+        emit signalReceived(signalName, QVariant::fromValue(nullptr));
+    }
 }
 
 }
