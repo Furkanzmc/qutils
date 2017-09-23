@@ -26,6 +26,7 @@ struct Response {
 };
 
 using RequestCallback = std::function<void(const Response &)>;
+using UploadProgressCallback = std::function<void(qint64/*bytesSent*/, qint64/*bytesTotal*/)>;
 
 class NetworkManager : public QObject
 {
@@ -75,9 +76,11 @@ public:
      * @param callback
      */
     void sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                              bool usePutRequest = false);
-    void sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
-    void sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
+                              UploadProgressCallback uploadProgressCallback = nullptr, bool usePutRequest = false);
+    void sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
+                           UploadProgressCallback uploadProgressCallback = nullptr);
+    void sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
+                          UploadProgressCallback uploadProgressCallback = nullptr);
 
     /**
      * @brief Uses the sendMultipartRequest to upload the given files.
@@ -86,7 +89,8 @@ public:
      * @param textParams
      * @param callback
      */
-    void uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback);
+    void uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
+                     UploadProgressCallback uploadProgressCallback = nullptr);
 
     /**
      * @brief Returns true if connected to internet.

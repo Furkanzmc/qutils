@@ -97,8 +97,7 @@ void NetworkManager::sendPut(const QString &url, const QString &data, RequestCal
 }
 
 void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
-        RequestCallback callback,
-        bool usePutRequest)
+        RequestCallback callback, UploadProgressCallback uploadProgressCallback, bool usePutRequest)
 {
     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
     QMimeDatabase db;
@@ -159,22 +158,30 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
     reply->setObjectName(QString::number(threadIndex));
     insertCallback(threadIndex, std::move(callback));
 
-    connect(reply, &QNetworkReply::uploadProgress, this, &NetworkManager::onUploadProgressChanged);
+    if (uploadProgressCallback == nullptr) {
+        connect(reply, &QNetworkReply::uploadProgress, this, &NetworkManager::onUploadProgressChanged);
+    }
+    else {
+        connect(reply, &QNetworkReply::uploadProgress, uploadProgressCallback);
+    }
 }
 
-void NetworkManager::sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+void NetworkManager::sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
+                                       RequestCallback callback, UploadProgressCallback uploadProgressCallback)
 {
-    sendMultipartRequest(url, files, textParams, callback, false);
+    sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, false);
 }
 
-void NetworkManager::sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+void NetworkManager::sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
+                                      RequestCallback callback, UploadProgressCallback uploadProgressCallback)
 {
-    sendMultipartRequest(url, files, textParams, callback, true);
+    sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, true);
 }
 
-void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback)
+void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
+                                 UploadProgressCallback uploadProgressCallback)
 {
-    sendMultipartRequest(url, files, textParams, callback, false);
+    sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, false);
 }
 
 bool NetworkManager::isConnectedToInternet()
