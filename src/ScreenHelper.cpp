@@ -262,8 +262,13 @@ void ScreenHelper::calculateRatio()
 #else
     m_Scale = 1.f;
 #endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
-    m_Ratio = (m_DPI / 160.f) * m_Scale;
-    m_RatioFont = (m_DPI / 160.f) * m_Scale;
+#ifdef Q_OS_ANDROID
+    const float baseDPI = 160.f;
+#else
+    const float baseDPI = 163.f;
+#endif // Q_OS_ANDROID
+    m_Ratio = (m_DPI / baseDPI) * m_Scale;
+    m_RatioFont = (m_DPI / baseDPI) * m_Scale;
 }
 
 float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const
