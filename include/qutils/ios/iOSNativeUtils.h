@@ -10,6 +10,12 @@ public:
     std::function<void(unsigned int /*buttonIndex*/)> onAlertDialogClicked;
     std::function<void(unsigned int /*buttonIndex*/)> onActionSheetClicked;
 
+    /**
+     * @brief If the keyboard is hidden then the width and height will be zero. Otherwise they will be non-zero.
+     * Keyboard's size will be reported as zero with UIKeyboardWillHideNotification. And the keyboard height will change with UIKeyboardWillShowNotification.
+     */
+    std::function<void(int /*height*/)> onKeyboardHeightChanged;
+
 public:
     iOSNativeUtils();
 

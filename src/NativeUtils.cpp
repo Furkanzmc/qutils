@@ -5,15 +5,14 @@
 namespace zmc
 {
 
-#ifdef Q_OS_IOS
-iOSUtils *NativeUtils::m_iOSUtils = new iOSUtils();
-#endif // Q_OS_IOS
-
 NativeUtils::NativeUtils(QObject *parent)
     : QObject(parent)
 #ifdef Q_OS_ANDROID
     , m_AndroidUtils(new AndroidUtils(this))
 #endif // Q_OS_ANDROID
+#ifdef Q_OS_IOS
+    , m_iOSUtils(new iOSUtils())
+#endif // Q_OS_IOS
 {
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
@@ -42,6 +41,7 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_IOS
     connect(m_iOSUtils, &iOSUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
     connect(m_iOSUtils, &iOSUtils::actionSheetClicked, this, &NativeUtils::actionSheetClicked);
+    connect(m_iOSUtils, &iOSUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 #endif // Q_OS_IOS
 }
 

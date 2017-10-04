@@ -79,7 +79,7 @@ private:
     AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
 #ifdef Q_OS_IOS
-    static iOSUtils *m_iOSUtils;
+    iOSUtils *m_iOSUtils;
 #endif // Q_OS_IOS
 };
 

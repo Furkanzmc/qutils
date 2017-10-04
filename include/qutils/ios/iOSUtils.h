@@ -55,6 +55,7 @@ public:
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);
+    void keyboardHeightChanged(int keyboardHeight);
 
 private:
     iOSNativeUtils *m_iOSNative;

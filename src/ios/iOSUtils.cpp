@@ -11,6 +11,7 @@ iOSUtils::iOSUtils(QObject *parent)
 {
     m_iOSNative->onAlertDialogClicked = std::bind(&iOSUtils::alertDialogClicked, this, std::placeholders::_1);
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
+    m_iOSNative->onKeyboardHeightChanged = std::bind(&iOSUtils::keyboardHeightChanged, this, std::placeholders::_1);
 }
 
 void iOSUtils::showAlertView(const QVariantMap &dialogProperties)

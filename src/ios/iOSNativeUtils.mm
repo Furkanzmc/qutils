@@ -4,7 +4,19 @@
 
 iOSNativeUtils::iOSNativeUtils()
 {
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIKeyboardWillHideNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        Q_UNUSED(note);
+        if (onKeyboardHeightChanged) {
+            onKeyboardHeightChanged(0);
+        }
+    }];
 
+    [[NSNotificationCenter defaultCenter] addObserverForName:UIKeyboardWillShowNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+        if (onKeyboardHeightChanged) {
+            const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+            onKeyboardHeightChanged(static_cast<int>(height));
+        }
+    }];
 }
 
 void iOSNativeUtils::showAlertView(const QString &title, const QString &message, const QStringList &buttons)
