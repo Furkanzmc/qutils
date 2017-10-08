@@ -18,6 +18,11 @@ DEFINES += QUTILS_FOR_MOBILE
 CONFIG += ENABLE_FCM
 ```
 
+# Notification Behavior
+
+When you send an instant notification, only the `NonitificationManager` that sent the notification will receive `notificationReceived` signal. But this behavior changes when you send a scheduled notification. Scheduled notifications emit the signals according to the `objectName` of the `NotificationManager` that sent it. If a `NotificationManager` has an empty `objectName`, then when the app is opened by tapping on the scheduled notification all of the `NotificationManager` instances are notified about the `Notification`.
+But if `NotificationManager` has an `objectName` only that `NotificationManager` will be signaled.
+
 
 # Android Features
 
@@ -63,16 +68,48 @@ You can send notifications either by creating a `Notification` object, or just b
 
 You can check out the `qutils_demo` app source code or the app on [Play Store](https://play.google.com/store/apps/details?id=org.zmc.qutils.demo&rdid=org.zmc.qutils.demo).
 
-### Notification Behavior
-
-When you send an instant notification, only the `NonitificationManager` that sent the notification will receive `notificationReceived` signal. But this behavior changes when you send a scheduled notification. Scheduled notifications emit the signals according to the `objectName` of the `NotificationManager` that sent it. If a `NotificationManager` has an empty `objectName`, then when the app is opened by tapping on the scheduled notification all of the `NotificationManager` instances are notified about the `Notification`.
-But if `NotificationManager` has an `objectName` only that `NotificationManager` will be signaled.
-
 ### Note
 
 You need to set the notification icon by using `m_NotificationClient.setSmallIcon(R.drawable.icon);`. Otherwise you'll get a `android.app.RemoteServiceException: Bad notification posted from package` error when the notification arrives.
 
 Also, when tapping on the notification Android's navigation system messes with Qt window so you should change the `android:launchMode="singleTop"` to `android:launchMode="singleInstance"`
+
+# iOS Push Notifications
+
+You can follow the official instructions [here](https://firebase.google.com/docs/cloud-messaging/ios/client).
+To use CocoaPods with Qt create a `ios/CocoaPods` directory in your project's root. And then create an empty XCode project as a dummy project for CocoaPods.
+Initialize the pod and add the dependencies.
+
+Example Pod file:
+
+```
+target 'Dummy' do
+pod 'Firebase/Core'
+pod 'Firebase/Messaging'
+pod 'Firebase/Crash'
+end
+
+```
+
+Adding the libraries in your main `pro` file.
+
+```
+ios {
+    LIBS += -F$$PWD/ios/CocoaPods/Pods/FirebaseCore/Frameworks -framework FirebaseCore \
+        -F$$PWD/ios/CocoaPods/Pods/FirebaseCrash/Frameworks -framework FirebaseCrash \
+        -F$$PWD/ios/CocoaPods/Pods/FirebaseInstanceID/Frameworks -framework FirebaseInstanceID \
+        -F$$PWD/ios/CocoaPods/Pods/FirebaseMessaging/Frameworks -framework FirebaseMessaging
+
+    INCLUDEPATH += $$PWD/ios/CocoaPods/Pods/FirebaseCore/Frameworks/FirebaseCore.framework/Headers \
+        $$PWD/ios/CocoaPods/Pods/FirebaseAnalytics/Frameworks/FirebaseAnalytics.framework/Headers \
+        $$PWD/ios/CocoaPods/Pods/FirebaseCrash/Frameworks/FirebaseCrash.framework/Headers \
+        $$PWD/ios/CocoaPods/Pods/FirebaseInstanceID/Frameworks/FirebaseInstanceID.framework/Headers \
+        $$PWD/ios/CocoaPods/Pods/FirebaseMessaging/Frameworks/FirebaseMessaging.framework/Headers
+
+    XCODE_EXTRAS.files = ios/GoogleService-Info.plist
+    QMAKE_BUNDLE_DATA += XCODE_EXTRAS
+}
+```
 
 
 # Common

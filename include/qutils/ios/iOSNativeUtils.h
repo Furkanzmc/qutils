@@ -47,4 +47,6 @@ public:
      * @param buttons
      */
     void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+
+    void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
 };

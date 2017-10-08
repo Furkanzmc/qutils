@@ -14,22 +14,20 @@ FCM_ENABLED=false
 contains(CONFIG, ENABLE_FCM) {
     message("[qutils] Firebase Cloud Messageing is enabled.")
     FCM_ENABLED=true
+    DEFINES += FCM_ENABLED=1
 }
 else {
     message("[qutils] Firebase Cloud Messageing is NOT enabled.")
+    DEFINES += FCM_ENABLED=0
 }
 
 android {
     QT += androidextras
 
     isEqual(FCM_ENABLED, true) {
-        DEFINES += FCM_ENABLED=1
         OTHER_FILES += \
             $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
             $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java
-    }
-    else {
-        DEFINES += FCM_ENABLED=0
     }
 
     OTHER_FILES += \
@@ -61,13 +59,28 @@ ios {
         $$PWD/include/qutils/ios/iOSNativeUtils.h
 
     OBJECTIVE_SOURCES += \
-        $$PWD/src/ios/iOSNativeUtils.mm
+        $$PWD/src/ios/iOSNativeUtils.mm \
+        $$PWD/src/ios/AppDelegate.mm
 
     HEADERS += \
-        $$PWD/include/qutils/ios/iOSUtils.h
+        $$PWD/include/qutils/ios/iOSUtils.h \
+        $$PWD/include/qutils/ios/NotificationClient_iOS.h \
+        $$PWD/include/qutils/ios/Notification_iOS.h
 
     SOURCES += \
-        $$PWD/src/ios/iOSUtils.cpp
+        $$PWD/src/ios/iOSUtils.cpp \
+        $$PWD/src/ios/NotificationClient_iOS.cpp \
+        $$PWD/src/ios/Notification_iOS.cpp
+
+    LIBS += -framework UserNotifications
+
+    isEqual(FCM_ENABLED, true) {
+        LIBS += -framework UserNotifications
+
+        MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+        MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements
+        QMAKE_MAC_XCODE_SETTINGS += MY_ENTITLEMENTS
+    }
 }
 
 HEADERS += \

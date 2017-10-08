@@ -93,3 +93,14 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
     UIApplication *app = [UIApplication sharedApplication];
     [[[app keyWindow] rootViewController] presentViewController: alert animated: YES completion: nil];
 }
+
+void iOSNativeUtils::schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds)
+{
+    UILocalNotification* localNotification = [[UILocalNotification alloc] init];
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:delayInSeconds];
+    localNotification.alertTitle = title.toNSString();
+    localNotification.alertBody = body.toNSString();
+    localNotification.timeZone = [NSTimeZone defaultTimeZone];
+    UIApplication *app = [UIApplication sharedApplication];
+    [app scheduleLocalNotification:localNotification];
+}
