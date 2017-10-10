@@ -67,7 +67,6 @@ void NotificationClient::schedule(QVariantMap data)
     Notification notif = Notification::fromVariantMap(data);
     if (notif.isValid()) {
         scheduleNotification(&notif);
-        LOG("AKSJAKJSDHSA");
     }
 }
 
@@ -117,6 +116,11 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 
         m_NotificationQueue.pop_back();
     }
+}
+
+QString NotificationClient::getFCMToken() const
+{
+    return m_iOSNative->getFCMToken();
 }
 
 void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)

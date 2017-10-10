@@ -1,6 +1,10 @@
 #import "qutils/ios/iOSNativeUtils.h"
 // UIKit
 #import <UIKit/UIKit.h>
+// Firebase
+#if FCM_ENABLED == 1
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#endif // FCM_ENABLED
 
 iOSNativeUtils::iOSNativeUtils()
 {
@@ -103,4 +107,17 @@ void iOSNativeUtils::schedulePushNotification(const QString &title, const QStrin
     localNotification.timeZone = [NSTimeZone defaultTimeZone];
     UIApplication *app = [UIApplication sharedApplication];
     [app scheduleLocalNotification:localNotification];
+}
+
+QString iOSNativeUtils::getFCMToken() const
+{
+    QString token = "";
+#if FCM_ENABLED == 1
+    NSString *fcmToken = [FIRMessaging messaging].FCMToken;
+    if (fcmToken) {
+        token = QString::fromNSString(fcmToken);
+    }
+#endif // FCM_ENABLED
+
+    return token;
 }

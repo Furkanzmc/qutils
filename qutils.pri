@@ -76,6 +76,7 @@ ios {
 
     isEqual(FCM_ENABLED, true) {
         LIBS += -framework UserNotifications
+        QMAKE_LFLAGS += -ObjC
 
         MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
         MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements

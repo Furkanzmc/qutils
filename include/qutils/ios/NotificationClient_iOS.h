@@ -28,6 +28,18 @@ public:
     Q_INVOKABLE void schedule(QVariantMap data);
 
     /**
+     * @brief Returns an available ID and increases the m_NotificationID
+     * @return
+     */
+    Q_INVOKABLE int getNextID() const;
+
+    /**
+     * @brief Returns teh FCM token.
+     * @return QString
+     */
+    Q_INVOKABLE QString getFCMToken() const;
+
+    /**
      * @brief If an instance with the given tag and ID exists, returns the instance and removes it from the map.
      * @param notificationTag
      * @param notificationID
@@ -52,12 +64,6 @@ public:
 
     void emitNotificationReceivedSignal(QString payload);
     void emitNotificationTappedSignal(QString payload);
-
-    /**
-     * @brief Returns an available ID and increases the m_NotificationID
-     * @return
-     */
-    Q_INVOKABLE int getNextID() const;
 
 signals:
     void notificationReceived(const QString &payload);

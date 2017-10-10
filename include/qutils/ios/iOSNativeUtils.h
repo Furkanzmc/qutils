@@ -49,4 +49,10 @@ public:
     void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
 
     void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
+
+    /**
+     * @brief Returns teh FCM token if it was generated. If it wasn't, returns an empty string.
+     * @return QString
+     */
+    QString getFCMToken() const;
 };
