@@ -54,6 +54,17 @@
 
     UIApplication *app = [UIApplication sharedApplication];
     [app registerForRemoteNotifications];
+
+    // Remote Notification Info
+    NSDictionary *remoteNotifiInfo = [launchOptions objectForKey: UIApplicationLaunchOptionsRemoteNotificationKey];
+
+    // Accept push notification when app is not open
+    if (remoteNotifiInfo) {
+        NSMutableDictionary *mutDict = [remoteNotifiInfo mutableCopy];
+        [mutDict setValue:@"true" forKey:@"is_tapped"];
+        NSDictionary *dict = [mutDict copy];
+        [self application:application didReceiveRemoteNotification: dict];
+    }
 #endif // FCM_ENABLED
 
     return YES;
@@ -62,16 +73,26 @@
 #if FCM_ENABLED == 1
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    // If you are receiving a notification message while your app is in the background,
-    // this callback will not be fired till the user taps on the notification launching the application.
-    // TODO: Handle data of notification
-
-    // With swizzling disabled you must let Messaging know about the message, for Analytics
-    // [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
-
     (void)application;
-    // Print full message.
-    NSLog(@"%@", userInfo);
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:userInfo options:NSJSONWritingPrettyPrinted error:&error];
+    NSString *jsonString;
+    if (jsonData) {
+        jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+    else {
+        jsonString = @"";
+    }
+
+    const QString payload = QString::fromNSString(jsonString);
+    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(QString(""), -1);
+    if (client) {
+        client->emitNotificationReceivedSignal(payload);
+    }
+    else {
+        bool isTapped = [userInfo objectForKey:@"is_tapped"] != nil;
+        zmc::NotificationClient::addNotifiationQueue(std::make_tuple("", -1, "", payload, isTapped));
+    }
 }
 
 - (void)messaging:(nonnull FIRMessaging *)messaging didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
