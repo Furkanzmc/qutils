@@ -109,6 +109,11 @@ void iOSNativeUtils::schedulePushNotification(const QString &title, const QStrin
     [app scheduleLocalNotification:localNotification];
 }
 
+void iOSNativeUtils::dismissKeyboard()
+{
+    [[UIApplication sharedApplication] sendAction:@selector(resignFirstResponder) to:nil from:nil forEvent:nil];
+}
+
 QString iOSNativeUtils::getFCMToken() const
 {
     QString token = "";

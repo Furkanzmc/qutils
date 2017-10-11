@@ -35,4 +35,9 @@ void iOSUtils::showActionSheet(const QString &title, const QString &message, con
     m_iOSNative->showActionSheet(title, message, buttons);
 }
 
+void iOSUtils::dismissKeyboard()
+{
+    m_iOSNative->dismissKeyboard();;
+}
+
 }

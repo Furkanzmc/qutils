@@ -162,6 +162,10 @@ void NativeUtils::dismissKeyboard()
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->dismissKeyboard();
 #endif // Q_OS_ANDROID
+
+#ifdef Q_OS_IOS
+    m_iOSUtils->dismissKeyboard();
+#endif // Q_OS_IOS
 }
 
 bool NativeUtils::isButtonEventsEnabled() const

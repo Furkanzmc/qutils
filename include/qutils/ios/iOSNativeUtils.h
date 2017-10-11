@@ -51,6 +51,12 @@ public:
     void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
 
     /**
+     * @brief Hides the keyboard.
+     * @return void
+     */
+    void dismissKeyboard();
+
+    /**
      * @brief Returns teh FCM token if it was generated. If it wasn't, returns an empty string.
      * @return QString
      */

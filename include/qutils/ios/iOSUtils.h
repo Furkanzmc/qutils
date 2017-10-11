@@ -52,6 +52,12 @@ public:
 
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
 
+    /**
+     * @brief Dismisses the keyboard.
+     * @return void
+     */
+    Q_INVOKABLE void dismissKeyboard();
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);
