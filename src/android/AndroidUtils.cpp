@@ -224,6 +224,18 @@ void AndroidUtils::openGallery()
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+void AndroidUtils::dismissKeyboard()
+{
+    auto runnable = []() {
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "dismissKeyboard",
+            "()V");
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     if (m_IsButtonEventsEnabled) {

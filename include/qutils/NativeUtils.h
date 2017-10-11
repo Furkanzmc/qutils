@@ -44,6 +44,8 @@ public:
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
     Q_INVOKABLE void openGallery();
 
+    Q_INVOKABLE void dismissKeyboard();
+
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
 

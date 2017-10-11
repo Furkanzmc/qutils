@@ -157,6 +157,13 @@ void NativeUtils::openGallery()
 #endif // Q_OS_ANDROID
 }
 
+void NativeUtils::dismissKeyboard()
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->dismissKeyboard();
+#endif // Q_OS_ANDROID
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID

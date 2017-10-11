@@ -1,5 +1,6 @@
 package org.zmc.qutils;
 
+import android.content.Context;
 import android.util.Log;
 import android.graphics.Color;
 import android.view.Window;
@@ -20,6 +21,7 @@ import android.provider.MediaStore;
 import android.os.Environment;
 import android.net.Uri;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 // Java
@@ -58,6 +60,14 @@ public class AndroidUtils extends QtActivity {
             m_MainContext.setCustomData("capture_save_path", filePath);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
             m_MainContext.startActivityForResult(takePictureIntent, Constants.CAMERA_CAPTURE_REQUEST_CODE);
+        }
+    }
+
+    public static void dismissKeyboard() {
+        View view = m_MainContext.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager)m_MainContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
 

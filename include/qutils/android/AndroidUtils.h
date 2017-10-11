@@ -65,30 +65,45 @@ public:
      * nu.showAlertDialog(properties);
      * @endcode
      * @param dialogData
+     * @return void
      */
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
     /**
      * @brief If m_IsEnabled is false, you cannot use this function.
+     * @return void
      */
     Q_INVOKABLE void showDatePicker();
 
     /**
      * @brief If m_IsEnabled is false, you cannot use this function.
+     * @return void
      */
     Q_INVOKABLE void showTimePicker();
 
     /**
      * @brief If m_IsEnabled is false, you cannot use this function.
+     * @return void
      */
     Q_INVOKABLE void showCamera(const QString &fileName);
 
+    /**
+     * @brief Shows toast with the given text.
+     * @return void
+     */
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
 
     /**
      * @brief Opens the gallery for an pick file operation. If m_IsEnabled is false, you cannot use this function.
+     * @return void
      */
     Q_INVOKABLE void openGallery();
+
+    /**
+     * @brief Dismisses the keyboard from the view.
+     * @return void
+     */
+    Q_INVOKABLE void dismissKeyboard();
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
