@@ -40,14 +40,10 @@ android {
         $$PWD/android/src/org/zmc/qutils/TimePickerFragment.java
 
     HEADERS += \
-        $$PWD/include/qutils/android/Notification_Android.h \
-        $$PWD/include/qutils/android/NotificationClient_Android.h \
         $$PWD/include/qutils/android/AndroidUtils.h \
         $$PWD/include/qutils/android/JNICallbacks.h
 
     SOURCES += \
-        $$PWD/src/android/Notification_Android.cpp \
-        $$PWD/src/android/NotificationClient_Android.cpp \
         $$PWD/src/android/AndroidUtils.cpp \
         $$PWD/src/android/JNICallbacks.cpp
 
@@ -63,14 +59,10 @@ ios {
         $$PWD/src/ios/AppDelegate.mm
 
     HEADERS += \
-        $$PWD/include/qutils/ios/iOSUtils.h \
-        $$PWD/include/qutils/ios/NotificationClient_iOS.h \
-        $$PWD/include/qutils/ios/Notification_iOS.h
+        $$PWD/include/qutils/ios/iOSUtils.h
 
     SOURCES += \
-        $$PWD/src/ios/iOSUtils.cpp \
-        $$PWD/src/ios/NotificationClient_iOS.cpp \
-        $$PWD/src/ios/Notification_iOS.cpp
+        $$PWD/src/ios/iOSUtils.cpp
 
     LIBS += -framework UserNotifications
 
@@ -118,6 +110,8 @@ SOURCES += \
     $$PWD/src/SignalManager.cpp \
     $$PWD/src/DateManager.cpp \
     $$PWD/src/QMLRefresh.cpp \
+    $$PWD/src/NotificationClient.cpp \
+    $$PWD/src/Notification.cpp \
     $$PWD/src/QutilsLog.cpp \
     $$PWD/src/FileUtils.cpp
 

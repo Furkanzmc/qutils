@@ -90,7 +90,6 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
     }
     else {
         LOG("Cannot find the instance for the notification (" << notificationTag << ", " << notificationID << ").");
-
     }
 
     return instance;

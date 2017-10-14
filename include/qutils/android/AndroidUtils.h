@@ -4,7 +4,7 @@
 #include <QColor>
 #include <QtAndroidExtras/QAndroidJniObject>
 // Local
-#include "qutils/android/NotificationClient_Android.h"
+#include "qutils/NotificationClient.h"
 
 namespace zmc
 {

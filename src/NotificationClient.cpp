@@ -1,22 +1,31 @@
-#include "qutils/android/NotificationClient_Android.h"
+#include "qutils/NotificationClient.h"
 // std
 #include <functional>
 // Qt
+#ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
+#endif // Q_OS_ANDROID
 #include <QGuiApplication>
 #include <QThread>
 #include <QTimer>
 #include <QDateTime>
 #include <QMetaMethod>
 // Local
-#include "qutils/android/Notification_Android.h"
+#include "qutils/Notification.h"
+#ifdef Q_OS_ANDROID
 #include "qutils/android/JNICallbacks.h"
+#endif // Q_OS_ANDROID
+#ifdef Q_OS_IOS
+#include "qutils/ios/iOSNativeUtils.h"
+#endif // Q_OS_IOS
 #include "qutils/Macros.h"
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
 
+#ifdef Q_OS_ANDROID
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
+#endif // Q_OS_ANDROID
 
 namespace zmc
 {
@@ -33,6 +42,9 @@ QString NotificationClient::m_FCMToken = "";
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
+#ifdef Q_OS_IOS
+    , m_iOSNative(new iOSNativeUtils())
+#endif // Q_OS_IOS
 {
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
     m_Instances.push_back(this);
@@ -52,47 +64,34 @@ NotificationClient::~NotificationClient()
 
 void NotificationClient::scheduleNotification(zmc::Notification *notification)
 {
-    notification->setNotificationManagerName(this->objectName());
-    setNotificationProperties(notification);
+#ifdef Q_OS_MOBILE
+#  ifdef Q_OS_ANDROID
+    scheduleNotificationAndroid(notification);
+#  endif // Q_OS_ANDROID
 
-    qint64 delay = notification->getDelay();
-    const QDateTime date = notification->getDate();
-    if (date.isValid()) {
-        const QDateTime current = QDateTime::currentDateTime();
-        delay = current.msecsTo(date);
-    }
-
-    int notificationID = QAndroidJniObject::callStaticMethod<jint>(
-                             NOTIFICATION_CLIENT_CLASS,
-                             "getLastNotificationID",
-                             "()I");
-
-    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notificationID), this));
-
-    QAndroidJniObject javaNotificationTitle = QAndroidJniObject::fromString(notification->getTitle());
-    QAndroidJniObject javaNotification = QAndroidJniObject::fromString(notification->getText());
-    QAndroidJniObject javaNotificationData = QAndroidJniObject::fromString(notification->getPayload());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "notify",
-        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
-        javaNotification.object<jstring>(),
-        javaNotificationTitle.object<jstring>(),
-        javaNotificationData.object<jstring>(),
-        delay);
+#  ifdef Q_OS_IOS
+    scheduleNotificationIOS(notification);
+#  endif // Q_OS_IOS
+#else
+    Q_UNUSED(notification);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::schedule(QVariantMap data)
 {
+#ifdef Q_OS_MOBILE
     Notification notif = Notification::fromVariantMap(data);
     if (notif.isValid()) {
         scheduleNotification(&notif);
     }
+#endif // Q_OS_MOBILE
 }
 
 int NotificationClient::getNextID() const
 {
+#ifdef Q_OS_MOBILE
     m_NotificationID++;
+#endif // Q_OS_MOBILE
     return m_NotificationID;
 }
 
@@ -118,6 +117,7 @@ NotificationClient *NotificationClient::getInstance(QString notificationTag, int
 
 void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 {
+#ifdef Q_OS_MOBILE
     auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
         return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple)
                && std::get<2>(tup) == std::get<2>(inTuple) && std::get<4>(tup) == std::get<4>(inTuple);
@@ -136,10 +136,14 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 
         m_NotificationQueue.pop_back();
     }
+#else
+    Q_UNUSED(tup);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 {
+#ifdef Q_OS_MOBILE
     if (m_Instances.size() > 0) {
         for (NotificationClient *client : m_Instances) {
             if (client) {
@@ -147,24 +151,84 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
             }
         }
     }
-#if FCM_ENABLED == 1
+#  if FCM_ENABLED == 1
     else {
         m_FCMToken = token;
     }
-#endif // FCM_ENABLED == 1
+#  endif // FCM_ENABLED == 1
+#else
+    Q_UNUSED(token);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
+#ifdef Q_OS_MOBILE
     emit notificationReceived(payload);
+#else
+    Q_UNUSED(payload);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::emitNotificationTappedSignal(QString payload)
 {
+#ifdef Q_OS_MOBILE
     emit notificationTapped(payload);
+#else
+    Q_UNUSED(payload);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::setNotificationProperties(const Notification *notification)
+{
+#ifdef Q_OS_MOBILE
+#  ifdef Q_OS_ANDROID
+    setNotificationPropertiesAndroid(notification);
+#  endif // Q_OS_ANDROID
+
+#  ifdef Q_OS_IOS
+    setNotificationPropertiesIOS(notification);
+#  endif // Q_OS_IOS
+#else
+    Q_UNUSED(notification);
+#endif // Q_OS_MOBILE
+}
+
+void NotificationClient::processQueue()
+{
+    if (m_NotificationQueue.size() == 0) {
+        return;
+    }
+
+    QString objectName = this->objectName();
+    for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
+        const NotificationQueueMember &tup = m_NotificationQueue[index];
+        const QString payload = std::get<3>(tup);
+
+        const QString managerName = std::get<2>(tup);
+        bool shouldNotify = false;
+
+        if ((objectName.length() > 0 && objectName == managerName)) {
+            shouldNotify = true;
+        }
+        else if (managerName.length() == 0) {
+            shouldNotify = true;
+        }
+
+        if (shouldNotify) {
+            if (std::get<4>(tup) == true) {
+                emit notificationTapped(payload);
+            }
+            else {
+                emit notificationReceived(payload);
+            }
+        }
+    }
+}
+
+#ifdef Q_OS_ANDROID
+
+void NotificationClient::setNotificationPropertiesAndroid(const Notification *notification)
 {
     // Set defaults
     QAndroidJniObject::callStaticMethod<void>(
@@ -245,36 +309,58 @@ void NotificationClient::setNotificationProperties(const Notification *notificat
         jniManagerName.object<jstring>());
 }
 
-void NotificationClient::processQueue()
+void NotificationClient::scheduleNotificationAndroid(Notification *notification)
 {
-    if (m_NotificationQueue.size() == 0) {
-        return;
+    notification->setNotificationManagerName(this->objectName());
+    setNotificationProperties(notification);
+
+    qint64 delay = notification->getDelay();
+    const QDateTime date = notification->getDate();
+    if (date.isValid()) {
+        const QDateTime current = QDateTime::currentDateTime();
+        delay = current.msecsTo(date);
     }
 
-    QString objectName = this->objectName();
-    for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
-        const NotificationQueueMember &tup = m_NotificationQueue[index];
-        const QString payload = std::get<3>(tup);
+    int notificationID = QAndroidJniObject::callStaticMethod<jint>(
+                             NOTIFICATION_CLIENT_CLASS,
+                             "getLastNotificationID",
+                             "()I");
 
-        const QString managerName = std::get<2>(tup);
-        bool shouldNotify = false;
+    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notificationID), this));
 
-        if ((objectName.length() > 0 && objectName == managerName)) {
-            shouldNotify = true;
-        }
-        else if (managerName.length() == 0) {
-            shouldNotify = true;
-        }
-
-        if (shouldNotify) {
-            if (std::get<4>(tup) == true) {
-                emit notificationTapped(payload);
-            }
-            else {
-                emit notificationReceived(payload);
-            }
-        }
-    }
+    QAndroidJniObject javaNotificationTitle = QAndroidJniObject::fromString(notification->getTitle());
+    QAndroidJniObject javaNotification = QAndroidJniObject::fromString(notification->getText());
+    QAndroidJniObject javaNotificationData = QAndroidJniObject::fromString(notification->getPayload());
+    QAndroidJniObject::callStaticMethod<void>(
+        NOTIFICATION_CLIENT_CLASS,
+        "notify",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
+        javaNotification.object<jstring>(),
+        javaNotificationTitle.object<jstring>(),
+        javaNotificationData.object<jstring>(),
+        delay);
 }
 
+#endif // Q_OS_ANDROID
+
+#ifdef Q_OS_IOS
+
+void NotificationClient::setNotificationPropertiesIOS(const Notification *notification)
+{
+    Q_UNUSED(notification);
+}
+
+void NotificationClient::scheduleNotificationIOS(zmc::Notification *notification)
+{
+    notification->setNotificationManagerName(this->objectName());
+    setNotificationProperties(notification);
+
+    qint64 delay = notification->getDelay();
+
+    m_iOSNative->schedulePushNotification(notification->getTitle(), notification->getText(), delay);
+
+    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), -1), this));
+}
+
+#endif // Q_OS_IOS
 }
