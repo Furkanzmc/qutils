@@ -62,6 +62,26 @@ NotificationClient::~NotificationClient()
     m_Instances[m_InstanceIndex] = nullptr;
 }
 
+NotificationClient *NotificationClient::getInstance(QString notificationTag, int notificationID)
+{
+    NotificationClient *instance = nullptr;
+
+    auto foundIt = std::find_if(m_Clients.begin(), m_Clients.end(), [&notificationTag, &notificationID](const ClientPair & inst) {
+        return inst.first.first == notificationTag && inst.first.second == notificationID;
+    });
+
+    if (foundIt != m_Clients.end()) {
+        instance = (*foundIt).second;
+        m_Clients.erase(foundIt);
+    }
+    else {
+        LOG("Cannot find the instance for the notification (" << notificationTag << ", " << notificationID << ").");
+
+    }
+
+    return instance;
+}
+
 void NotificationClient::scheduleNotification(zmc::Notification *notification)
 {
 #ifdef Q_OS_MOBILE
@@ -95,24 +115,31 @@ int NotificationClient::getNextID() const
     return m_NotificationID;
 }
 
-NotificationClient *NotificationClient::getInstance(QString notificationTag, int notificationID)
+QString NotificationClient::getFCMToken() const
 {
-    NotificationClient *instance = nullptr;
+    QString token = "";
+#ifdef Q_OS_IOS
+    token = m_iOSNative->getFCMToken();
+#endif // Q_OS_IOS
+    return token;
+}
 
-    auto foundIt = std::find_if(m_Clients.begin(), m_Clients.end(), [&notificationTag, &notificationID](const ClientPair & inst) {
-        return inst.first.first == notificationTag && inst.first.second == notificationID;
-    });
+void NotificationClient::emitNotificationReceivedSignal(QString payload)
+{
+#ifdef Q_OS_MOBILE
+    emit notificationReceived(payload);
+#else
+    Q_UNUSED(payload);
+#endif // Q_OS_MOBILE
+}
 
-    if (foundIt != m_Clients.end()) {
-        instance = (*foundIt).second;
-        m_Clients.erase(foundIt);
-    }
-    else {
-        LOG("Cannot find the instance for the notification (" << notificationTag << ", " << notificationID << ").");
-
-    }
-
-    return instance;
+void NotificationClient::emitNotificationTappedSignal(QString payload)
+{
+#ifdef Q_OS_MOBILE
+    emit notificationTapped(payload);
+#else
+    Q_UNUSED(payload);
+#endif // Q_OS_MOBILE
 }
 
 void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
@@ -158,24 +185,6 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 #  endif // FCM_ENABLED == 1
 #else
     Q_UNUSED(token);
-#endif // Q_OS_MOBILE
-}
-
-void NotificationClient::emitNotificationReceivedSignal(QString payload)
-{
-#ifdef Q_OS_MOBILE
-    emit notificationReceived(payload);
-#else
-    Q_UNUSED(payload);
-#endif // Q_OS_MOBILE
-}
-
-void NotificationClient::emitNotificationTappedSignal(QString payload)
-{
-#ifdef Q_OS_MOBILE
-    emit notificationTapped(payload);
-#else
-    Q_UNUSED(payload);
 #endif // Q_OS_MOBILE
 }
 

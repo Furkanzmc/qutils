@@ -22,6 +22,14 @@ public:
     ~NotificationClient();
 
     /**
+     * @brief If an instance with the given tag and ID exists, returns the instance and removes it from the map.
+     * @param notificationTag
+     * @param notificationID
+     * @return
+     */
+    static NotificationClient *getInstance(QString notificationTag, int notificationID);
+
+    /**
      * @brief Schedule notification with a Notification object.
      * @note the `zmc` namespace is used in the function definition and implementation to avoid `Unknown method parameter type Notification *` error.
      * @param notification
@@ -30,12 +38,19 @@ public:
     Q_INVOKABLE void schedule(QVariantMap data);
 
     /**
-     * @brief If an instance with the given tag and ID exists, returns the instance and removes it from the map.
-     * @param notificationTag
-     * @param notificationID
-     * @return
+     * @brief Returns an available ID and increases the m_NotificationID
+     * @return int
      */
-    static NotificationClient *getInstance(QString notificationTag, int notificationID);
+    Q_INVOKABLE int getNextID() const;
+
+    /**
+     * @brief Returns the FCM token if available. If it is not yet generated, or If FCM is disabled, returns an empty string.
+     * @return QString
+     */
+    Q_INVOKABLE QString getFCMToken() const;
+
+    void emitNotificationReceivedSignal(QString payload);
+    void emitNotificationTappedSignal(QString payload);
 
     /**
      * @brief Notification queue is used when the app receives a notification while it is closed and the user opened the app by clicking on the notification.
@@ -51,15 +66,6 @@ public:
     static void addNotifiationQueue(const NotificationQueueMember &tup);
 
     static void emitFCMTokenReceivedSignal(const QString &token);
-
-    void emitNotificationReceivedSignal(QString payload);
-    void emitNotificationTappedSignal(QString payload);
-
-    /**
-     * @brief Returns an available ID and increases the m_NotificationID
-     * @return
-     */
-    Q_INVOKABLE int getNextID() const;
 
 signals:
     void notificationReceived(const QString &payload);
