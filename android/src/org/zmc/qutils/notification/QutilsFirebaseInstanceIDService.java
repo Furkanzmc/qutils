@@ -24,4 +24,13 @@ public class QutilsFirebaseInstanceIDService extends FirebaseInstanceIdService {
         // Get updated InstanceID token.
         CppCallbacks.fcmTokenReceived(FirebaseInstanceId.getInstance().getToken());
     }
+
+    public static String getFMCToken() {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        if (token == null) {
+            token = "";
+        }
+
+        return token;
+    }
 }

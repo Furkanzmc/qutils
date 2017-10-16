@@ -25,6 +25,7 @@ using ClientsList = std::vector<ClientPair>;
 
 #ifdef Q_OS_ANDROID
 #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
+#define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
 #endif // Q_OS_ANDROID
 
 namespace zmc
@@ -121,6 +122,11 @@ QString NotificationClient::getFCMToken() const
 #ifdef Q_OS_IOS
     token = m_iOSNative->getFCMToken();
 #endif // Q_OS_IOS
+
+#ifdef Q_OS_ANDROID
+    const QAndroidJniObject jniToken = QAndroidJniObject::callStaticObjectMethod(FIREBASE_INSTANCE_ID_SERVICE, "getFMCToken", "()Ljava/lang/String;");
+    token = jniToken.toString();
+#endif // Q_OS_ANDROID
     return token;
 }
 
