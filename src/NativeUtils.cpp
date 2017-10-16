@@ -168,6 +168,15 @@ void NativeUtils::dismissKeyboard()
 #endif // Q_OS_IOS
 }
 
+void NativeUtils::setApplicationIconBadgeNumber(const unsigned int &number)
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->setApplicationIconBadgeNumber(number);
+#else
+    Q_UNUSED(number);
+#endif // Q_OS_IOS
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID

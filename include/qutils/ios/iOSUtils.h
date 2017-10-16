@@ -58,6 +58,13 @@ public:
      */
     Q_INVOKABLE void dismissKeyboard();
 
+    /**
+     * @brief Sets the application's icon badge number. Set to 0 to clear it.
+     * @param number
+     * @return void
+     */
+    Q_INVOKABLE void setApplicationIconBadgeNumber(const int &number);
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);

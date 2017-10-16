@@ -40,4 +40,9 @@ void iOSUtils::dismissKeyboard()
     m_iOSNative->dismissKeyboard();;
 }
 
+void iOSUtils::setApplicationIconBadgeNumber(const int &number)
+{
+    m_iOSNative->setApplicationIconBadgeNumber(number);
+}
+
 }

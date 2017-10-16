@@ -61,4 +61,11 @@ public:
      * @return QString
      */
     QString getFCMToken() const;
+
+    /**
+     * @brief Sets the application's icon badge number. Set to 0 to clear it.
+     * @param number
+     * @return void
+     */
+    void setApplicationIconBadgeNumber(const int &number);
 };

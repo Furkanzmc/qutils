@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE void openGallery();
 
     Q_INVOKABLE void dismissKeyboard();
+    Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);

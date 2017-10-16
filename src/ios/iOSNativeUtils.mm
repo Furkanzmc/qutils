@@ -126,3 +126,8 @@ QString iOSNativeUtils::getFCMToken() const
 
     return token;
 }
+
+void iOSNativeUtils::setApplicationIconBadgeNumber(const int &number)
+{
+    [UIApplication sharedApplication].applicationIconBadgeNumber = number;
+}
