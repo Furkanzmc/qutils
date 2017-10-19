@@ -13,7 +13,7 @@ namespace Location
 /**
  * @brief MapBoxGeocodingQuery is used to ease the query parameter setting for a geocoding request.
  * For more information about the parameters see here: https://www.mapbox.com/api-documentation/?language=cURL#request-format
- * If you leave the searchString empty, reverse geocoding will be used. But in that case latitude and longitude must be set.
+ * If you leave the searchQuery empty, reverse geocoding will be used. But in that case latitude and longitude must be set.
  */
 class MapBoxGeocodingQuery : public QObject
 {
@@ -35,7 +35,7 @@ public:
     Q_PROPERTY(float latitude READ getLatitude WRITE setLatitude NOTIFY latitudeChanged)
 
     Q_PROPERTY(float longitude READ getLongitude WRITE setLongitude NOTIFY longitudeChanged)
-    Q_PROPERTY(QString searchString READ getSearchString WRITE setSearchString NOTIFY searchStringChanged)
+    Q_PROPERTY(QString searchQuery READ getSearchString WRITE setSearchString NOTIFY searchQueryChanged)
     Q_PROPERTY(Mode mode READ getMode WRITE setMode NOTIFY modeChanged)
 
 public:
@@ -208,7 +208,7 @@ signals:
     /**
      * @brief Emitted when search string changes.
      */
-    void searchStringChanged();
+    void searchQueryChanged();
 
     /**
      * @brief Emitted when mode changes.

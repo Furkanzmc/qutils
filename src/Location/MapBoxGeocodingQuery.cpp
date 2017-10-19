@@ -150,7 +150,7 @@ void MapBoxGeocodingQuery::setSearchString(const QString &query)
 {
     if (m_SearchString != query) {
         m_SearchString = query;
-        emit searchStringChanged();
+        emit searchQueryChanged();
     }
 }
 

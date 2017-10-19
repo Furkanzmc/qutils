@@ -1,6 +1,8 @@
 #include "qutils/Location/MapBoxGeocoding.h"
 #include "qutils/Network/NetworkManager.h"
 #include "qutils/Macros.h"
+#include "qutils/Network/HttpCodes.h"
+#include "qutils/JsonUtils.h"
 // Qt
 #include <QUrlQuery>
 
@@ -18,7 +20,7 @@ MapBoxGeocoding::MapBoxGeocoding(QObject *parent)
     , m_Token("")
     , m_NetworkManager(new NetworkManager(this))
 {
-
+    connect(this, &MapBoxGeocoding::queryChanged, this, &MapBoxGeocoding::updateQueryConnection);
 }
 
 MapBoxGeocoding::~MapBoxGeocoding()
@@ -52,10 +54,9 @@ void MapBoxGeocoding::setQuery(MapBoxGeocodingQuery *query)
     }
 }
 
-bool MapBoxGeocoding::update(MapBoxGeocodingQuery *query)
+bool MapBoxGeocoding::update()
 {
-    MapBoxGeocodingQuery *queryToUse = query ? query : m_Query;
-    if (queryToUse == nullptr) {
+    if (m_Query == nullptr) {
         LOG_ERROR("There is no valid query. Doing nothing.");
         return false;
     }
@@ -66,21 +67,56 @@ bool MapBoxGeocoding::update(MapBoxGeocodingQuery *query)
     }
 
     QString urlStr = m_BaseURL;
-    if (queryToUse->getSearchString().length() > 0) {
-        urlStr += "/geocoding/v5/" + queryToUse->getModeString() + "/" + queryToUse->getSearchString() + ".json";
+    if (m_Query->getSearchString().length() > 0) {
+        urlStr += "/geocoding/v5/" + m_Query->getModeString() + "/" + m_Query->getSearchString() + ".json";
     }
 
     QUrl url(urlStr);
-    QUrlQuery queryParams = queryToUse->constructQuery();
+    QUrlQuery queryParams = m_Query->constructQuery();
     queryParams.addQueryItem("access_token", m_Token);
     url.setQuery(queryParams);
     m_NetworkManager->sendGet(url.toEncoded(), std::bind(&MapBoxGeocoding::updateQueryCallback, this, std::placeholders::_1));
     return true;
 }
 
+bool MapBoxGeocoding::getAutoUpdate() const
+{
+    return m_AutoUpdate;
+}
+
+void MapBoxGeocoding::setAutoUpdate(bool enabled)
+{
+    if (m_AutoUpdate != enabled) {
+        m_AutoUpdate = enabled;
+        if (m_AutoUpdate && m_Query) {
+            connect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+        }
+        else if (m_AutoUpdate && m_Query) {
+            disconnect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+        }
+
+        emit autoUpdateChanged();
+    }
+}
+
 void MapBoxGeocoding::updateQueryCallback(const Response &response)
 {
-    LOG(response.data);
+    QVariantMap data = JsonUtils::toVariantMap(response.data);
+    if (response.httpCode == HttpCodes::HTTP_200_OK) {
+        emit responseRetreived(data);
+    }
+    else {
+        data["http_code"] = response.httpCode;
+        data["network_error_code"] = response.networkError;
+        emit errorOccurred(data);
+    }
+}
+
+void MapBoxGeocoding::updateQueryConnection()
+{
+    if (m_AutoUpdate && m_Query) {
+        connect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+    }
 }
 
 }
