@@ -1,5 +1,7 @@
 #pragma once
 #include <QObject>
+// qutils
+#include "qutils/Location/MapBoxGeocodingQuery.h"
 
 namespace zmc
 {
@@ -8,12 +10,11 @@ namespace zmc
 namespace Network
 {
 class NetworkManager;
+struct Response;
 }
 
 namespace Location
 {
-
-class MapBoxGeocodingQuery;
 
 /**
  * @brief MapBoxGeocoding uses the MapBox REST API to provide the geocoding functionality.
@@ -23,14 +24,7 @@ class MapBoxGeocoding : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString token READ getToken WRITE setToken NOTIFY tokenChanged)
-    Q_PROPERTY(MapBoxGeocodingQuery* query READ getQuery WRITE setQuery NOTIFY queryChanged)
-
-public:
-    enum Mode {
-        Places,
-        PlacesPermanent
-    };
-    Q_ENUM(Mode)
+    Q_PROPERTY(MapBoxGeocodingQuery *query READ getQuery WRITE setQuery NOTIFY queryChanged)
 
 public:
     explicit MapBoxGeocoding(QObject *parent = nullptr);
@@ -62,6 +56,12 @@ public:
      */
     void setQuery(MapBoxGeocodingQuery *query);
 
+    /**
+     * @brief Uses the given MapBoxGeocodingQuery to update the request. If there is no valid query, this will do nothing and return false.
+     * @return bool
+     */
+    Q_INVOKABLE bool update(MapBoxGeocodingQuery *query);
+
 signals:
     /**
      * @brief Emitted when the token changes.
@@ -85,6 +85,9 @@ private:
     QString m_Token;
     Network::NetworkManager *m_NetworkManager;
     MapBoxGeocodingQuery *m_Query;
+
+private:
+    void updateQueryCallback(const zmc::Network::Response &response);
 };
 
 }

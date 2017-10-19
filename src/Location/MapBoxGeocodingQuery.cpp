@@ -141,6 +141,37 @@ void MapBoxGeocodingQuery::setLongitude(const float &longitude)
     }
 }
 
+QString MapBoxGeocodingQuery::getSearchString() const
+{
+    return m_SearchString;
+}
+
+void MapBoxGeocodingQuery::setSearchString(const QString &query)
+{
+    if (m_SearchString != query) {
+        m_SearchString = query;
+        emit searchStringChanged();
+    }
+}
+
+MapBoxGeocodingQuery::Mode MapBoxGeocodingQuery::getMode() const
+{
+    return m_Mode;
+}
+
+void MapBoxGeocodingQuery::setMode(const MapBoxGeocodingQuery::Mode &mode)
+{
+    if (m_Mode != mode) {
+        m_Mode = mode;
+        emit modeChanged();
+    }
+}
+
+QString MapBoxGeocodingQuery::getModeString() const
+{
+    return m_Mode == Mode::Places ? "mapbox.places" : "mapbox.places-permanent";
+}
+
 }
 
 }

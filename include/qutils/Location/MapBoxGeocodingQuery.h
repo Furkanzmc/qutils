@@ -13,10 +13,18 @@ namespace Location
 /**
  * @brief MapBoxGeocodingQuery is used to ease the query parameter setting for a geocoding request.
  * For more information about the parameters see here: https://www.mapbox.com/api-documentation/?language=cURL#request-format
+ * If you leave the searchString empty, reverse geocoding will be used. But in that case latitude and longitude must be set.
  */
 class MapBoxGeocodingQuery : public QObject
 {
     Q_OBJECT
+
+public:
+    enum Mode {
+        Places,
+        PlacesPermanent
+    };
+    Q_ENUM(Mode)
 
     Q_PROPERTY(QString country READ getCountry WRITE setCountry NOTIFY countryChanged)
     Q_PROPERTY(QPointF proximity READ getProximity WRITE setProximity NOTIFY proximityChanged)
@@ -27,6 +35,8 @@ class MapBoxGeocodingQuery : public QObject
     Q_PROPERTY(float latitude READ getLatitude WRITE setLatitude NOTIFY latitudeChanged)
 
     Q_PROPERTY(float longitude READ getLongitude WRITE setLongitude NOTIFY longitudeChanged)
+    Q_PROPERTY(QString searchString READ getSearchString WRITE setSearchString NOTIFY searchStringChanged)
+    Q_PROPERTY(Mode mode READ getMode WRITE setMode NOTIFY modeChanged)
 
 public:
     explicit MapBoxGeocodingQuery(QObject *parent = nullptr);
@@ -128,6 +138,37 @@ public:
      */
     void setLongitude(const float &longitude);
 
+    /**
+     * @brief Returns the search string that will be used for the request.
+     * @return QString
+     */
+    QString getSearchString() const;
+
+    /**
+     * @brief Set search string for the request.
+     * @param SearchString
+     */
+    void setSearchString(const QString &query);
+
+    /**
+     * @brief Returns the mode for the request.
+     * @return Mode
+     */
+    Mode getMode() const;
+
+    /**
+     * @brief Set the mode for the request. The default is Mode::Places
+     * @param Mode
+     * @return void
+     */
+    void setMode(const Mode &mode);
+
+    /**
+     * @brief Returns the string representation of the mode.
+     * @return QString
+     */
+    QString getModeString() const;
+
 signals:
     /**
      * @brief Emitted when the country changes.
@@ -164,8 +205,20 @@ signals:
      */
     void longitudeChanged();
 
+    /**
+     * @brief Emitted when search string changes.
+     */
+    void searchStringChanged();
+
+    /**
+     * @brief Emitted when mode changes.
+     */
+    void modeChanged();
+
 private:
-    QString m_Country, m_Language;
+    QString m_Country,
+            m_Language,
+            m_SearchString;
 
     QStringList m_Types;
     QPointF m_Proximity;
@@ -173,6 +226,7 @@ private:
 
     bool m_Autocomplete;
     int m_Limit;
+    Mode m_Mode;
 
 public slots:
 };
