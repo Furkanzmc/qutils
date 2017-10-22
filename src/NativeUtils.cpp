@@ -198,7 +198,7 @@ void NativeUtils::setButtonEventsEnabled(bool enabled)
 bool NativeUtils::isEnabled() const
 {
 #ifdef Q_OS_ANDROID
-    m_AndroidUtils->isEnabled();
+    return m_AndroidUtils->isEnabled();
 #else
     return true;
 #endif // Q_OS_ANDROID
