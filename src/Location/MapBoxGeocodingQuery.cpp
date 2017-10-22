@@ -16,6 +16,7 @@ MapBoxGeocodingQuery::MapBoxGeocodingQuery(QObject *parent)
     , m_BoundingBox()
     , m_Autocomplete(true)
     , m_Limit(5)
+    , m_Mode(Mode::Places)
 {
 
 }
