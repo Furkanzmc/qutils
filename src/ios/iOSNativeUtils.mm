@@ -131,3 +131,8 @@ void iOSNativeUtils::setApplicationIconBadgeNumber(const int &number)
 {
     [UIApplication sharedApplication].applicationIconBadgeNumber = number;
 }
+
+bool iOSNativeUtils::isiPad() const
+{
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+}

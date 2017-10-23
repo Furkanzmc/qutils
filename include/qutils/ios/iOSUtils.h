@@ -65,6 +65,12 @@ public:
      */
     Q_INVOKABLE void setApplicationIconBadgeNumber(const int &number);
 
+    /**
+     * @brief Returns true If the device running the app is an iPad.
+     * @return bool
+     */
+    Q_INVOKABLE bool isiPad() const;
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);

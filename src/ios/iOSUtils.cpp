@@ -45,4 +45,9 @@ void iOSUtils::setApplicationIconBadgeNumber(const int &number)
     m_iOSNative->setApplicationIconBadgeNumber(number);
 }
 
+bool iOSUtils::isiPad() const
+{
+    return m_iOSNative->isiPad();
+}
+
 }

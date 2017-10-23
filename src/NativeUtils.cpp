@@ -177,6 +177,15 @@ void NativeUtils::setApplicationIconBadgeNumber(const unsigned int &number)
 #endif // Q_OS_IOS
 }
 
+bool NativeUtils::isiPad() const
+{
+#ifdef Q_OS_IOS
+    return m_iOSUtils->isiPad();
+#else
+    return false;
+#endif // Q_OS_IOS
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID
@@ -198,7 +207,7 @@ void NativeUtils::setButtonEventsEnabled(bool enabled)
 bool NativeUtils::isEnabled() const
 {
 #ifdef Q_OS_ANDROID
-    m_AndroidUtils->isEnabled();
+    return m_AndroidUtils->isEnabled();
 #else
     return true;
 #endif // Q_OS_ANDROID
