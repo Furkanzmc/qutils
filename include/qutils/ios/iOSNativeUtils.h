@@ -68,4 +68,10 @@ public:
      * @return void
      */
     void setApplicationIconBadgeNumber(const int &number);
+
+    /**
+     * @brief Returns true If the device running the app is an iPad.
+     * @return bool
+     */
+    bool isiPad() const;
 };

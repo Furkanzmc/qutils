@@ -24,6 +24,7 @@ class NativeUtils : public QObject
 
     Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(bool ipad READ isiPad CONSTANT)
 
 public:
     explicit NativeUtils(QObject *parent = 0);
@@ -46,6 +47,7 @@ public:
 
     Q_INVOKABLE void dismissKeyboard();
     Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);
+    Q_INVOKABLE bool isiPad() const;
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
