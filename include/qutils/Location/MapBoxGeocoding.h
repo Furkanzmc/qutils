@@ -100,6 +100,9 @@ signals:
      */
     void errorOccurred(const QVariantMap &response);
 
+    /**
+     * @brief Emitted when autoUpdate changes.
+     */
     void autoUpdateChanged();
 
 private:
@@ -115,6 +118,9 @@ private:
     Network::NetworkManager *m_NetworkManager;
     MapBoxGeocodingQuery *m_Query;
 
+    /**
+     * @brief The default value is false.
+     */
     bool m_AutoUpdate;
 
 private:

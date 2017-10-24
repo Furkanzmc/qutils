@@ -19,6 +19,7 @@ MapBoxGeocoding::MapBoxGeocoding(QObject *parent)
     , m_BaseURL("https://api.mapbox.com")
     , m_Token("")
     , m_NetworkManager(new NetworkManager(this))
+    , m_AutoUpdate(false)
 {
     connect(this, &MapBoxGeocoding::queryChanged, this, &MapBoxGeocoding::updateQueryConnection);
 }
@@ -69,14 +70,16 @@ bool MapBoxGeocoding::update()
     QString urlStr = m_BaseURL;
     if (m_Query->getSearchString().length() > 0) {
         urlStr += "/geocoding/v5/" + m_Query->getModeString() + "/" + m_Query->getSearchString() + ".json";
+
+        QUrl url(urlStr);
+        QUrlQuery queryParams = m_Query->constructQuery();
+        queryParams.addQueryItem("access_token", m_Token);
+        url.setQuery(queryParams);
+        m_NetworkManager->sendGet(url.toEncoded(), std::bind(&MapBoxGeocoding::updateQueryCallback, this, std::placeholders::_1));
+        return true;
     }
 
-    QUrl url(urlStr);
-    QUrlQuery queryParams = m_Query->constructQuery();
-    queryParams.addQueryItem("access_token", m_Token);
-    url.setQuery(queryParams);
-    m_NetworkManager->sendGet(url.toEncoded(), std::bind(&MapBoxGeocoding::updateQueryCallback, this, std::placeholders::_1));
-    return true;
+    return false;
 }
 
 bool MapBoxGeocoding::getAutoUpdate() const
@@ -88,7 +91,7 @@ void MapBoxGeocoding::setAutoUpdate(bool enabled)
 {
     if (m_AutoUpdate != enabled) {
         m_AutoUpdate = enabled;
-        if (m_AutoUpdate && m_Query) {
+        if (m_AutoUpdate && m_Query != nullptr) {
             connect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
         }
         else if (m_AutoUpdate && m_Query) {
