@@ -13,6 +13,7 @@ MapBoxGeocodingQuery::MapBoxGeocodingQuery(QObject *parent)
     , m_Language("")
     , m_Types("")
     , m_Proximity()
+    , m_ReverseGeoCodingCoords()
     , m_BoundingBox()
     , m_Autocomplete(true)
     , m_Limit(5)
@@ -118,27 +119,29 @@ void MapBoxGeocodingQuery::setLanguage(const QString &language)
 
 qreal MapBoxGeocodingQuery::getLatitude() const
 {
-    return m_Proximity.x();
+    return m_ReverseGeoCodingCoords.x();
 }
 
 void MapBoxGeocodingQuery::setLatitude(const qreal &latitude)
 {
-    if (!qFuzzyCompare(m_Proximity.x() + 1.0, latitude + 1.0)) {
-        m_Proximity.setX(latitude);
+    if (!qFuzzyCompare(m_ReverseGeoCodingCoords.x() + 1.0, latitude + 1.0)) {
+        m_ReverseGeoCodingCoords.setX(latitude);
         emit latitudeChanged();
+        emit requiresUpdate();
     }
 }
 
 qreal MapBoxGeocodingQuery::getLongitude() const
 {
-    return m_Proximity.y();
+    return m_ReverseGeoCodingCoords.y();
 }
 
 void MapBoxGeocodingQuery::setLongitude(const qreal &longitude)
 {
-    if (!qFuzzyCompare(m_Proximity.y() + 1.0, longitude + 1.0)) {
-        m_Proximity.setY(longitude);
+    if (!qFuzzyCompare(m_ReverseGeoCodingCoords.y() + 1.0, longitude + 1.0)) {
+        m_ReverseGeoCodingCoords.setY(longitude);
         emit longitudeChanged();
+        emit requiresUpdate();
     }
 }
 
@@ -152,6 +155,9 @@ void MapBoxGeocodingQuery::setSearchString(const QString &query)
     if (m_SearchString != query) {
         m_SearchString = query;
         emit searchQueryChanged();
+        if (m_SearchString.length() > 0) {
+            emit requiresUpdate();
+        }
     }
 }
 
@@ -181,6 +187,11 @@ void MapBoxGeocodingQuery::setMode(const MapBoxGeocodingQuery::Mode &mode)
 QString MapBoxGeocodingQuery::getModeString() const
 {
     return m_Mode == Mode::Places ? "mapbox.places" : "mapbox.places-permanent";
+}
+
+QPointF MapBoxGeocodingQuery::getReverseGeoCodingCoords() const
+{
+    return m_ReverseGeoCodingCoords;
 }
 
 }

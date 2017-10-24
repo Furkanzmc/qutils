@@ -115,26 +115,26 @@ public:
     void setLanguage(const QString &language);
 
     /**
-     * @brief Returns the latitude of the proximity.
+     * @brief Returns the latitude of the reverse geocoding.
      * @return float
      */
     qreal getLatitude() const;
 
     /**
-     * @brief Sets the latitude of the proximity.
+     * @brief Sets the latitude of the reverse geocoding.
      * @param latitude
      * @return void
      */
     void setLatitude(const qreal &latitude);
 
     /**
-     * @brief Returns the longitude of the proximity.
+     * @brief Returns the longitude of the reverse geocoding.
      * @return float
      */
     qreal getLongitude() const;
 
     /**
-     * @brief Sets the longitude of the proximity.
+     * @brief Sets the longitude of the reverse geocoding.
      * @param latitude
      * @return void
      */
@@ -183,6 +183,12 @@ public:
      * @return QString
      */
     QString getModeString() const;
+
+    /**
+     * @brief Returns the current coordinates for reverse geocoding. If this not an invalid QPointF, it will be used for reverse geocoding.
+     * @return QPointF
+     */
+    QPointF getReverseGeoCodingCoords() const;
 
 signals:
     /**
@@ -235,13 +241,18 @@ signals:
      */
     void modeChanged();
 
+    /**
+     * @brief This will be emitted when the search query or the reverse geocoding data changes.
+     */
+    void requiresUpdate();
+
 private:
     QString m_Country,
             m_Language,
             m_SearchString;
 
     QStringList m_Types;
-    QPointF m_Proximity;
+    QPointF m_Proximity, m_ReverseGeoCodingCoords;
     QRectF m_BoundingBox;
 
     bool m_Autocomplete;

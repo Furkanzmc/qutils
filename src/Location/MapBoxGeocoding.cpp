@@ -70,14 +70,26 @@ bool MapBoxGeocoding::update()
     QString urlStr = m_BaseURL;
     if (m_Query->getSearchString().length() > 0) {
         urlStr += "/geocoding/v5/" + m_Query->getModeString() + "/" + m_Query->getSearchString() + ".json";
-
-        QUrl url(urlStr);
-        QUrlQuery queryParams = m_Query->constructQuery();
-        queryParams.addQueryItem("access_token", m_Token);
-        url.setQuery(queryParams);
-        m_NetworkManager->sendGet(url.toEncoded(), std::bind(&MapBoxGeocoding::updateQueryCallback, this, std::placeholders::_1));
-        return true;
     }
+    else {
+        const QPointF coords = m_Query->getReverseGeoCodingCoords();
+        if (coords.isNull() == false) {
+            urlStr += "/geocoding/v5/" + m_Query->getModeString() + "/" + QString::number(coords.y()) + "," + QString::number(coords.x()) + ".json";
+        }
+        else {
+            return false;
+        }
+    }
+
+    QUrl url(urlStr);
+    QUrlQuery queryParams = m_Query->constructQuery();
+    if (m_Query->getSearchString().length() == 0) {
+        queryParams.removeQueryItem("limit");
+    }
+
+    queryParams.addQueryItem("access_token", m_Token);
+    url.setQuery(queryParams);
+    m_NetworkManager->sendGet(url.toEncoded(), std::bind(&MapBoxGeocoding::updateQueryCallback, this, std::placeholders::_1));
 
     return false;
 }
@@ -92,10 +104,10 @@ void MapBoxGeocoding::setAutoUpdate(bool enabled)
     if (m_AutoUpdate != enabled) {
         m_AutoUpdate = enabled;
         if (m_AutoUpdate && m_Query != nullptr) {
-            connect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+            connect(m_Query, &MapBoxGeocodingQuery::requiresUpdate, this, &MapBoxGeocoding::update);
         }
         else if (m_AutoUpdate && m_Query) {
-            disconnect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+            disconnect(m_Query, &MapBoxGeocodingQuery::requiresUpdate, this, &MapBoxGeocoding::update);
         }
 
         emit autoUpdateChanged();
@@ -106,6 +118,7 @@ void MapBoxGeocoding::updateQueryCallback(const Response &response)
 {
     QVariantMap data = JsonUtils::toVariantMap(response.data);
     if (response.httpCode == HttpCodes::HTTP_200_OK) {
+        data["reverse_geocoding"] = m_Query->getSearchString().length() == 0;
         emit responseRetreived(data);
     }
     else {
@@ -118,7 +131,7 @@ void MapBoxGeocoding::updateQueryCallback(const Response &response)
 void MapBoxGeocoding::updateQueryConnection()
 {
     if (m_AutoUpdate && m_Query) {
-        connect(m_Query, &MapBoxGeocodingQuery::searchQueryChanged, this, &MapBoxGeocoding::update);
+        connect(m_Query, &MapBoxGeocodingQuery::requiresUpdate, this, &MapBoxGeocoding::update);
     }
 }
 
