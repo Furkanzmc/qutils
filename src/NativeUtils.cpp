@@ -188,7 +188,11 @@ bool NativeUtils::isiPad() const
 
 void NativeUtils::openSafari(const QString &url)
 {
+#ifdef Q_OS_IOS
     m_iOSUtils->openSafari(url);
+#else
+    Q_UNUSED(url);
+#endif // Q_OS_IOS
 }
 
 bool NativeUtils::isButtonEventsEnabled() const
