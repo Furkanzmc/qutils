@@ -38,6 +38,8 @@ public:
     Q_PROPERTY(QString searchQuery READ getSearchString WRITE setSearchString NOTIFY searchQueryChanged)
     Q_PROPERTY(Mode mode READ getMode WRITE setMode NOTIFY modeChanged)
 
+    Q_PROPERTY(int limit READ getLimit WRITE setLimit NOTIFY limitChanged)
+
 public:
     explicit MapBoxGeocodingQuery(QObject *parent = nullptr);
 
@@ -151,6 +153,19 @@ public:
     void setSearchString(const QString &query);
 
     /**
+     * @brief Get the limit for this instance.
+     * @return int
+     */
+    int getLimit() const;
+
+    /**
+     * @brief Set limit for this instance
+     * @param Limit
+     * @return void
+     */
+    void setLimit(int Limit);
+
+    /**
      * @brief Returns the mode for the request.
      * @return Mode
      */
@@ -209,6 +224,11 @@ signals:
      * @brief Emitted when search string changes.
      */
     void searchQueryChanged();
+
+    /**
+     * @brief Emitted when limit changes.
+     */
+    void limitChanged();
 
     /**
      * @brief Emitted when mode changes.

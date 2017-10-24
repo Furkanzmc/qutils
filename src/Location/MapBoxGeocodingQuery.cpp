@@ -155,6 +155,16 @@ void MapBoxGeocodingQuery::setSearchString(const QString &query)
     }
 }
 
+int MapBoxGeocodingQuery::getLimit() const
+{
+    return m_Limit;
+}
+
+void MapBoxGeocodingQuery::setLimit(int Limit)
+{
+    m_Limit = Limit;
+}
+
 MapBoxGeocodingQuery::Mode MapBoxGeocodingQuery::getMode() const
 {
     return m_Mode;
