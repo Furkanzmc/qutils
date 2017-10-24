@@ -5,6 +5,9 @@
 #if FCM_ENABLED == 1
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #endif // FCM_ENABLED
+#ifdef SAFARI_SERVICES_ENABLED
+#import <SafariServices/SafariServices.h>
+#endif // SAFARI_SERVICES_ENABLED
 
 iOSNativeUtils::iOSNativeUtils()
 {
@@ -135,4 +138,16 @@ void iOSNativeUtils::setApplicationIconBadgeNumber(const int &number)
 bool iOSNativeUtils::isiPad() const
 {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+}
+
+void iOSNativeUtils::openSafari(const QString &url)
+{
+#ifdef SAFARI_SERVICES_ENABLED
+    SFSafariViewController *safariVC = [[SFSafariViewController alloc]initWithURL:[NSURL URLWithString:url.toNSString()] entersReaderIfAvailable:NO];
+
+    UIApplication *app = [UIApplication sharedApplication];
+    [[[app keyWindow] rootViewController] presentViewController:safariVC animated:YES completion:nil];
+#else
+    Q_UNUSED(url)
+#endif // SAFARI_SERVICES_ENABLED
 }

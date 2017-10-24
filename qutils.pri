@@ -1,6 +1,8 @@
 CONFIG += c++11
 QT += sql
 
+QUTILS_FEATURE_SAFARI_SERVICES = safari_services
+
 contains(CONFIG, QUTILS_NO_MULTIMEDIA) {
     message("[qutils] Multimedia is disabled in qutils")
     QUTILS_NO_MULTIMEDIA=false
@@ -64,8 +66,6 @@ ios {
     SOURCES += \
         $$PWD/src/ios/iOSUtils.cpp
 
-    LIBS += -framework UserNotifications
-
     isEqual(FCM_ENABLED, true) {
         LIBS += -framework UserNotifications
         QMAKE_LFLAGS += -ObjC
@@ -73,6 +73,12 @@ ios {
         MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
         MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements
         QMAKE_MAC_XCODE_SETTINGS += MY_ENTITLEMENTS
+    }
+
+    contains(QUTILS_FEATURES, $$QUTILS_FEATURE_SAFARI_SERVICES) {
+        message("[qutils] SafariServices is enabled.")
+        DEFINES += SAFARI_SERVICES_ENABLED
+        LIBS += -framework SafariServices
     }
 }
 

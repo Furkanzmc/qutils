@@ -49,6 +49,8 @@ public:
     Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);
     Q_INVOKABLE bool isiPad() const;
 
+    Q_INVOKABLE void openSafari(const QString &url);
+
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
 

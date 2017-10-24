@@ -50,4 +50,9 @@ bool iOSUtils::isiPad() const
     return m_iOSNative->isiPad();
 }
 
+void iOSUtils::openSafari(const QString &url)
+{
+    m_iOSNative->openSafari(url);
+}
+
 }

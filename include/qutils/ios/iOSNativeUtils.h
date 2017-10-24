@@ -74,4 +74,12 @@ public:
      * @return bool
      */
     bool isiPad() const;
+
+    /**
+     * @brief Uses iOS SafariServices to open the url in an in-app browser. The browser events are not yet supported.
+     * This function requires safari_services in QUTILS_FEATURES.
+     * @param url
+     * @return void
+     */
+    void openSafari(const QString &url);
 };

@@ -71,6 +71,8 @@ public:
      */
     Q_INVOKABLE bool isiPad() const;
 
+    Q_INVOKABLE void openSafari(const QString &url);
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);
