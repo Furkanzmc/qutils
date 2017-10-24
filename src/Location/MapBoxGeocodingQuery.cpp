@@ -72,7 +72,7 @@ QPointF MapBoxGeocodingQuery::getProximity() const
 
 void MapBoxGeocodingQuery::setProximity(const QPointF &proximity)
 {
-    if (m_Proximity.x() != proximity.x() || m_Proximity.y() != proximity.y()) {
+    if (qFuzzyCompare(m_Proximity.x() + 1.0, proximity.x() + 1.0) || qFuzzyCompare(m_Proximity.y() + 1.0, proximity.y() + 1.0)) {
         m_Proximity = proximity;
         emit proximityChanged();
     }
@@ -96,8 +96,8 @@ QRectF MapBoxGeocodingQuery::getBoundingBox() const
 
 void MapBoxGeocodingQuery::setBoundingBox(const QRectF &boundingBox)
 {
-    if (m_BoundingBox.top() != boundingBox.top() || m_BoundingBox.left() != boundingBox.left()
-        || m_BoundingBox.right() != boundingBox.right() || m_BoundingBox.bottom() != boundingBox.bottom()) {
+    if (qFuzzyCompare(m_BoundingBox.top() + 1.0, boundingBox.top() + 1.0) || qFuzzyCompare(m_BoundingBox.left() + 1.0, boundingBox.left() + 1.0)
+        || qFuzzyCompare(m_BoundingBox.right() + 1.0, boundingBox.right() + 1.0) || qFuzzyCompare(m_BoundingBox.bottom() + 1.0, boundingBox.bottom() + 1.0)) {
         m_BoundingBox = boundingBox;
         emit boundingBoxChanged();
     }
@@ -116,27 +116,27 @@ void MapBoxGeocodingQuery::setLanguage(const QString &language)
     }
 }
 
-float MapBoxGeocodingQuery::getLatitude() const
+qreal MapBoxGeocodingQuery::getLatitude() const
 {
     return m_Proximity.x();
 }
 
-void MapBoxGeocodingQuery::setLatitude(const float &latitude)
+void MapBoxGeocodingQuery::setLatitude(const qreal &latitude)
 {
-    if (m_Proximity.x() != latitude) {
+    if (!qFuzzyCompare(m_Proximity.x() + 1.0, latitude + 1.0)) {
         m_Proximity.setX(latitude);
         emit latitudeChanged();
     }
 }
 
-float MapBoxGeocodingQuery::getLongitude() const
+qreal MapBoxGeocodingQuery::getLongitude() const
 {
     return m_Proximity.y();
 }
 
-void MapBoxGeocodingQuery::setLongitude(const float &longitude)
+void MapBoxGeocodingQuery::setLongitude(const qreal &longitude)
 {
-    if (m_Proximity.y() != longitude) {
+    if (!qFuzzyCompare(m_Proximity.y() + 1.0, longitude + 1.0)) {
         m_Proximity.setY(longitude);
         emit longitudeChanged();
     }

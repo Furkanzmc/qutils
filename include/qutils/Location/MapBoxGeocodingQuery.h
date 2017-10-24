@@ -116,27 +116,27 @@ public:
      * @brief Returns the latitude of the proximity.
      * @return float
      */
-    float getLatitude() const;
+    qreal getLatitude() const;
 
     /**
      * @brief Sets the latitude of the proximity.
      * @param latitude
      * @return void
      */
-    void setLatitude(const float &latitude);
+    void setLatitude(const qreal &latitude);
 
     /**
      * @brief Returns the longitude of the proximity.
      * @return float
      */
-    float getLongitude() const;
+    qreal getLongitude() const;
 
     /**
      * @brief Sets the longitude of the proximity.
      * @param latitude
      * @return void
      */
-    void setLongitude(const float &longitude);
+    void setLongitude(const qreal &longitude);
 
     /**
      * @brief Returns the search string that will be used for the request.
