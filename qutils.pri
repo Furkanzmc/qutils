@@ -101,10 +101,7 @@ HEADERS += \
     $$PWD/include/qutils/DateManager.h \
     $$PWD/include/qutils/QutilsLog.h \
     $$PWD/include/qutils/FileUtils.h \
-    $$PWD/include/qutils/CppTypes.h \
-    $$PWD/include/qutils/Location/MapBoxGeocoding.h \
-    $$PWD/include/qutils/Location/MapBoxGeocodingQuery.h
-
+    $$PWD/include/qutils/CppTypes.h
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
     $$PWD/src/TranslationHelper.cpp \
@@ -121,9 +118,7 @@ SOURCES += \
     $$PWD/src/NotificationClient.cpp \
     $$PWD/src/Notification.cpp \
     $$PWD/src/QutilsLog.cpp \
-    $$PWD/src/FileUtils.cpp \
-    $$PWD/src/Location/MapBoxGeocoding.cpp \
-    $$PWD/src/Location/MapBoxGeocodingQuery.cpp
+    $$PWD/src/FileUtils.cpp
 
 if (!QUTILS_NO_MULTIMEDIA) {
     HEADERS += \
