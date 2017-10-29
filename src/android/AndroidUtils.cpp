@@ -500,8 +500,13 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
         m_URLOpenedWith = url;
     }
     else {
-        AndroidUtils *utils = m_Instances.at(0);
-        utils->openedWithURL(url);
+        for (AndroidUtils *utils : m_Instances) {
+            if (utils == nullptr) {
+                continue;
+            }
+
+            utils->openedWithURL(url);
+        }
     }
 }
 
