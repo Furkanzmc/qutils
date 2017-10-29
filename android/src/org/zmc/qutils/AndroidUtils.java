@@ -228,9 +228,6 @@ public class AndroidUtils extends QtActivity {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
         String[] mimetypes = fileType.split("\\|");
-        for (String s : mimetypes) {
-            System.out.println(s);
-        }
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
         m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
     }
