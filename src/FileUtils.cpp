@@ -128,8 +128,12 @@ bool FileUtils::copy(QString filePath, QString newFilePath)
     return QFile::copy(filePath, newFilePath);
 }
 
-QString FileUtils::getFileChecksum(const QString &filePath)
+QString FileUtils::getFileChecksum(QString filePath)
 {
+    if (filePath.contains("file://")) {
+        filePath.remove("file://");
+    }
+
     QString hashData = "";
     QFile file(filePath);
 

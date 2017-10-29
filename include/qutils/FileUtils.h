@@ -96,7 +96,7 @@ public:
      * @param filePath
      * @return QString
      */
-    Q_INVOKABLE QString getFileChecksum(const QString &filePath);
+    Q_INVOKABLE QString getFileChecksum(QString filePath);
 
     /**
      * @brief Returns true if the URL is non-empty and valid; otherwise returns false. Calls the QUrl::isValid.
