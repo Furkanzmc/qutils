@@ -235,6 +235,11 @@ QDateTime DateManager::convertToLocalDateTime(QDateTime datetime)
     return datetime.toLocalTime();
 }
 
+QDateTime DateManager::convertToUTCDateTime(QDateTime datetime)
+{
+    return datetime.toUTC();
+}
+
 qint64 DateManager::dayDifference(QDateTime from, QDateTime to)
 {
     return from.daysTo(to);

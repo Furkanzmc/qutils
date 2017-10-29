@@ -242,6 +242,13 @@ public:
     Q_INVOKABLE QDateTime convertToLocalDateTime(QDateTime datetime);
 
     /**
+     * @brief Converts the given QDateTime to UTC time.
+     * @param datetime
+     * @return QDateTime
+     */
+    Q_INVOKABLE QDateTime convertToUTCDateTime(QDateTime datetime);
+
+    /**
      * @brief Returns the day difference between the two dates.
      * @param from
      * @param to
