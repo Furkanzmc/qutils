@@ -43,7 +43,7 @@ public:
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
-    Q_INVOKABLE void openGallery();
+    Q_INVOKABLE void openGallery(const QString &fileType = "image/*");
 
     Q_INVOKABLE void dismissKeyboard();
     Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);

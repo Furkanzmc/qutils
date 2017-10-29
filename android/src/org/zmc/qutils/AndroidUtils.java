@@ -223,9 +223,15 @@ public class AndroidUtils extends QtActivity {
         toast.show();
     }
 
-    public static void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
+    public static void openGallery(String fileType) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        String[] mimetypes = fileType.split("\\|");
+        for (String s : mimetypes) {
+            System.out.println(s);
+        }
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
         m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
     }
 

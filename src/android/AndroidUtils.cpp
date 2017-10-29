@@ -207,18 +207,20 @@ void AndroidUtils::showToast(const QString &text, bool isLongDuration)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
-void AndroidUtils::openGallery()
+void AndroidUtils::openGallery(const QString &fileType)
 {
     if (this->signalsBlocked()) {
         return;
     }
 
     m_IsGalleryShown = true;
-    auto runnable = []() {
+    auto runnable = [fileType]() {
+        const QAndroidJniObject jniStr = QAndroidJniObject::fromString(fileType);
         QAndroidJniObject::callStaticMethod<void>(
             ANDROID_UTILS_CLASS,
             "openGallery",
-            "()V");
+            "(Ljava/lang/String;)V",
+            jniStr.object<jstring>());
     };
 
     QtAndroid::runOnAndroidThreadSync(runnable);

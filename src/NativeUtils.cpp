@@ -150,10 +150,10 @@ void NativeUtils::showActionSheet(const QString &title, const QString &message, 
 #endif // Q_OS_IOS
 }
 
-void NativeUtils::openGallery()
+void NativeUtils::openGallery(const QString &fileType)
 {
 #ifdef Q_OS_ANDROID
-    m_AndroidUtils->openGallery();
+    m_AndroidUtils->openGallery(fileType);
 #endif // Q_OS_ANDROID
 }
 
