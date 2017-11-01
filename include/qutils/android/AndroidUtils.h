@@ -120,7 +120,7 @@ public:
 
     /**
      * @brief Signals are not emitted if the application state is not Qt::ApplicationActive. AndroidUtils starts from the latest created AndroidUtils instance
-     * and works its way down to the bottom. And the loop is broken when we hit the first instance who has the buttonEventsEnabled property true. The default
+     * and works its way down to the bottom. And every instance who has the buttonEventsEnabled property true is notified of the signal. The default
      * value of the property is false.
      * @param isBackButton
      * @param isMenuButton
