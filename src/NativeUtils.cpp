@@ -154,6 +154,8 @@ void NativeUtils::openGallery(const QString &fileType)
 {
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->openGallery(fileType);
+#else
+    Q_UNUSED(fileType);
 #endif // Q_OS_ANDROID
 }
 
