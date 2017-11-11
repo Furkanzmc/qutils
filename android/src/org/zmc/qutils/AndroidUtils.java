@@ -235,4 +235,8 @@ public class AndroidUtils extends QtActivity {
     public static String getStatusBarColor() {
         return m_LastStatusBarColor;
     }
+
+    public static String getDeviceModel() {
+        return Build.MODEL;
+    }
 }

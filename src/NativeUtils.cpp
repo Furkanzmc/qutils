@@ -197,6 +197,24 @@ void NativeUtils::openSafari(const QString &url)
 #endif // Q_OS_IOS
 }
 
+QString NativeUtils::getDeviceModel()
+{
+    QString model = "";
+#ifdef Q_OS_ANDROID
+    model = m_AndroidUtils->getDeviceModel();
+#endif // Q_OS_ANDROID
+
+#ifdef Q_OS_WINDOWS
+    model = "windows";
+#endif // Q_OS_WINDOWS
+
+#ifdef Q_OS_MAC
+    model = "macOS";
+#endif // Q_OS_WINDOWS
+
+    return model;
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID

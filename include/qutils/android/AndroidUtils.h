@@ -95,7 +95,7 @@ public:
 
     /**
      * @brief Opens the gallery for an pick file operation. If m_IsEnabled is false, you cannot use this function.
-     * You can split the MIME types with "|" to set multiple MIME types. Example: `application/pdf|image/*|text/plain`.
+     * You can split the MIME types with "|" to set multiple MIME types. Example: `application/pdf|image/jpeg|text/plain`.
      * @param fileType The MIME type for the type of file to be selected.
      * @return void
      */
@@ -106,6 +106,12 @@ public:
      * @return void
      */
     Q_INVOKABLE void dismissKeyboard();
+
+    /**
+     * @brief Returns the device model
+     * @return QString
+     */
+    Q_INVOKABLE QString getDeviceModel();
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
@@ -227,7 +233,7 @@ private:
      * - QVariantMap
      * - List (Sadly, only String lists for now)
      * @param map
-     * @return
+     * @return QAndroidJniObject
      */
     QAndroidJniObject getJNIHashMap(const QVariantMap &map) const;
 };

@@ -238,6 +238,15 @@ void AndroidUtils::dismissKeyboard()
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+QString AndroidUtils::getDeviceModel()
+{
+    QAndroidJniObject jniStr = QAndroidJniObject::callStaticObjectMethod(
+                                   ANDROID_UTILS_CLASS,
+                                   "getDeviceModel",
+                                   "()Ljava/lang/String;");
+    return jniStr.toString();
+}
+
 void AndroidUtils::emitBackButtonPressed()
 {
     if (m_IsButtonEventsEnabled) {

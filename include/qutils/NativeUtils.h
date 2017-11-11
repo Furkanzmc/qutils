@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE bool isiPad() const;
 
     Q_INVOKABLE void openSafari(const QString &url);
+    Q_INVOKABLE QString getDeviceModel();
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
