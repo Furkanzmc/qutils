@@ -151,6 +151,18 @@ bool SettingsManager::clear()
     return successful;
 }
 
+QStringList SettingsManager::getKeys()
+{
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(m_Database, m_SettingsTableName);
+    QStringList keys;
+
+    for (const QMap<QString, QVariant> &val : existingData) {
+        keys.append(val.value(COL_SETTING_NAME).toString());
+    }
+
+    return keys;
+}
+
 QString SettingsManager::getDatabaseName() const
 {
     return m_DatabaseName;

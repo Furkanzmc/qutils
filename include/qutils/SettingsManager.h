@@ -70,6 +70,12 @@ public:
      */
     Q_INVOKABLE bool clear();
 
+    /**
+     * @brief Returns the list of keys in the settings.
+     * @return QStringList
+     */
+    Q_INVOKABLE QStringList getKeys();
+
     QString getDatabaseName() const;
 
     /**
