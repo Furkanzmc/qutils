@@ -105,6 +105,8 @@ void NotificationClient::schedule(QVariantMap data)
     if (notif.isValid()) {
         scheduleNotification(&notif);
     }
+#else
+    Q_UNUSED(data);
 #endif // Q_OS_MOBILE
 }
 
