@@ -74,7 +74,13 @@ You need to set the notification icon by using `m_NotificationClient.setSmallIco
 
 Also, when tapping on the notification Android's navigation system messes with Qt window so you should change the `android:launchMode="singleTop"` to `android:launchMode="singleInstance"`
 
-# iOS Push Notifications
+# iOS Features
+
+## Deep Linking
+
+You just need to add `CFBundleURLTypes` key to the `*.plist` file. Everything else is taken care of by qutils.
+
+## Push Notifications
 
 You can follow the official instructions [here](https://firebase.google.com/docs/cloud-messaging/ios/client).
 To use CocoaPods with Qt create a `ios/CocoaPods` directory in your project's root. And then create an empty XCode project as a dummy project for CocoaPods.
