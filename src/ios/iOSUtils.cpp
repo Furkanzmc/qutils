@@ -85,6 +85,16 @@ void iOSUtils::openSafari(const QString &url)
     m_iOSNative->openSafari(url);
 }
 
+void iOSUtils::requestLocationPermission()
+{
+    m_iOSNative->requestLocationPermission();
+}
+
+int iOSUtils::getLocationAuthorizationStatus()
+{
+    return static_cast<int>(m_iOSNative->getLocationAuthorizationStatus());
+}
+
 void iOSUtils::emitOpenedWithURLSignal(const QString &url)
 {
     if (m_Instances.size() == 0) {

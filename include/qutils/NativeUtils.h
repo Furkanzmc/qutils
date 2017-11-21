@@ -51,6 +51,9 @@ public:
 
     Q_INVOKABLE void openSafari(const QString &url);
     Q_INVOKABLE QString getDeviceModel();
+    Q_INVOKABLE void requestLocationPermission();
+
+    Q_INVOKABLE int getLocationAuthorizationStatus();
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);

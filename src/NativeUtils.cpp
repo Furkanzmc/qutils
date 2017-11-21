@@ -218,6 +218,23 @@ QString NativeUtils::getDeviceModel()
     return model;
 }
 
+void NativeUtils::requestLocationPermission()
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->requestLocationPermission();
+#endif // Q_OS_IOS
+}
+
+int NativeUtils::getLocationAuthorizationStatus()
+{
+    int status = 0;
+#ifdef Q_OS_IOS
+    status = m_iOSUtils->getLocationAuthorizationStatus();
+#endif // Q_OS_IOS
+
+    return status;
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID

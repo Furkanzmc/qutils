@@ -80,6 +80,11 @@ Also, when tapping on the notification Android's navigation system messes with Q
 
 You just need to add `CFBundleURLTypes` key to the `*.plist` file. Everything else is taken care of by qutils.
 
+## Location
+
+You can use `iOSNativeUtils::requestLocationPermission` and `iOSNativeUtils::getLocationAuthorizationStatus` If you added `positioning` to Qt modules.
+If `positioning` is not present in the enabled modules, those methods will not function.
+
 ## Push Notifications
 
 You can follow the official instructions [here](https://firebase.google.com/docs/cloud-messaging/ios/client).

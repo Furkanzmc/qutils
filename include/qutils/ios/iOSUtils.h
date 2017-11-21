@@ -72,7 +72,24 @@ public:
      */
     Q_INVOKABLE bool isiPad() const;
 
+    /**
+     * @brief If Safari services is enabled, opens the link in an in app browser. Otherwise it does nothing.
+     * @param url
+     * @return void
+     */
     Q_INVOKABLE void openSafari(const QString &url);
+
+    /**
+     * @brief See iOSNativeUtils::requestLocationPermission.
+     * @return void
+     */
+    Q_INVOKABLE void requestLocationPermission();
+
+    /**
+     * @brief See iOSNativeUtils::getLocationAuthorizationStatus.
+     * @return LocationAuthorizationStatus
+     */
+    int getLocationAuthorizationStatus();
 
     /**
      * @brief Only the first instance will be notified of this.

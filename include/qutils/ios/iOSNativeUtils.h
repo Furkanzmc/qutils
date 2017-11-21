@@ -16,6 +16,15 @@ public:
      */
     std::function<void(int /*height*/)> onKeyboardHeightChanged;
 
+    enum LocationAuthorizationStatus {
+        None = 0, // The location services is not in use.
+        NotDetermined = 1, // The user has not yet made a choice regarding whether this app can use location services.
+        Restricted = 2, // This app is not authorized to use location services.
+        Denied = 3, // The user explicitly denied the use of location services for this app or location services are currently disabled in Settings.
+        AuthorizedAlways = 4, // This app is authorized to start location services at any time.
+        AuthorizedWhenInUse = 5 // This app is authorized to start most location services while running in the foreground.
+    };
+
 public:
     iOSNativeUtils();
 
@@ -82,4 +91,17 @@ public:
      * @return void
      */
     void openSafari(const QString &url);
+
+    /**
+     * @brief Requests the location services permission.
+     * @return void
+     */
+    void requestLocationPermission();
+
+    /**
+     * @brief Returns the current location authorization status from the device. If location is not enabled for qutils, LocationAuthorizationStatus::None is
+     * returned.
+     * @return LocationAuthorizationStatus
+     */
+    LocationAuthorizationStatus getLocationAuthorizationStatus();
 };

@@ -13,6 +13,15 @@ else {
     QT += multimedia
 }
 
+contains(QT, positioning) {
+    message("[qutils] Enabling location related services.")
+    DEFINES += QUTILS_LOCATION_ENABLED=1
+}
+else {
+    message("[qutils] Location related services are NOT enabled.")
+    DEFINES += QUTILS_LOCATION_ENABLED=0
+}
+
 FCM_ENABLED=false
 contains(CONFIG, ENABLE_FCM) {
     message("[qutils] Firebase Cloud Messageing is enabled.")
