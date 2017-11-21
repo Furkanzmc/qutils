@@ -13,6 +13,7 @@ class iOSUtils : public QObject
 
 public:
     explicit iOSUtils(QObject *parent = nullptr);
+    ~iOSUtils();
 
     /**
      * @brief Shows a native AlertDialog according to the given dialog properties.
@@ -73,12 +74,40 @@ public:
 
     Q_INVOKABLE void openSafari(const QString &url);
 
+    /**
+     * @brief Only the first instance will be notified of this.
+     * @param url
+     */
+    static void emitOpenedWithURLSignal(const QString &url);
+
+    /**
+     * @brief Only the first instance will be notified of this.
+     * @param url
+     */
+    static void emitOpenedWithoutURLSignal();
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);
     void keyboardHeightChanged(int keyboardHeight);
 
+    /**
+     * @brief This signal is emitted when the app is opened with a URL.
+     * Follow this tutorial for how to implement int into your app: https://developer.android.com/training/app-links/index.html
+     * @param url
+     */
+    void openedWithURL(const QString &url);
+
+    /**
+     * @brief This is also called for the first instance. This is just a complementary signal. This is emitted If an app is not opened from a URL.
+     */
+    void openedWithoutURL();
+
 private:
+    static QList<iOSUtils *> m_Instances;
+    static QString m_URLOpenedWith;
+
+    const int m_InstanceID;
     iOSNativeUtils *m_iOSNative;
 };
 

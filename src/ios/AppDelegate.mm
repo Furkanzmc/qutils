@@ -12,6 +12,7 @@
 // qutils
 #import "NotificationClient.h"
 #endif // FCM_ENABLED
+#import "iOSUtils.h"
 
 #if FCM_ENABLED == 1
 @interface QIOSApplicationDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate, FIRMessagingDelegate>
@@ -25,8 +26,8 @@
 
 @implementation QIOSApplicationDelegate (QPushNotificationDelegate)
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    (void)application;
-    (void)launchOptions;
+    Q_UNUSED(application);
+    Q_UNUSED(launchOptions);
 
 #if FCM_ENABLED == 1
     [FIRApp configure];
@@ -66,7 +67,13 @@
         [self application:application didReceiveRemoteNotification: dict];
     }
 #endif // FCM_ENABLED
+    return YES;
+}
 
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+    Q_UNUSED(options);
+    Q_UNUSED(app);
+    zmc::iOSUtils::emitOpenedWithURLSignal(QString::fromNSString(url.absoluteString));
     return YES;
 }
 

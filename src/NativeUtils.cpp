@@ -42,6 +42,9 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
     connect(m_iOSUtils, &iOSUtils::actionSheetClicked, this, &NativeUtils::actionSheetClicked);
     connect(m_iOSUtils, &iOSUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
+    connect(m_iOSUtils, &iOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
+
+    connect(m_iOSUtils, &iOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
 #endif // Q_OS_IOS
 }
 

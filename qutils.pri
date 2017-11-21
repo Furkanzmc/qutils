@@ -2,6 +2,7 @@ CONFIG += c++11
 QT += sql
 
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
+QUTILS_FEATURE_FCM = fcm
 
 contains(CONFIG, QUTILS_NO_MULTIMEDIA) {
     message("[qutils] Multimedia is disabled in qutils")
@@ -14,6 +15,16 @@ else {
 
 FCM_ENABLED=false
 contains(CONFIG, ENABLE_FCM) {
+    message("[qutils] Firebase Cloud Messageing is enabled.")
+    FCM_ENABLED=true
+    DEFINES += FCM_ENABLED=1
+}
+else {
+    message("[qutils] Firebase Cloud Messageing is NOT enabled.")
+    DEFINES += FCM_ENABLED=0
+}
+
+contains(QUTILS_FEATURES, $$QUTILS_FEATURE_FCM) {
     message("[qutils] Firebase Cloud Messageing is enabled.")
     FCM_ENABLED=true
     DEFINES += FCM_ENABLED=1
