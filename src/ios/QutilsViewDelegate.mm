@@ -49,10 +49,7 @@
              (void)dataUTI;
              (void)orientation;
              if ([info objectForKey:@"PHImageFileURLKey"]) {
-                 // path looks like this -
-                 // file:///var/mobile/Media/DCIM/###APPLE/IMG_####.JPG
                  fileURL = [info objectForKey:@"PHImageFileURLKey"];
-                 NSLog(@"FILE PATH IS: %@", fileURL);
              }
          }];
     }
