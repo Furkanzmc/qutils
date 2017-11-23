@@ -4,11 +4,23 @@
 // std
 #include <functional>
 
+namespace zmc
+{
+
 class iOSNativeUtils
 {
 public:
     std::function<void(unsigned int /*buttonIndex*/)> onAlertDialogClicked;
     std::function<void(unsigned int /*buttonIndex*/)> onActionSheetClicked;
+    std::function<void()> onImagePickerControllerCancelled;
+
+    /**
+     * @brief The following keys will be present in the map:
+     * - mediaType
+     * - mediaUrl
+     * - referenceUrl
+     */
+    std::function<void(const QVariantMap &/*info*/)> onImagePickerControllerFinishedPicking;
 
     /**
      * @brief If the keyboard is hidden then the width and height will be zero. Otherwise they will be non-zero.
@@ -16,17 +28,36 @@ public:
      */
     std::function<void(int /*height*/)> onKeyboardHeightChanged;
 
+    /**
+     * @brief This is called when the user authenticates the app to access to the photos.
+     */
+    std::function<void()> onPhotosAccessGranted;
+
+    /**
+     * @brief This is called when the user declines authentication to access to the photos.
+     */
+    std::function<void()> onPhotosAccessDenied;
+
     enum LocationAuthorizationStatus {
-        None = 0, // The location services is not in use.
-        NotDetermined = 1, // The user has not yet made a choice regarding whether this app can use location services.
-        Restricted = 2, // This app is not authorized to use location services.
-        Denied = 3, // The user explicitly denied the use of location services for this app or location services are currently disabled in Settings.
-        AuthorizedAlways = 4, // This app is authorized to start location services at any time.
-        AuthorizedWhenInUse = 5 // This app is authorized to start most location services while running in the foreground.
+        LANone = 0, // The location services is not in use.
+        LANotDetermined = 1, // The user has not yet made a choice regarding whether this app can use location services.
+        LARestricted = 2, // This app is not authorized to use location services.
+        LADenied = 3, // The user explicitly denied the use of location services for this app or location services are currently disabled in Settings.
+        LAAuthorizedAlways = 4, // This app is authorized to start location services at any time.
+        LAAuthorizedWhenInUse = 5 // This app is authorized to start most location services while running in the foreground.
+    };
+
+    enum PhotosAuthorizationStatus {
+        PANone = 0, // Photos is not enabled for quitls.
+        PANotDetermined = 1, // Explicit user permission is required for photo library access, but the user has not yet granted or denied such permission.
+        PARestricted = 2, // Your app is not authorized to access the photo library, and the user cannot grant such permission.
+        PADenied = 3, // The user has explicitly denied your app access to the photo library.
+        PAAuthorized = 4 // The user has explicitly granted your app access to the photo library.
     };
 
 public:
     iOSNativeUtils();
+    ~iOSNativeUtils();
 
     /**
      * @brief Shows a native alert view on iOS. Make sure that you connect the onAlertDialogClicked lamda to get a callback.
@@ -104,4 +135,53 @@ public:
      * @return LocationAuthorizationStatus
      */
     LocationAuthorizationStatus getLocationAuthorizationStatus();
+
+    /**
+     * @brief Requests access to photos on iOS.
+     * @return void
+     */
+    void requestPhotosPermisson();
+
+    /**
+     * @brief Returns the current photos access authorization status from the device. If photos is not enabled for qutils, PhotosAuthorizationStatus::None is
+     * returned.
+     * @return LocationAuthorizationStatus
+     */
+    PhotosAuthorizationStatus getPhotosAuthorizationStatus();
+
+    /**
+     * @brief Opens the gallery to pick an image.
+     * @return void
+     */
+    void openGallery();
+
+    /**
+     * @brief Calls the callback for image picker finished for the instance that opened it.
+     * @param data
+     * @return void
+     */
+    static void emitImagePickerFinished(QVariantMap data);
+
+    /**
+     * @brief Calls the callback for image picker cancelled for the instance that opened it.
+     * @return void
+     */
+    static void emitImagePickerCancelled();
+
+    /**
+     * @brief This will be set to true when the image picker is open and only this instance will be notified of the events from the image picker.
+     * @return
+     */
+    bool isImagePickerOpen() const;
+
+private:
+    static QList<iOSNativeUtils *> m_Instances;
+    const unsigned int m_InstanceIndex;
+    bool m_IsImagePickerOpen;
+
+private:
+    void callImagePickerFinishedCallback(const QVariantMap &data);
+    void callImagePickerCancelledCallback();
 };
+
+}

@@ -3,6 +3,20 @@ QT += sql
 
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
 QUTILS_FEATURE_FCM = fcm
+DEFAULT_FEATURES = ""
+
+ios {
+    DEFAULT_FEATURES += photos
+}
+
+contains(DEFAULT_FEATURES, photos) {
+    message("[qutils] Photos framework is enabled by default.")
+    DEFINES += QUTILS_PHOTOS_ENABLED=1
+    LIBS += -framework Photos
+}
+else {
+    DEFINES += QUTILS_PHOTOS_ENABLED=0
+}
 
 contains(CONFIG, QUTILS_NO_MULTIMEDIA) {
     message("[qutils] Multimedia is disabled in qutils")
@@ -74,11 +88,13 @@ android {
 
 ios {
     OBJECTIVE_HEADERS += \
-        $$PWD/include/qutils/ios/iOSNativeUtils.h
+        $$PWD/include/qutils/ios/iOSNativeUtils.h \
+        $$PWD/include/qutils/ios/QutilsViewDelegate.h
 
     OBJECTIVE_SOURCES += \
         $$PWD/src/ios/iOSNativeUtils.mm \
-        $$PWD/src/ios/AppDelegate.mm
+        $$PWD/src/ios/AppDelegate.mm \
+        $$PWD/src/ios/QutilsViewDelegate.mm
 
     HEADERS += \
         $$PWD/include/qutils/ios/iOSUtils.h
@@ -151,4 +167,5 @@ if (!QUTILS_NO_MULTIMEDIA) {
 INCLUDEPATH += $$PWD/include
 
 DISTFILES += \
-    $$PWD/android/src/org/zmc/qutils/Constants.java
+    $$PWD/android/src/org/zmc/qutils/Constants.java \
+    $$PWD/src/ios/UIIMagePickerDelegate

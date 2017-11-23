@@ -20,6 +20,9 @@ iOSUtils::iOSUtils(QObject *parent)
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
     m_iOSNative->onKeyboardHeightChanged = std::bind(&iOSUtils::keyboardHeightChanged, this, std::placeholders::_1);
 
+    m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imagePickerCancelledCallback, this);
+    m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
+
     if (m_URLOpenedWith.length() > 0) {
         /*
          * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
@@ -42,6 +45,7 @@ iOSUtils::iOSUtils(QObject *parent)
 iOSUtils::~iOSUtils()
 {
     m_Instances[m_InstanceID] = nullptr;
+    delete m_iOSNative;
 }
 
 void iOSUtils::showAlertView(const QVariantMap &dialogProperties)
@@ -95,6 +99,11 @@ int iOSUtils::getLocationAuthorizationStatus()
     return static_cast<int>(m_iOSNative->getLocationAuthorizationStatus());
 }
 
+void iOSUtils::openGallery()
+{
+    m_iOSNative->openGallery();
+}
+
 void iOSUtils::emitOpenedWithURLSignal(const QString &url)
 {
     if (m_Instances.size() == 0) {
@@ -119,6 +128,16 @@ void iOSUtils::emitOpenedWithoutURLSignal()
             emit utils->openedWithoutURL();
         }
     }
+}
+
+void iOSUtils::imagePickerCancelledCallback()
+{
+    emit imageSelectionCancelled();
+}
+
+void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
+{
+    emit imageSelected(data["referenceUrl"].toString());
 }
 
 }

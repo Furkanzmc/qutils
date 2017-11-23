@@ -2,10 +2,10 @@
 #include <QObject>
 #include <QVariantMap>
 
-class iOSNativeUtils;
-
 namespace zmc
 {
+
+class iOSNativeUtils;
 
 class iOSUtils : public QObject
 {
@@ -89,7 +89,13 @@ public:
      * @brief See iOSNativeUtils::getLocationAuthorizationStatus.
      * @return LocationAuthorizationStatus
      */
-    int getLocationAuthorizationStatus();
+    Q_INVOKABLE int getLocationAuthorizationStatus();
+
+    /**
+     * @brief See iOSNativeUtils::openGallery.
+     * @return void
+     */
+    Q_INVOKABLE void openGallery();
 
     /**
      * @brief Only the first instance will be notified of this.
@@ -120,12 +126,29 @@ signals:
      */
     void openedWithoutURL();
 
+    /**
+     * @brief Emitted when an image is picked with the image picker.
+     * @return void
+     */
+    void imageSelectionCancelled();
+
+    /**
+     * @brief Emitted when an image picker is used to select an image.
+     * @param mediaURL
+     * @return void
+     */
+    void imageSelected(const QString &mediaURL);
+
 private:
     static QList<iOSUtils *> m_Instances;
     static QString m_URLOpenedWith;
 
     const int m_InstanceID;
     iOSNativeUtils *m_iOSNative;
+
+private:
+    void imagePickerCancelledCallback();
+    void imagePickerFinishedPickingCallback(const QVariantMap &data);
 };
 
 }

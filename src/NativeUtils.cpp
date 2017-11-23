@@ -45,6 +45,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 
     connect(m_iOSUtils, &iOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
+    connect(m_iOSUtils, &iOSUtils::imageSelected, this, &NativeUtils::fileSelected);
+    connect(m_iOSUtils, &iOSUtils::imageSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
 #endif // Q_OS_IOS
 }
 
@@ -155,8 +157,11 @@ void NativeUtils::showActionSheet(const QString &title, const QString &message, 
 
 void NativeUtils::openGallery(const QString &fileType)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->openGallery(fileType);
+#elif defined(Q_OS_IOS)
+    m_iOSUtils->openGallery();
+    Q_UNUSED(fileType);
 #else
     Q_UNUSED(fileType);
 #endif // Q_OS_ANDROID
