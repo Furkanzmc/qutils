@@ -374,7 +374,7 @@ void NotificationClient::scheduleNotificationIOS(zmc::Notification *notification
 
     qint64 delay = notification->getDelay();
 
-    m_iOSNative->schedulePushNotification(notification->getTitle(), notification->getText(), delay);
+    m_iOSNative->schedulePushNotification(notification->getTitle(), notification->getText(), static_cast<int>(delay));
 
     m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), -1), this));
 }

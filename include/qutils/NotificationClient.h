@@ -2,14 +2,15 @@
 #include <QObject>
 #include <QVariantMap>
 
-#ifdef Q_OS_IOS
-class iOSNativeUtils;
-#endif // Q_OS_IOS
-
 namespace zmc
 {
 
+// Forward Declerations
+#ifdef Q_OS_IOS
+class iOSNativeUtils;
+#endif // Q_OS_IOS
 class Notification;
+
 using NotificationQueueMember = std::tuple<QString/*tag*/, int/*id*/, QString/*managerName*/, QString/*payload*/, bool/*isTapped*/>;
 using NotificationQueue = std::vector<NotificationQueueMember>;
 

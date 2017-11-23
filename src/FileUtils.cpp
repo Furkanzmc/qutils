@@ -72,7 +72,7 @@ QVariantMap FileUtils::getFileInfo(QString filePath)
     QVariantMap info;
     const QFileInfo fileInfo(filePath);
     if (fileInfo.exists() == false) {
-        info["exists"] = fileInfo.exists();
+        info["exists"] = false;
     }
     else {
         info["absoluteFilePath"] = fileInfo.absoluteFilePath();
