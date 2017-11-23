@@ -19,7 +19,16 @@
 #define Q_OS_MOBILE
 #endif // Mobile Platform
 
-#ifdef Q_OS_MOBILE
+#if defined(Q_OS_MOBILE)
+#  if defined(__clang__)
+#define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
+#define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << ":" << __LINE__ << "):" << msg
+#define LOG_ERROR(msg) qDebug() << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
+
+#define LOG_STD(msg) std::cout << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
+#define LOG_WARNING_STD(msg) std::cout << "[WARNING]" << __FUNCTION__ << ":" << msg << std::endl
+#define LOG_ERROR_STD(msg) std::cerr << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
+#  else // __clang__
 #define LOG(msg) qDebug() << "[INFO] " << msg
 #define LOG_WARNING(msg) qDebug() << "[WARNING] " << msg
 #define LOG_ERROR(msg) qDebug() << "[ERROR] " << msg
@@ -27,6 +36,7 @@
 #define LOG_STD(msg) std::cout << "[INFO] " << msg << std::endl
 #define LOG_WARNING_STD(msg) std::cout << "[WARNING] " << msg << std::endl
 #define LOG_ERROR_STD(msg) std::cerr << "[ERROR] " << msg << std::endl
+#  endif // __clang__
 #else
 #define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
 #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << ":" << __LINE__ << "):" << msg
@@ -47,7 +57,7 @@
 #define LOG_WARNING_JNI(msg) __android_log_write(ANDROID_LOG_WARN, APP_TAG, msg)
 #define LOG_ERROR_JNI(msg) __android_log_write(ANDROID_LOG_ERROR, APP_TAG, msg)
 #else
-#define LOG_JNI(msg) void(0)
-#define LOG_WARNING_JNI(msg) void(0)
-#define LOG_ERROR_JNI(msg) void(0)
+#define LOG_JNI(msg) Q_UNUSED(msg)
+#define LOG_WARNING_JNI(msg) Q_UNUSED(msg)
+#define LOG_ERROR_JNI(msg) Q_UNUSED(msg)
 #endif // Q_OS_ANDROID
