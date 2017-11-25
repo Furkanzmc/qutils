@@ -137,7 +137,7 @@ void iOSUtils::imagePickerCancelledCallback()
 
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
 {
-    emit imageSelected(data["referenceUrl"].toString());
+    emit imageSelected(data["tempUrl"].toString());
 }
 
 }

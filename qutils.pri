@@ -1,5 +1,5 @@
 CONFIG += c++11
-QT += sql
+QT += sql network
 
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
 QUTILS_FEATURE_FCM = fcm

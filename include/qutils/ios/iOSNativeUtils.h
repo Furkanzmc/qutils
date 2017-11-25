@@ -16,9 +16,9 @@ public:
 
     /**
      * @brief The following keys will be present in the map:
-     * - mediaType
-     * - mediaUrl
-     * - referenceUrl
+     * - mediaType: The media type for the file.
+     * - tempUrl: The file that resides at the temporary location for read and write access by the app.
+     * - referenceUrl: The reference URL provided by PHImageManager.
      */
     std::function<void(const QVariantMap &/*info*/)> onImagePickerControllerFinishedPicking;
 
@@ -180,7 +180,7 @@ private:
     bool m_IsImagePickerOpen;
 
 private:
-    void callImagePickerFinishedCallback(const QVariantMap &data);
+    void callImagePickerFinishedCallback(QVariantMap &data);
     void callImagePickerCancelledCallback();
 };
 

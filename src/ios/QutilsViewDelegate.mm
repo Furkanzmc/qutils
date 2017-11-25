@@ -2,6 +2,10 @@
 #import "qutils/ios/iOSNativeUtils.h"
 // iOS
 #import <Photos/Photos.h>
+// Qt
+#include <QImage>
+#include <QSize>
+#include <QVariant>
 
 @interface QutilsViewDelegate ()
 
@@ -24,6 +28,12 @@
     }
     else {
         data["referenceUrl"] = "";
+    }
+
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    if (!image) {
+        image = info[UIImagePickerControllerOriginalImage];
+        data["image"] = QVariant::fromValue<QImage>([self convertUIImageToQImage:image]);
     }
 
     zmc::iOSNativeUtils::emitImagePickerFinished(data);
@@ -55,6 +65,61 @@
     }
 
     return fileURL;
+}
+
+-(QImage)convertUIImageToQImage:(UIImage *)image {
+    if (!image) {
+        return QImage();
+    }
+
+    QImage::Format format = QImage::Format_RGB32;
+
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(image.CGImage);
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+
+    int orientation = [image imageOrientation];
+    int degree = 0;
+
+    switch (orientation) {
+        case UIImageOrientationLeft:
+            degree = -90;
+            break;
+        case UIImageOrientationDown: // Down
+            degree = 180;
+            break;
+        case UIImageOrientationRight:
+            degree = 90;
+            break;
+    }
+
+    if (degree == 90 || degree == -90)  {
+        CGFloat tmp = width;
+        width = height;
+        height = tmp;
+    }
+
+    QSize size(width, height);
+    QImage result = QImage(size, format);
+
+    CGContextRef contextRef = CGBitmapContextCreate(result.bits(),
+                                                    width,
+                                                    height,
+                                                    8,
+                                                    result.bytesPerLine(),
+                                                    colorSpace,
+                                                    kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little);
+
+    CGContextDrawImage(contextRef, CGRectMake(0, 0, width, height), image.CGImage);
+    CGContextRelease(contextRef);
+
+    if (degree != 0) {
+        QTransform myTransform;
+        myTransform.rotate(degree);
+        result = result.transformed(myTransform,Qt::SmoothTransformation);
+    }
+
+    return result;
 }
 
 @end

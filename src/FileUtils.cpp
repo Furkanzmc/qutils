@@ -7,6 +7,8 @@
 #include <QDateTime>
 #include <QCryptographicHash>
 #include <QUrl>
+#include <QTemporaryFile>
+#include <QStandardPaths>
 // Local
 #include "qutils/Macros.h"
 
@@ -165,6 +167,22 @@ bool FileUtils::isLocalFile(const QString &url) const
 {
     QUrl urlObject(url);
     return urlObject.isLocalFile();
+}
+
+QString FileUtils::getTemporaryFile(const QString &fileTemplate)
+{
+    QTemporaryFile tmpFile;
+    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
+    QString tmpPath = paths.at(0);
+
+    tmpFile.setFileTemplate(tmpPath + "/" + fileTemplate);
+    tmpFile.setAutoRemove(false);
+
+    tmpFile.open();
+    const QString fileName = tmpFile.fileName();
+    tmpFile.close();
+
+    return fileName;
 }
 
 }

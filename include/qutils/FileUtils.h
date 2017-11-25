@@ -112,6 +112,14 @@ public:
      */
     Q_INVOKABLE bool isLocalFile(const QString &url) const;
 
+    /**
+     * @brief Uses QTemporaryFile to generate a temporary file in the Temporary files directory of the current platform. The file template is used to generate
+     * a unique name. The file is not automatically removed from the temp directory.
+     * @param directory
+     * @return
+     */
+    Q_INVOKABLE static QString getTemporaryFile(const QString &fileTemplate);
+
 signals:
     void imageQualityChanged(bool success, const QString &savedPath);
 
