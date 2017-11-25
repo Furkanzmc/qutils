@@ -7,7 +7,6 @@
 #import <CoreLocation/CoreLocation.h>
 #endif // QUTILS_LOCATION_ENABLED
 #import "qutils/ios/QutilsViewDelegate.h"
-#include "qutils/FileUtils.h"
 // Firebase
 #if FCM_ENABLED == 1
 #import <FirebaseMessaging/FirebaseMessaging.h>
@@ -15,9 +14,6 @@
 #ifdef SAFARI_SERVICES_ENABLED
 #import <SafariServices/SafariServices.h>
 #endif // SAFARI_SERVICES_ENABLED
-// Qt
-#include <QImage>
-#include <QImageWriter>
 
 namespace zmc
 {
@@ -292,18 +288,6 @@ namespace zmc
 
     void iOSNativeUtils::callImagePickerFinishedCallback(QVariantMap &data)
     {
-        if (data.contains("image")) {
-            QImage image = data["image"].value<QImage>();
-            // Get a random file name from the temp directory.
-            const QString fileName = FileUtils::getTemporaryFile("XXXXX.jpg");
-
-            QImageWriter writer;
-            writer.setFileName(fileName);
-            writer.write(image);
-            data["tempUrl"] = fileName;
-            data.remove("image");
-        }
-
         if (onImagePickerControllerFinishedPicking) {
             onImagePickerControllerFinishedPicking(data);
         }
