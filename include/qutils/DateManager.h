@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QDateTime>
+#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -46,6 +47,14 @@ public:
      * @return QDate
      */
     Q_INVOKABLE QDate addYears(QDate from, const unsigned int &years);
+
+    /**
+     * @brief Add seconds to the given date time. You can add negative seconds to get an earlier date.
+     * @param dateTime
+     * @param seconds
+     * @return
+     */
+    Q_INVOKABLE QDateTime addSeconds(QDateTime dateTime, const int &seconds) const;
 
     /**
      * @brief Sets the day but keeps the month and the year the same. This will affect the date that this instance holds.
@@ -295,6 +304,12 @@ public:
      * @return bool
      */
     Q_INVOKABLE bool isLater(const QDateTime &from, const QDateTime &to);
+
+    /**
+     * @brief Returns the number of seconds to add to UTC to get the local time.
+     * @return int
+     */
+    Q_INVOKABLE int getOffsetFromUtc() const;
 
 private:
     QDateTime m_DateTime;

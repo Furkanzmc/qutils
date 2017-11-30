@@ -35,6 +35,11 @@ QDate DateManager::addYears(QDate from, const unsigned int &years)
     return from.addYears(years);
 }
 
+QDateTime DateManager::addSeconds(QDateTime dateTime, const int &seconds) const
+{
+    return dateTime.addSecs(seconds);
+}
+
 void DateManager::setDay(const unsigned int &day)
 {
     const QDate date = m_DateTime.date();
@@ -216,6 +221,9 @@ QDateTime DateManager::fromDateTimeString(const QString &dateTimeStr, const QStr
     if (isUTC) {
         datetime.setTimeZone(QTimeZone::utc());
     }
+    else {
+        datetime.setTimeZone(QTimeZone::systemTimeZone());
+    }
 
     return datetime;
 }
@@ -225,6 +233,9 @@ QDateTime DateManager::fromDateTimeString(const QString &dateTimeStr, const Qt::
     QDateTime datetime = QDateTime::fromString(dateTimeStr, dateTimeFormat);
     if (isUTC) {
         datetime.setTimeZone(QTimeZone::utc());
+    }
+    else {
+        datetime.setTimeZone(QTimeZone::systemTimeZone());
     }
 
     return datetime;
@@ -268,6 +279,12 @@ bool DateManager::isEarlier(const QDateTime &from, const QDateTime &to)
 bool DateManager::isLater(const QDateTime &from, const QDateTime &to)
 {
     return from > to;
+}
+
+int DateManager::getOffsetFromUtc() const
+{
+    const QDateTime now = QDateTime::currentDateTime();
+    return now.offsetFromUtc();
 }
 
 }
