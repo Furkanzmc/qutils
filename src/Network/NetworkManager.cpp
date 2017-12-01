@@ -104,8 +104,8 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
 
     for (auto it = files.constBegin(); it != files.constEnd(); it++) {
         QString filePath = it.value();
-        if (filePath.contains("file://")) {
-            filePath.remove("file://");
+        if (filePath.contains(FILE_PATH_PREFIX)) {
+            filePath.remove(FILE_PATH_PREFIX);
         }
 
         QFile *file = new QFile(filePath);

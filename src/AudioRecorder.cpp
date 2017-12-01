@@ -40,7 +40,7 @@ AudioRecorder::~AudioRecorder()
 
 void AudioRecorder::setOutputPath(QString location)
 {
-    location.remove("file://");
+    location.remove(FILE_PATH_PREFIX);
     m_AudioRecorder->setOutputLocation(QUrl::fromLocalFile(location));
 }
 
@@ -129,7 +129,7 @@ QString AudioRecorder::getWritableDir() const
 bool AudioRecorder::hasValidRecording() const
 {
     QString location = m_AudioRecorder->outputLocation().toString();
-    location.remove("file://");
+    location.remove(FILE_PATH_PREFIX);
     QFile file(location);
     return file.exists();
 }

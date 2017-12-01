@@ -8,6 +8,12 @@
 // std
 #include <iostream>
 
+#if defined(Q_OS_WIN)
+#define FILE_PATH_PREFIX "file:///"
+#else
+#define FILE_PATH_PREFIX "file://"
+#endif // defined(Q_OS_WIN)
+
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 

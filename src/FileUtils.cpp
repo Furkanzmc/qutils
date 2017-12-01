@@ -52,12 +52,12 @@ FileUtils::FileUtils(QObject *parent)
 
 void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int &quality)
 {
-    if (imagePath.contains("file://")) {
-        imagePath.remove("file://");
+    if (imagePath.contains(FILE_PATH_PREFIX)) {
+        imagePath.remove(FILE_PATH_PREFIX);
     }
 
-    if (newPath.contains("file://")) {
-        newPath.remove("file://");
+    if (newPath.contains(FILE_PATH_PREFIX)) {
+        newPath.remove(FILE_PATH_PREFIX);
     }
 
     ImageQualityWorkerThread *workerThread = new ImageQualityWorkerThread(imagePath, quality, newPath, this);
@@ -67,8 +67,8 @@ void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int
 
 QVariantMap FileUtils::getFileInfo(QString filePath)
 {
-    if (filePath.contains("file://")) {
-        filePath.remove("file://");
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
     }
 
     QVariantMap info;
@@ -94,8 +94,8 @@ QVariantMap FileUtils::getFileInfo(QString filePath)
 
 bool FileUtils::remove(QString filePath)
 {
-    if (filePath.contains("file://")) {
-        filePath.remove("file://");
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
     }
 
     bool succeeded = false;
@@ -109,8 +109,8 @@ bool FileUtils::remove(QString filePath)
 
 bool FileUtils::exists(QString filePath)
 {
-    if (filePath.contains("file://")) {
-        filePath.remove("file://");
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
     }
 
     QFile file(filePath);
@@ -119,12 +119,12 @@ bool FileUtils::exists(QString filePath)
 
 bool FileUtils::copy(QString filePath, QString newFilePath)
 {
-    if (filePath.contains("file://")) {
-        filePath.remove("file://");
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
     }
 
-    if (newFilePath.contains("file://")) {
-        newFilePath.remove("file://");
+    if (newFilePath.contains(FILE_PATH_PREFIX)) {
+        newFilePath.remove(FILE_PATH_PREFIX);
     }
 
     return QFile::copy(filePath, newFilePath);
@@ -132,8 +132,8 @@ bool FileUtils::copy(QString filePath, QString newFilePath)
 
 QString FileUtils::getFileChecksum(QString filePath)
 {
-    if (filePath.contains("file://")) {
-        filePath.remove("file://");
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
     }
 
     QString hashData = "";
