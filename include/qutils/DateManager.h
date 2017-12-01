@@ -49,6 +49,30 @@ public:
     Q_INVOKABLE QDate addYears(QDate from, const unsigned int &years);
 
     /**
+     * @brief Add days to the given date and returns the new instance.
+     * @param from
+     * @param months
+     * @return QDateTime
+     */
+    Q_INVOKABLE QDateTime addDays(QDateTime from, const int &days);
+
+    /**
+     * @brief Add months to the given date and returns the new instance
+     * @param from
+     * @param months
+     * @return QDateTime
+     */
+    Q_INVOKABLE QDateTime addMonths(QDateTime from, const int &months);
+
+    /**
+     * @brief Add years to the given date and returns the new instance
+     * @param from
+     * @param years
+     * @return QDateTime
+     */
+    Q_INVOKABLE QDateTime addYears(QDateTime from, const int &years);
+
+    /**
      * @brief Add seconds to the given date time. You can add negative seconds to get an earlier date.
      * @param dateTime
      * @param seconds

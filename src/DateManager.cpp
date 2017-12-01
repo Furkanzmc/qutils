@@ -35,6 +35,21 @@ QDate DateManager::addYears(QDate from, const unsigned int &years)
     return from.addYears(years);
 }
 
+QDateTime DateManager::addDays(QDateTime from, const int &days)
+{
+    return from.addDays(days);
+}
+
+QDateTime DateManager::addMonths(QDateTime from, const int &months)
+{
+    return from.addMonths(months);
+}
+
+QDateTime DateManager::addYears(QDateTime from, const int &years)
+{
+    return from.addYears(years);
+}
+
 QDateTime DateManager::addSeconds(QDateTime dateTime, const int &seconds) const
 {
     return dateTime.addSecs(seconds);
