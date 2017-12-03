@@ -17,6 +17,7 @@ namespace zmc
 {
 
 QList<CacheManager *> CacheManager::m_Instances = QList<CacheManager *>();
+QSqlDatabase CacheManager::m_Database = QSqlDatabase();
 
 CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -24,7 +25,6 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_CacheTableName(tableName)
     , m_SqlManager()
-    , m_Database()
 {
     m_Instances.append(this);
 }

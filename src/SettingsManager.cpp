@@ -17,6 +17,7 @@ namespace zmc
 {
 
 QList<SettingsManager *> SettingsManager::m_Instances = QList<SettingsManager *>();
+QSqlDatabase SettingsManager::m_Database = QSqlDatabase();
 
 SettingsManager::SettingsManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -24,7 +25,6 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_SettingsTableName(tableName)
     , m_SqlManager()
-    , m_Database()
 {
     m_Instances.append(this);
 
