@@ -23,7 +23,7 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
         db = QSqlDatabase::addDatabase("QSQLITE", databasePath);
         db.setDatabaseName(databasePath);
         if (db.open() == false) {
-            LOG_ERROR("Cannot open the database at " << databasePath);
+            LOG_ERROR("Cannot open the database at " << databasePath << "\nError: " << db.lastError().text());
         }
     }
 

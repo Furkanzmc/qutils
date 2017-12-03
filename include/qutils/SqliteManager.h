@@ -92,7 +92,6 @@ public:
      * If another database with the same databasePath has been opened before, returns that database connection to avoid multiple connections to the same
      * database.
      * @param databasePath
-     * @param createIfFileAbsent
      * @return QSqlDatabase
      */
     QSqlDatabase openDatabase(const QString &databasePath);
