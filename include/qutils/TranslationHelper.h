@@ -7,7 +7,7 @@ namespace zmc
 
 /**
  * @brief TranslationHelper is a utlity class to help you manage the translations for your app.
- * Everytime the langauge changes, the `LCS` signal is emitted and it causes all of the `qsTr` functions to be re-evaluted If they were used along side of the
+ * Everytime the language changes, the `LCS` signal is emitted and it causes all of the `qsTr` functions to be re-evaluted If they were used along side of the
  * `LCS` signal.
  *
  * @code
@@ -18,7 +18,7 @@ namespace zmc
  *     }
  *
  *     Text {
- *         // This will stay the same even when the langauge changes at runtime because we are not using the `LCS` signal.
+ *         // This will stay the same even when the language changes at runtime because we are not using the `LCS` signal.
  *         text: qsTr("Hello World!")
  *         anchors.centerIn: parent
  *     }
