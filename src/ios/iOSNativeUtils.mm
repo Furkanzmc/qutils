@@ -27,16 +27,12 @@ namespace zmc
     {
         [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
             Q_UNUSED(note);
-            if (onKeyboardHeightChanged) {
-                onKeyboardHeightChanged(0);
-            }
+            iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
         }];
 
         [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
-            if (onKeyboardHeightChanged) {
-                const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
-                onKeyboardHeightChanged(static_cast<int>(height));
-            }
+            const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+            iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
         }];
 
         m_Instances.append(this);
@@ -45,6 +41,15 @@ namespace zmc
     iOSNativeUtils::~iOSNativeUtils()
     {
         m_Instances[m_InstanceIndex] = nullptr;
+        onAlertDialogClicked = nullptr;
+        onActionSheetClicked = nullptr;
+
+        onImagePickerControllerCancelled = nullptr;
+        onImagePickerControllerFinishedPicking = nullptr;
+        onKeyboardHeightChanged = nullptr;
+
+        onPhotosAccessGranted = nullptr;
+        onPhotosAccessDenied = nullptr;
     }
 
     void iOSNativeUtils::showAlertView(const QString &title, const QString &message, const QStringList &buttons)
@@ -286,6 +291,15 @@ namespace zmc
         return m_IsImagePickerOpen;
     }
 
+    void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
+    {
+        for (iOSNativeUtils *instance : m_Instances) {
+            if (instance) {
+                instance->emitKeyboardHeightChanged(height);
+            }
+        }
+    }
+
     void iOSNativeUtils::callImagePickerFinishedCallback(QVariantMap &data)
     {
         if (onImagePickerControllerFinishedPicking) {
@@ -302,5 +316,12 @@ namespace zmc
         }
 
         m_IsImagePickerOpen = false;
+    }
+
+    void iOSNativeUtils::emitKeyboardHeightChanged(int height)
+    {
+        if (onKeyboardHeightChanged) {
+            onKeyboardHeightChanged(height);
+        }
     }
 }

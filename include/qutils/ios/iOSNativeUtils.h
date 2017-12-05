@@ -170,9 +170,16 @@ public:
 
     /**
      * @brief This will be set to true when the image picker is open and only this instance will be notified of the events from the image picker.
-     * @return
+     * @return bool
      */
     bool isImagePickerOpen() const;
+
+    /**
+     * @brief Calls onKeyboardHeightChanged function on every valid instance.
+     * @param height
+     * @return void
+     */
+    static void emitKeyboardHeightChangedSignals(int height);
 
 private:
     static QList<iOSNativeUtils *> m_Instances;
@@ -182,6 +189,7 @@ private:
 private:
     void callImagePickerFinishedCallback(QVariantMap &data);
     void callImagePickerCancelledCallback();
+    void emitKeyboardHeightChanged(int height);
 };
 
 }
