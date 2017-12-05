@@ -11,7 +11,7 @@ NativeUtils::NativeUtils(QObject *parent)
     , m_AndroidUtils(new AndroidUtils(this))
 #endif // Q_OS_ANDROID
 #ifdef Q_OS_IOS
-    , m_iOSUtils(new iOSUtils())
+    , m_iOSUtils(new iOSUtils(this))
 #endif // Q_OS_IOS
 {
 #ifdef Q_OS_ANDROID
