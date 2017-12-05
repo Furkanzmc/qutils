@@ -103,7 +103,7 @@
 }
 
 - (void)messaging:(nonnull FIRMessaging *)messaging didRefreshRegistrationToken:(nonnull NSString *)fcmToken {
-    (void)messaging;
+    Q_UNUSED(messaging)
     zmc::NotificationClient::emitFCMTokenReceivedSignal(QString::fromNSString(fcmToken));
 }
 
