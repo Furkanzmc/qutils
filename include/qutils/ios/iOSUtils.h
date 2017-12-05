@@ -101,13 +101,31 @@ public:
      * @brief Only the first instance will be notified of this.
      * @param url
      */
-    static void emitOpenedWithURLSignal(const QString &url);
+    static void emitOpenedWithURLSignal(QString url);
 
     /**
      * @brief Only the first instance will be notified of this.
      * @param url
      */
     static void emitOpenedWithoutURLSignal();
+
+    /**
+     * @brief Returns true if this is the main controller.
+     * @return bool
+     */
+    Q_INVOKABLE bool isMainController() const;
+
+    /**
+     * @brief Set the main controller to this one. When an instance is set as main controller, certain signals will only be emitted for this instance.
+     * Only one instance can be the main controller. When an instance is set as main controller while there is already an existing main controller, the existing
+     * main controller will relinquish its position and the new instance will be the new main controller.
+     * The signals that are designated to main controller are:
+     * - openedWithUrl
+     * - openedWithoutUrl
+     * @param isMain
+     * @return void
+     */
+    Q_INVOKABLE void setMainController(bool isMain);
 
 signals:
     void alertDialogClicked(int buttonIndex);
@@ -119,7 +137,7 @@ signals:
      * Follow this tutorial for how to implement int into your app: https://developer.android.com/training/app-links/index.html
      * @param url
      */
-    void openedWithURL(const QString &url);
+    void openedWithURL(QString url);
 
     /**
      * @brief This is also called for the first instance. This is just a complementary signal. This is emitted If an app is not opened from a URL.
@@ -139,12 +157,20 @@ signals:
      */
     void imageSelected(const QString &mediaURL);
 
+    /**
+     * @brief Emitted when m_IsMainController is changed.
+     * @return void
+     *
+     */
+    void mainControllerChanged();
+
 private:
     static QList<iOSUtils *> m_Instances;
     static QString m_URLOpenedWith;
 
     const int m_InstanceID;
     iOSNativeUtils *m_iOSNative;
+    bool m_IsMainController;
 
 private:
     void imagePickerCancelledCallback();

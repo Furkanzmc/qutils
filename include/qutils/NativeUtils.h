@@ -26,6 +26,8 @@ class NativeUtils : public QObject
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool ipad READ isiPad CONSTANT)
 
+    Q_PROPERTY(bool mainController READ isMainController WRITE setMainController NOTIFY mainControllerChanged)
+
 public:
     explicit NativeUtils(QObject *parent = 0);
 
@@ -61,6 +63,9 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
+    bool isMainController() const;
+    void setMainController(bool isMain);
+
 signals:
     void backButtonPressed();
     void menuButtonPressed();
@@ -84,6 +89,7 @@ signals:
 
     void openedWithURL(const QString &url);
     void openedWithoutURL();
+    void mainControllerChanged();
 
 private:
 #ifdef Q_OS_ANDROID

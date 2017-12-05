@@ -24,6 +24,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
     , m_IsButtonEventsEnabled(false)
+    , m_IsMainController(false)
 {
     m_Instances.append(this);
     if (m_URLOpenedWith.length() > 0) {
@@ -508,23 +509,43 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
     }
     else {
         for (AndroidUtils *utils : m_Instances) {
-            if (utils == nullptr) {
-                continue;
+            if (utils && utils->isMainController()) {
+                emit utils->openedWithURL(url);
+                break;
             }
-
-            utils->openedWithURL(url);
         }
     }
 }
 
 void AndroidUtils::emitOpenedWithoutURLSignal()
 {
-    if (m_Instances.size() != 0) {
-        AndroidUtils *utils = m_Instances.at(0);
-        if (utils) {
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
+            break;
         }
     }
+}
+
+bool AndroidUtils::isMainController() const
+{
+    return m_IsMainController;
+}
+
+void AndroidUtils::setMainController(bool IsMainController)
+{
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils && utils->isMainController()) {
+            utils->setMainController(false);
+            break;
+        }
+    }
+
+    if (m_IsMainController != IsMainController) {
+        emit mainControllerChanged();
+    }
+
+    m_IsMainController = IsMainController;
 }
 
 bool AndroidUtils::isButtonEventsEnabled() const

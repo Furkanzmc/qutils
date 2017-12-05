@@ -155,6 +155,24 @@ public:
      */
     static void emitOpenedWithoutURLSignal();
 
+    /**
+     * @brief Returns true if this is the main controller.
+     * @return bool
+     */
+    Q_INVOKABLE bool isMainController() const;
+
+    /**
+     * @brief Set the main controller to this one. When an instance is set as main controller, certain signals will only be emitted for this instance.
+     * Only one instance can be the main controller. When an instance is set as main controller while there is already an existing main controller, the existing
+     * main controller will relinquish its position and the new instance will be the new main controller.
+     * The signals that are designated to main controller are:
+     * - openedWithUrl
+     * - openedWithoutUrl
+     * @param isMain
+     * @return void
+     */
+    Q_INVOKABLE void setMainController(bool isMain);
+
 signals:
     /**
      * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
@@ -195,6 +213,13 @@ signals:
      */
     void openedWithoutURL();
 
+    /**
+     * @brief Emitted when m_IsMainController is changed.
+     * @return void
+     *
+     */
+    void mainControllerChanged();
+
 private:
     static QList<AndroidUtils *> m_Instances;
     static QString m_URLOpenedWith;
@@ -204,8 +229,8 @@ private:
          m_IsDatePickerShown,
          m_IsTimePickerShown,
          m_IsCameraShown,
-         m_IsGalleryShown;
-
+         m_IsGalleryShown,
+         m_IsMainController;
     /**
      * @brief The default value is false. This is used to determine which instance to send the backButtonPressed signal.
      */

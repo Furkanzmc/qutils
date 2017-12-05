@@ -15,6 +15,7 @@ iOSUtils::iOSUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_Instances.size())
     , m_iOSNative(new iOSNativeUtils())
+    , m_IsMainController(false)
 {
     m_iOSNative->onAlertDialogClicked = std::bind(&iOSUtils::alertDialogClicked, this, std::placeholders::_1);
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
@@ -104,30 +105,51 @@ void iOSUtils::openGallery()
     m_iOSNative->openGallery();
 }
 
-void iOSUtils::emitOpenedWithURLSignal(const QString &url)
+void iOSUtils::emitOpenedWithURLSignal(QString url)
 {
+
     if (m_Instances.size() == 0) {
         m_URLOpenedWith = url;
     }
     else {
         for (iOSUtils *utils : m_Instances) {
-            if (utils == nullptr) {
-                continue;
+            if (utils && utils->isMainController()) {
+                emit utils->openedWithURL(url);
+                break;
             }
-
-            utils->openedWithURL(url);
         }
     }
 }
 
 void iOSUtils::emitOpenedWithoutURLSignal()
 {
-    if (m_Instances.size() > 0) {
-        iOSUtils *utils = m_Instances.at(0);
-        if (utils) {
+    for (iOSUtils *utils : m_Instances) {
+        if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
+            break;
         }
     }
+}
+
+bool iOSUtils::isMainController() const
+{
+    return m_IsMainController;
+}
+
+void iOSUtils::setMainController(bool isMain)
+{
+    for (iOSUtils *utils : m_Instances) {
+        if (utils && utils->isMainController()) {
+            utils->setMainController(false);
+            break;
+        }
+    }
+
+    if (m_IsMainController != isMain) {
+        emit mainControllerChanged();
+    }
+
+    m_IsMainController = isMain;
 }
 
 void iOSUtils::imagePickerCancelledCallback()

@@ -36,6 +36,7 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 
     connect(m_AndroidUtils, &AndroidUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
+    connect(m_AndroidUtils, &AndroidUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
@@ -47,6 +48,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
     connect(m_iOSUtils, &iOSUtils::imageSelected, this, &NativeUtils::fileSelected);
     connect(m_iOSUtils, &iOSUtils::imageSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
+
+    connect(m_iOSUtils, &iOSUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
 #endif // Q_OS_IOS
 }
 
@@ -273,6 +276,24 @@ void NativeUtils::setEnabled(bool enabled)
     m_AndroidUtils->setEnabled(enabled);
 #else
     Q_UNUSED(enabled);
+#endif // Q_OS_ANDROID
+}
+
+bool NativeUtils::isMainController() const
+{
+#ifdef Q_OS_IOS
+    return m_iOSUtils->isMainController();
+#else
+    return m_AndroidUtils->isMainController();
+#endif // Q_OS_ANDROID
+}
+
+void NativeUtils::setMainController(bool isMain)
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->setMainController(isMain);
+#else
+    m_AndroidUtils->setMainController(isMain);
 #endif // Q_OS_ANDROID
 }
 
