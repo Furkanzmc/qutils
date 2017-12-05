@@ -250,6 +250,10 @@ QString AndroidUtils::getDeviceModel()
 
 void AndroidUtils::emitBackButtonPressed()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     if (m_IsButtonEventsEnabled) {
         emit backButtonPressed();
     }
@@ -257,6 +261,10 @@ void AndroidUtils::emitBackButtonPressed()
 
 void AndroidUtils::emitMenuButtonPressed()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     if (m_IsButtonEventsEnabled) {
         emit menuButtonPressed();
     }
@@ -398,11 +406,8 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         return;
     }
 
-    AndroidUtils *utils = nullptr;
-
-    for (int i = m_Instances.size() - 1; i > -1; i--) {
-        if (m_Instances.at(i) != nullptr && m_Instances.at(i)->isButtonEventsEnabled()) {
-            utils = m_Instances.at(i);
+    for (AndroidUtils *utils : m_Instances) {
+        if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
                 utils->emitBackButtonPressed();
             }

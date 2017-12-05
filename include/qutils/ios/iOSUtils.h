@@ -11,6 +11,8 @@ class iOSUtils : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
+
 public:
     explicit iOSUtils(QObject *parent = nullptr);
     ~iOSUtils();
@@ -133,6 +135,21 @@ public:
      */
     Q_INVOKABLE void setMainController(bool isMain);
 
+    /**
+     * @brief Returns the enabled status
+     * @return bool
+     */
+    bool isEnabled() const;
+
+    /**
+     * @brief If m_IsEnabled is set to false, this instance will not receive any signals from the system. So, when m_IsEnabled is false, you cannot show an
+     * alert dialog or show the date picker. Basically, anything that requires a callback back to you cannot be used.
+     * The only exceptions are the openedWithoutURL() and openedWithURL() signals.
+     * @param enabled
+     * @return void
+     */
+    void setEnabled(bool enabled);
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);
@@ -180,6 +197,11 @@ signals:
      * @brief cameraCaptureCancelled
      */
     void cameraCaptureCancelled();
+
+    /**
+     * @brief Emitted when the enabled property changes.
+     */
+    void enabledChanged();
 
 private:
     static QList<iOSUtils *> m_Instances;

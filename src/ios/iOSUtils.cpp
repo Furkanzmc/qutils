@@ -52,6 +52,10 @@ iOSUtils::~iOSUtils()
 
 void iOSUtils::showAlertView(const QVariantMap &dialogProperties)
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     const QVariantList varButtons = dialogProperties.value("buttons").toList();
     QStringList buttons;
     for (const QVariant &button : varButtons) {
@@ -68,6 +72,10 @@ void iOSUtils::shareText(const QString &text)
 
 void iOSUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_iOSNative->showActionSheet(title, message, buttons);
 }
 
@@ -93,6 +101,10 @@ void iOSUtils::openSafari(const QString &url)
 
 void iOSUtils::requestLocationPermission()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_iOSNative->requestLocationPermission();
 }
 
@@ -103,17 +115,24 @@ int iOSUtils::getLocationAuthorizationStatus()
 
 void iOSUtils::openGallery()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_iOSNative->openGallery();
 }
 
 void iOSUtils::showCamera()
 {
+    if (this->signalsBlocked()) {
+        return;
+    }
+
     m_iOSNative->showCamera();
 }
 
 void iOSUtils::emitOpenedWithURLSignal(QString url)
 {
-
     if (m_Instances.size() == 0) {
         m_URLOpenedWith = url;
     }
@@ -156,6 +175,20 @@ void iOSUtils::setMainController(bool isMain)
     }
 
     m_IsMainController = isMain;
+}
+
+bool iOSUtils::isEnabled() const
+{
+    return this->signalsBlocked();
+}
+
+void iOSUtils::setEnabled(bool enabled)
+{
+    if (!this->signalsBlocked() != enabled) {
+        emit enabledChanged();
+    }
+
+    this->blockSignals(!enabled);
 }
 
 void iOSUtils::imagePickerCancelledCallback()

@@ -117,11 +117,18 @@ public:
     void setButtonEventsEnabled(bool enabled);
 
     /**
-     * @brief If m_IsEnabled is set to false, this instance will not receive any signals from the system. So, when m_IsEnabled is false, you cannot show an
-     * alert dialog or show the date picker. Basically, anything that requires a callback back to you cannot be used.
-     * @return
+     * @brief Returns the enabled property.
+     * @return bool
      */
     bool isEnabled() const;
+
+    /**
+     * @brief If m_IsEnabled is set to false, this instance will not receive any signals from the system. So, when m_IsEnabled is false, you cannot show an
+     * alert dialog or show the date picker. Basically, anything that requires a callback back to you cannot be used.
+     * The only exceptions are the openedWithoutURL() and openedWithURL() signals.
+     * @param enabled
+     * @return void
+     */
     void setEnabled(bool enabled);
 
     /**
@@ -216,7 +223,6 @@ signals:
     /**
      * @brief Emitted when m_IsMainController is changed.
      * @return void
-     *
      */
     void mainControllerChanged();
 
