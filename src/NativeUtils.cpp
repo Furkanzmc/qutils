@@ -130,8 +130,10 @@ void NativeUtils::showTimePicker()
 
 void NativeUtils::showCamera(const QString &photoName)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->showCamera(photoName);
+#elif defined(Q_OS_IOS)
+    m_iOSUtils->showCamera(photoName);
 #else
     Q_UNUSED(photoName);
 #endif // Q_OS_ANDROID
