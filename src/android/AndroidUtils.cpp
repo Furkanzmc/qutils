@@ -23,8 +23,8 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
-    , m_IsButtonEventsEnabled(false)
     , m_IsMainController(false)
+    , m_IsButtonEventsEnabled(false)
 {
     m_Instances.append(this);
     if (m_URLOpenedWith.length() > 0) {
