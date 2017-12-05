@@ -281,19 +281,23 @@ void NativeUtils::setEnabled(bool enabled)
 
 bool NativeUtils::isMainController() const
 {
-#ifdef Q_OS_IOS
+#if defined(Q_OS_IOS)
     return m_iOSUtils->isMainController();
-#else
+#elif defined(Q_OS_IOS)
     return m_AndroidUtils->isMainController();
 #endif // Q_OS_ANDROID
+
+    return false;
 }
 
 void NativeUtils::setMainController(bool isMain)
 {
 #ifdef Q_OS_IOS
     m_iOSUtils->setMainController(isMain);
-#else
+#elif defined(Q_OS_IOS)
     m_AndroidUtils->setMainController(isMain);
+#else
+    Q_UNUSED(isMain);
 #endif // Q_OS_ANDROID
 }
 
