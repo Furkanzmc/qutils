@@ -14,17 +14,22 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
 
     QVariantMap data;
-
+    NSURL *fileURL = nil;
     NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-    PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil] lastObject];
-    NSURL *fileURL = [self getAssetPath:asset];
+
+    if (imageURL) {
+        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil] lastObject];
+        fileURL = [self getAssetPath:asset];
+    }
 
     data["mediaType"] = QString::fromNSString(info[UIImagePickerControllerMediaType]);
     if (fileURL != nil) {
+        data["isSourceCamera"] = false;
         data["referenceUrl"] = QString::fromNSString([fileURL absoluteString]);
     }
     else {
         data["referenceUrl"] = "";
+        data["isSourceCamera"] = true;
     }
 
     UIImage *image = info[UIImagePickerControllerEditedImage];

@@ -23,6 +23,7 @@ iOSUtils::iOSUtils(QObject *parent)
 
     m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imagePickerCancelledCallback, this);
     m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
+    m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCancelledCallback, this);
 
     if (m_URLOpenedWith.length() > 0) {
         /*
@@ -105,6 +106,11 @@ void iOSUtils::openGallery()
     m_iOSNative->openGallery();
 }
 
+void iOSUtils::showCamera()
+{
+    m_iOSNative->showCamera();
+}
+
 void iOSUtils::emitOpenedWithURLSignal(QString url)
 {
 
@@ -159,7 +165,17 @@ void iOSUtils::imagePickerCancelledCallback()
 
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
 {
-    emit imageSelected(data["tempUrl"].toString());
+    if (data["isSourceCamera"].toBool() == true) {
+        emit cameraCaptured(data["tempUrl"].toString());
+    }
+    else {
+        emit imageSelected(data["tempUrl"].toString());
+    }
+}
+
+void iOSUtils::cameraCancelledCallback()
+{
+    emit cameraCaptureCancelled();
 }
 
 }

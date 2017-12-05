@@ -13,12 +13,14 @@ public:
     std::function<void(unsigned int /*buttonIndex*/)> onAlertDialogClicked;
     std::function<void(unsigned int /*buttonIndex*/)> onActionSheetClicked;
     std::function<void()> onImagePickerControllerCancelled;
+    std::function<void()> onCameraCancelled;
 
     /**
      * @brief The following keys will be present in the map:
      * - mediaType: The media type for the file.
      * - tempUrl: The file that resides at the temporary location for read and write access by the app.
      * - referenceUrl: The reference URL provided by PHImageManager.
+     * - isSourceCamera: A bool value that indicates If the image was taken from the camera.
      */
     std::function<void(const QVariantMap &/*info*/)> onImagePickerControllerFinishedPicking;
 
@@ -156,6 +158,12 @@ public:
     void openGallery();
 
     /**
+     * @brief Opens the camera.
+     * @return void
+     */
+    void showCamera();
+
+    /**
      * @brief Calls the callback for image picker finished for the instance that opened it.
      * @param data
      * @return void
@@ -173,6 +181,12 @@ public:
      * @return bool
      */
     bool isImagePickerOpen() const;
+
+    /**
+     * @brief This will be true when this instance calls the camera.
+     * @return bool
+     */
+    bool isCameraOpen() const;
 
     /**
      * @brief Calls onKeyboardHeightChanged function on every valid instance.
@@ -207,7 +221,8 @@ private:
     bool m_IsImagePickerOpen,
          m_IsAlertDialogVisible,
          m_IsActionSheetDialogVisible,
-         m_IsPhotoAccessPermissionRequested;
+         m_IsPhotoAccessPermissionRequested,
+         m_IsCameraOpen;
 
 private:
     void callImagePickerFinishedCallback(QVariantMap &data);

@@ -98,6 +98,12 @@ public:
     Q_INVOKABLE void openGallery();
 
     /**
+     * @brief Opens the camera.
+     * @return void
+     */
+    void showCamera();
+
+    /**
      * @brief Only the first instance will be notified of this.
      * @param url
      */
@@ -164,6 +170,17 @@ signals:
      */
     void mainControllerChanged();
 
+    /**
+     * @brief cameraCaptured
+     * @param capturePath
+     */
+    void cameraCaptured(const QString &capturePath);
+
+    /**
+     * @brief cameraCaptureCancelled
+     */
+    void cameraCaptureCancelled();
+
 private:
     static QList<iOSUtils *> m_Instances;
     static QString m_URLOpenedWith;
@@ -175,6 +192,7 @@ private:
 private:
     void imagePickerCancelledCallback();
     void imagePickerFinishedPickingCallback(const QVariantMap &data);
+    void cameraCancelledCallback();
 };
 
 }

@@ -27,6 +27,7 @@ namespace zmc
         , m_IsAlertDialogVisible(false)
         , m_IsActionSheetDialogVisible(false)
         , m_IsPhotoAccessPermissionRequested(false)
+        , m_IsCameraOpen(false)
     {
         [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
             Q_UNUSED(note);
@@ -53,6 +54,7 @@ namespace zmc
 
         onPhotosAccessGranted = nullptr;
         onPhotosAccessDenied = nullptr;
+        onCameraCancelled = nullptr;
     }
 
     void iOSNativeUtils::showAlertView(const QString &title, const QString &message, const QStringList &buttons)
@@ -274,10 +276,23 @@ namespace zmc
         [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
     }
 
+    void iOSNativeUtils::showCamera()
+    {
+        m_IsCameraOpen = true;
+
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.allowsEditing = NO;
+        picker.delegate = (id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)m_QutilsDelegate;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+
+        UIApplication *app = [UIApplication sharedApplication];
+        [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
+    }
+
     void iOSNativeUtils::emitImagePickerFinished(QVariantMap data)
     {
         for (iOSNativeUtils *instance : m_Instances) {
-            if (instance != nullptr && instance->isImagePickerOpen()) {
+            if (instance != nullptr && (instance->isImagePickerOpen() || instance->isCameraOpen())) {
                 instance->callImagePickerFinishedCallback(data);
                 break;
             }
@@ -287,7 +302,7 @@ namespace zmc
     void iOSNativeUtils::emitImagePickerCancelled()
     {
         for (iOSNativeUtils *instance : m_Instances) {
-            if (instance != nullptr && instance->isImagePickerOpen()) {
+            if (instance != nullptr && (instance->isImagePickerOpen() || instance->isCameraOpen())) {
                 instance->callImagePickerCancelledCallback();
                 break;
             }
@@ -297,6 +312,11 @@ namespace zmc
     bool iOSNativeUtils::isImagePickerOpen() const
     {
         return m_IsImagePickerOpen;
+    }
+
+    bool iOSNativeUtils::isCameraOpen() const
+    {
+        return m_IsCameraOpen;
     }
 
     void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
@@ -315,15 +335,25 @@ namespace zmc
         }
 
         m_IsImagePickerOpen = false;
+        m_IsCameraOpen = false;
     }
 
     void iOSNativeUtils::callImagePickerCancelledCallback()
     {
-        if (onImagePickerControllerCancelled) {
-            onImagePickerControllerCancelled();
-        }
+        if (m_IsImagePickerOpen) {
+            if (onImagePickerControllerCancelled) {
+                onImagePickerControllerCancelled();
+            }
 
-        m_IsImagePickerOpen = false;
+            m_IsImagePickerOpen = false;
+        }
+        else if (m_IsCameraOpen) {
+            if (onCameraCancelled) {
+                onCameraCancelled();
+            }
+
+            m_IsCameraOpen = false;
+        }
     }
 
     void iOSNativeUtils::emitKeyboardHeightChanged(int height)

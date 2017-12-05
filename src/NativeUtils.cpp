@@ -50,6 +50,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::imageSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
 
     connect(m_iOSUtils, &iOSUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
+    connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
+    connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
 #endif // Q_OS_IOS
 }
 
@@ -133,7 +135,8 @@ void NativeUtils::showCamera(const QString &photoName)
 #if defined(Q_OS_ANDROID)
     m_AndroidUtils->showCamera(photoName);
 #elif defined(Q_OS_IOS)
-    m_iOSUtils->showCamera(photoName);
+    m_iOSUtils->showCamera();
+    Q_UNUSED(photoName);
 #else
     Q_UNUSED(photoName);
 #endif // Q_OS_ANDROID
