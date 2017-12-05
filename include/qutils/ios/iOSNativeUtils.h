@@ -181,15 +181,42 @@ public:
      */
     static void emitKeyboardHeightChangedSignals(int height);
 
+    /**
+     * @brief Calls onAlertDialogClicked for the instance that called the alert dialog.
+     * @param index
+     * @return void
+     */
+    static void emitAlertDialogClickedSignal(unsigned int index);
+
+    /**
+     * @brief Calls onActionSheetClicked for the instance that called the alert dialog.
+     * @param index
+     * @return void
+     */
+    static void emitActionSheetDialogClickedSignal(unsigned int index);
+
+    /**
+     * @brief Calls the appropriate permission callback for the caller instance.
+     * @param isAccessGranted
+     */
+    static void emitPhotoAccessPermissionSignals(bool isAccessGranted);
+
 private:
     static QList<iOSNativeUtils *> m_Instances;
     const unsigned int m_InstanceIndex;
-    bool m_IsImagePickerOpen;
+    bool m_IsImagePickerOpen,
+         m_IsAlertDialogVisible,
+         m_IsActionSheetDialogVisible,
+         m_IsPhotoAccessPermissionRequested;
 
 private:
     void callImagePickerFinishedCallback(QVariantMap &data);
     void callImagePickerCancelledCallback();
     void emitKeyboardHeightChanged(int height);
+
+    void callAlertDialogClickedCallback(unsigned int index);
+    void callActionSheetDialogClickedCallback(unsigned int index);
+    void callPhotoAccessResultCallback(bool isAccessGranted);
 };
 
 }

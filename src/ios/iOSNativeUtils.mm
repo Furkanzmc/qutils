@@ -24,6 +24,9 @@ namespace zmc
     iOSNativeUtils::iOSNativeUtils()
         : m_InstanceIndex(m_Instances.size())
         , m_IsImagePickerOpen(false)
+        , m_IsAlertDialogVisible(false)
+        , m_IsActionSheetDialogVisible(false)
+        , m_IsPhotoAccessPermissionRequested(false)
     {
         [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
             Q_UNUSED(note);
@@ -54,6 +57,12 @@ namespace zmc
 
     void iOSNativeUtils::showAlertView(const QString &title, const QString &message, const QStringList &buttons)
     {
+        if (m_IsAlertDialogVisible) {
+            LOG("Only one alert dialog can be shown at a time.");
+            return;
+        }
+
+        m_IsAlertDialogVisible = true;
         UIAlertController *alert = [UIAlertController
                                     alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
                                     message: [NSString stringWithUTF8String: message.toStdString().c_str()]
@@ -65,10 +74,8 @@ namespace zmc
                                      actionWithTitle: [NSString stringWithUTF8String: buttonText.toStdString().c_str()]
                                      style: UIAlertActionStyleDefault
                                      handler: ^ (UIAlertAction * action) {
-                                         if (onAlertDialogClicked) {
-                                             NSUInteger index = [[alert actions] indexOfObject: action];
-                                             onAlertDialogClicked((unsigned int)index);
-                                         }
+                                         NSUInteger index = [[alert actions] indexOfObject: action];
+                                         iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
                                      }
                                      ];
 
@@ -91,6 +98,12 @@ namespace zmc
 
     void iOSNativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
     {
+        if (m_IsActionSheetDialogVisible) {
+            LOG("Only one action sheet can be called.");
+            return;
+        }
+
+        m_IsActionSheetDialogVisible = true;
         UIAlertController *alert = [UIAlertController
                                     alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
                                     message: [NSString stringWithUTF8String: message.toStdString().c_str()]
@@ -113,10 +126,8 @@ namespace zmc
                                            actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()]
                                            style: alertActionStyle
                                            handler: ^ (UIAlertAction * action) {
-                                               if (onActionSheetClicked) {
-                                                   NSUInteger index = [[alert actions] indexOfObject: action];
-                                                   onActionSheetClicked((unsigned int)index);
-                                               }
+                                               NSUInteger index = [[alert actions] indexOfObject: action];
+                                               iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
                                            }
                                            ];
 
@@ -214,18 +225,15 @@ namespace zmc
     void iOSNativeUtils::requestPhotosPermisson()
     {
 #if QUTILS_PHOTOS_ENABLED == 1
+        if (m_IsPhotoAccessPermissionRequested) {
+            LOG("Permission is already requested.");
+            return;
+        }
+
+        m_IsPhotoAccessPermissionRequested = true;
         if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined) {
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                if (status == PHAuthorizationStatusAuthorized) {
-                    if (onPhotosAccessGranted) {
-                        onPhotosAccessGranted();
-                    }
-                }
-                else {
-                    if (onPhotosAccessDenied) {
-                        onPhotosAccessDenied();
-                    }
-                }
+                iOSNativeUtils::emitPhotoAccessPermissionSignals(status == PHAuthorizationStatusAuthorized);
             }];
         }
 #endif // QUTILS_PHOTOS_ENABLED
@@ -323,5 +331,68 @@ namespace zmc
         if (onKeyboardHeightChanged) {
             onKeyboardHeightChanged(height);
         }
+    }
+
+    void iOSNativeUtils::emitAlertDialogClickedSignal(unsigned int index)
+    {
+        for (iOSNativeUtils *instance : m_Instances) {
+            if (instance) {
+                instance->callAlertDialogClickedCallback(index);
+            }
+        }
+    }
+
+    void iOSNativeUtils::emitActionSheetDialogClickedSignal(unsigned int index)
+    {
+        for (iOSNativeUtils *instance : m_Instances) {
+            if (instance) {
+                instance->callActionSheetDialogClickedCallback(index);
+            }
+        }
+    }
+
+    void iOSNativeUtils::emitPhotoAccessPermissionSignals(bool isAccessGranted)
+    {
+        for (iOSNativeUtils *instance : m_Instances) {
+            if (instance) {
+                instance->callPhotoAccessResultCallback(isAccessGranted);
+            }
+        }
+    }
+
+    void iOSNativeUtils::callAlertDialogClickedCallback(unsigned int index)
+    {
+        if (m_IsAlertDialogVisible) {
+            if (onAlertDialogClicked) {
+                onAlertDialogClicked(index);
+            }
+
+            m_IsAlertDialogVisible = false;
+        }
+    }
+
+    void iOSNativeUtils::callActionSheetDialogClickedCallback(unsigned int index)
+    {
+        if (m_IsActionSheetDialogVisible) {
+            if (onActionSheetClicked) {
+                onActionSheetClicked(index);
+            }
+
+            m_IsActionSheetDialogVisible = false;
+        }
+    }
+
+    void iOSNativeUtils::callPhotoAccessResultCallback(bool isAccessGranted)
+    {
+        if (isAccessGranted) {
+            if (onPhotosAccessGranted) {
+                onPhotosAccessGranted();
+            }
+        }
+        else if (onPhotosAccessDenied) {
+            onPhotosAccessDenied();
+        }
+
+        m_IsPhotoAccessPermissionRequested = false;
     }
 }
