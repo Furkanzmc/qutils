@@ -288,7 +288,7 @@ bool NativeUtils::isMainController() const
 {
 #if defined(Q_OS_IOS)
     return m_iOSUtils->isMainController();
-#elif defined(Q_OS_IOS)
+#elif defined(Q_OS_ANDROID)
     return m_AndroidUtils->isMainController();
 #endif // Q_OS_ANDROID
 
@@ -299,7 +299,7 @@ void NativeUtils::setMainController(bool isMain)
 {
 #ifdef Q_OS_IOS
     m_iOSUtils->setMainController(isMain);
-#elif defined(Q_OS_IOS)
+#elif defined(Q_OS_ANDROID)
     m_AndroidUtils->setMainController(isMain);
 #else
     Q_UNUSED(isMain);
