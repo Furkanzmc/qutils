@@ -18,11 +18,11 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
     , m_ScreenRect(QGuiApplication::primaryScreen()->geometry())
     , m_RefSize(refWidth, refHeight)
     , m_RefDPI(refDpi)
-#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     , m_DPI(refDpi)
 #else
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
-#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#endif // defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     , m_LowDPIValue(120)
     , m_MediumDPIValue(160)
     , m_HighDPIValue(240)
@@ -127,7 +127,7 @@ QString ScreenHelper::getResourceFolderName() const
 {
     QString name = "";
 
-#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     // If we are on the desktop testing for mobile, use the low DPI assets.
     name = getLowResourceFolderName();
 #else
@@ -162,7 +162,7 @@ QString ScreenHelper::getResourceFolderName() const
     else if (isXXXHDPI()) {
         name = getXXXHighResourceFolderName();
     }
-#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#endif // defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
 
     return name;
 }
@@ -249,7 +249,7 @@ bool ScreenHelper::isXLargeSize() const
 void ScreenHelper::calculateRatio()
 {
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
-#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     m_DesiredHeight = qMin((float)m_RefSize.height(), (float)QGuiApplication::primaryScreen()->geometry().height() * 0.8f);
     m_DesiredWidth = getAspectRatioWidth(m_RefSize, m_DesiredHeight);
 #else
@@ -257,11 +257,12 @@ void ScreenHelper::calculateRatio()
     m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
 #endif // Q_OS_DESKTOP
 
-#if defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     m_Scale = qMax(m_DesiredWidth / float(m_RefSize.width()), m_DesiredHeight / float(m_RefSize.height()));
 #else
     m_Scale = 1.f;
-#endif // defined(Q_OS_DESKTOP) && defined(QUTILS_FOR_MOBILE)
+#endif // defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
+
 #ifdef Q_OS_ANDROID
     const float baseDPI = 160.f;
 #else

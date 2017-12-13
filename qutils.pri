@@ -1,30 +1,49 @@
 CONFIG += c++11
 QT += sql network
 
+# Available QUTILS_FEATURES options:
+# no_photos: Disables the Photos framework on iOS.
+# fcm: Enables Firebase messaging integration.
+# multimedia: Enables multimedia features.
+# for_mobile: Enables mobile related features.
+
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
 QUTILS_FEATURE_FCM = fcm
-DEFAULT_FEATURES = ""
 
-ios {
-    DEFAULT_FEATURES += photos
+!isEmpty(QUTILS_APP_NAME) {
+    message("[qutils] App name is set to" $$QUTILS_APP_NAME)
+    DEFINES += QUTILS_APP_NAME="org.cuztech.cuzapp"
 }
 
-contains(DEFAULT_FEATURES, photos) {
-    message("[qutils] Photos framework is enabled by default.")
+contains(QUTILS_FEATURES, no_photos) {
+    DEFINES += QUTILS_PHOTOS_ENABLED=0
+}
+else {
+    message("[qutils] Photos framework is enabled by default. To explicitly disable, add `no_photos` to QUTILS_FEATURES.")
     DEFINES += QUTILS_PHOTOS_ENABLED=1
     LIBS += -framework Photos
 }
-else {
-    DEFINES += QUTILS_PHOTOS_ENABLED=0
-}
 
-contains(CONFIG, QUTILS_NO_MULTIMEDIA) {
-    message("[qutils] Multimedia is disabled in qutils")
+contains(QUTILS_FEATURES, multimedia) {
+    message("[qutils] Multimedia is enabled.")
+    QUTILS_NO_MULTIMEDIA=true
+    !contains(QT, multimedia) {
+        message("[qutils] Multimedia is not added to QT. Adding it to QT.")
+        QT += multimedia
+    }
+}
+else {
+    message("[qutils] Multimedia is disabled.")
     QUTILS_NO_MULTIMEDIA=false
 }
+
+contains(QUTILS_FEATURES, for_mobile) {
+    message("[qutils] Enabling mobile related features.")
+    DEFINES += QUTILS_FOR_MOBILE=1
+}
 else {
-    QUTILS_NO_MULTIMEDIA=true
-    QT += multimedia
+    message("[qutils] Disabling mobile related features.")
+    DEFINES += QUTILS_FOR_MOBILE=0
 }
 
 contains(QT, positioning) {
@@ -37,15 +56,6 @@ else {
 }
 
 FCM_ENABLED=false
-contains(CONFIG, ENABLE_FCM) {
-    message("[qutils] Firebase Cloud Messageing is enabled.")
-    FCM_ENABLED=true
-    DEFINES += FCM_ENABLED=1
-}
-else {
-    message("[qutils] Firebase Cloud Messageing is NOT enabled.")
-    DEFINES += FCM_ENABLED=0
-}
 
 contains(QUTILS_FEATURES, $$QUTILS_FEATURE_FCM) {
     message("[qutils] Firebase Cloud Messageing is enabled.")
@@ -156,7 +166,7 @@ SOURCES += \
     $$PWD/src/QutilsLog.cpp \
     $$PWD/src/FileUtils.cpp
 
-if (!QUTILS_NO_MULTIMEDIA) {
+equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \
         $$PWD/include/qutils/AudioRecorder.h
 
