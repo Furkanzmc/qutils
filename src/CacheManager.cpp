@@ -134,6 +134,7 @@ bool CacheManager::clear()
 {
     DATABASE_CHECK();
 
+    emit cleared();
     return m_SqlManager.clearTable(m_Database, m_CacheTableName);
 }
 

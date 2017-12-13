@@ -113,6 +113,7 @@ signals:
 
     void databaseOpened();
     void databaseClosed();
+    void cleared();
 };
 
 }
