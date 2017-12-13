@@ -14,6 +14,9 @@ QUTILS_FEATURE_FCM = fcm
     message("[qutils] App name is set to" $$QUTILS_APP_NAME)
     DEFINES += QUTILS_APP_NAME="org.cuztech.cuzapp"
 }
+else {
+    message("[qutils] App name is not set.")
+}
 
 contains(QUTILS_FEATURES, no_photos) {
     DEFINES += QUTILS_PHOTOS_ENABLED=0
