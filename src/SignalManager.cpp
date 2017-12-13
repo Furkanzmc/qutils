@@ -23,19 +23,14 @@ void SignalManager::emitSignal(const QString &signalName, const QString &targetO
         if (instance) {
             if (targetObjectName.length() > 0) {
                 if (targetObjectName == instance->objectName()) {
-                    instance->emitSignalPrivate(signalName, data);
+                    emit instance->signalReceived(signalName, data);
                 }
             }
             else {
-                instance->emitSignalPrivate(signalName, data);
+                emit instance->signalReceived(signalName, data);
             }
         }
     }
-}
-
-void SignalManager::emitSignalPrivate(const QString &signalName, const QVariantMap data)
-{
-    emit signalReceived(signalName, data);
 }
 
 }

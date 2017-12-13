@@ -36,9 +36,6 @@ private:
     static QVector<SignalManager *> m_Instances;
 
     const unsigned int m_InstanceIndex;
-
-private:
-    void emitSignalPrivate(const QString &signalName, const QVariantMap data);
 };
 
 }
