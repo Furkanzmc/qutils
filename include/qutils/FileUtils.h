@@ -120,6 +120,14 @@ public:
      */
     Q_INVOKABLE static QString getTemporaryFile(const QString &fileTemplate);
 
+    /**
+     * @brief Reads the file at the given path. If the file does not exist or cannot be reached it returns an empty string. Otherwise the contents of the file
+     * are returned in UTF-8 encoding.
+     * @param filePath
+     * @return QString
+     */
+    Q_INVOKABLE static QString readFile(QString filePath);
+
 signals:
     void imageQualityChanged(bool success, const QString &savedPath);
 

@@ -185,4 +185,29 @@ QString FileUtils::getTemporaryFile(const QString &fileTemplate)
     return fileName;
 }
 
+QString FileUtils::readFile(QString filePath)
+{
+    if (filePath.length() == 0) {
+        LOG_ERROR("Cannot read an empty file path.");
+        return "";
+    }
+
+    if (filePath.contains(FILE_PATH_PREFIX)) {
+        filePath.remove(FILE_PATH_PREFIX);
+    }
+
+    QFile file(filePath);
+    if (file.exists() == false) {
+        LOG_ERROR("File does not exist at " << filePath);
+        return "";
+    }
+
+    QString content = "";
+    if (file.open(QIODevice::ReadOnly)) {
+        content = QString(file.readAll());
+    }
+
+    return content;
+}
+
 }
