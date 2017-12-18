@@ -18,15 +18,6 @@ else {
     message("[qutils] App name is not set.")
 }
 
-contains(QUTILS_FEATURES, no_photos) {
-    DEFINES += QUTILS_PHOTOS_ENABLED=0
-}
-else {
-    message("[qutils] Photos framework is enabled by default. To explicitly disable, add `no_photos` to QUTILS_FEATURES.")
-    DEFINES += QUTILS_PHOTOS_ENABLED=1
-    LIBS += -framework Photos
-}
-
 contains(QUTILS_FEATURES, multimedia) {
     message("[qutils] Multimedia is enabled.")
     QUTILS_NO_MULTIMEDIA=true
@@ -61,7 +52,7 @@ else {
 FCM_ENABLED=false
 
 contains(QUTILS_FEATURES, $$QUTILS_FEATURE_FCM) {
-    message("[qutils] Firebase Cloud Messageing is enabled.")
+    message("[qutils] Firebase Cloud Messageing is enabled. It will only work on mobile devices.")
     FCM_ENABLED=true
     DEFINES += FCM_ENABLED=1
 }
@@ -100,6 +91,30 @@ android {
 }
 
 ios {
+    contains(QUTILS_FEATURES, no_photos) {
+        DEFINES += QUTILS_PHOTOS_ENABLED=0
+    }
+    else {
+        message("[qutils] Photos framework is enabled by default. To explicitly disable, add `no_photos` to QUTILS_FEATURES.")
+        DEFINES += QUTILS_PHOTOS_ENABLED=1
+        LIBS += -framework Photos
+    }
+
+    contains(QUTILS_FEATURES, $$QUTILS_FEATURE_SAFARI_SERVICES) {
+        message("[qutils] SafariServices is enabled.")
+        DEFINES += SAFARI_SERVICES_ENABLED
+        LIBS += -framework SafariServices
+    }
+
+    isEqual(FCM_ENABLED, true) {
+        LIBS += -framework UserNotifications
+        QMAKE_LFLAGS += -ObjC
+
+        MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
+        MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements
+        QMAKE_MAC_XCODE_SETTINGS += MY_ENTITLEMENTS
+    }
+
     OBJECTIVE_HEADERS += \
         $$PWD/include/qutils/ios/iOSNativeUtils.h \
         $$PWD/include/qutils/ios/QutilsViewDelegate.h
@@ -114,21 +129,6 @@ ios {
 
     SOURCES += \
         $$PWD/src/ios/iOSUtils.cpp
-
-    isEqual(FCM_ENABLED, true) {
-        LIBS += -framework UserNotifications
-        QMAKE_LFLAGS += -ObjC
-
-        MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
-        MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements
-        QMAKE_MAC_XCODE_SETTINGS += MY_ENTITLEMENTS
-    }
-
-    contains(QUTILS_FEATURES, $$QUTILS_FEATURE_SAFARI_SERVICES) {
-        message("[qutils] SafariServices is enabled.")
-        DEFINES += SAFARI_SERVICES_ENABLED
-        LIBS += -framework SafariServices
-    }
 }
 
 HEADERS += \
