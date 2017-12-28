@@ -19,7 +19,9 @@ SignalManager::~SignalManager()
 
 void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariantMap data)
 {
-    for (SignalManager *instance : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        SignalManager *instance = m_Instances.at(index);
         if (instance) {
             if (targetObjectName.length() > 0) {
                 if (targetObjectName == instance->objectName()) {

@@ -17,7 +17,6 @@ namespace zmc
 AudioRecorder::AudioRecorder(QObject *parent)
     : QObject(parent)
     , m_AudioRecorder(new QAudioRecorder(this))
-    , m_Probe(nullptr)
     , m_Duration(0)
 {
     connect(m_AudioRecorder, &QAudioRecorder::stateChanged, this, &AudioRecorder::onStateChanged);

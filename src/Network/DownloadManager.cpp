@@ -21,7 +21,7 @@ namespace Network
 
 DownloadManager::DownloadManager(QObject *parent)
     : QObject(parent)
-    , m_NetworkManager(new QNetworkAccessManager(parent))
+    , m_NetworkManager(new QNetworkAccessManager(this))
 {
     connect(m_NetworkManager, &QNetworkAccessManager::finished, this, &DownloadManager::processFinishedDownload);
 }

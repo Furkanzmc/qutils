@@ -208,20 +208,16 @@ void CacheManager::restartDatabase()
     emit databaseOpened();
 }
 
-void CacheManager::emitCacheChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newCachedValue)
+void CacheManager::emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue)
 {
-    if (oldSettingValue != newCachedValue) {
-        for (CacheManager *man : m_Instances) {
-            if (man) {
-                man->emitCacheChanged(settingName, oldSettingValue, newCachedValue);
+    if (oldCachedValue != newCachedValue) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            CacheManager *instance = m_Instances.at(index);
+            if (instance) {
+                emit instance->cacheChanged(cacheName, oldCachedValue, newCachedValue);
             }
         }
     }
 }
-
-void CacheManager::emitCacheChanged(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue)
-{
-    emit cacheChanged(cacheName, oldCachedValue, newCachedValue);
-}
-
 }

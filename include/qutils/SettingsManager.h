@@ -109,7 +109,6 @@ private:
     void restartDatabase();
 
     static void emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
-    void emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue);
     static void emitClearedSignals();
 
 signals:

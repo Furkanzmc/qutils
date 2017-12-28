@@ -61,6 +61,10 @@ NotificationClient::NotificationClient(QObject *parent)
 NotificationClient::~NotificationClient()
 {
     m_Instances[m_InstanceIndex] = nullptr;
+#ifdef Q_OS_IOS
+    delete m_iOSNative;
+    m_iOSNative = nullptr;
+#endif // Q_OS_IOS
 }
 
 NotificationClient *NotificationClient::getInstance(QString notificationTag, int notificationID)

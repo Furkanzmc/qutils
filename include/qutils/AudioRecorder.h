@@ -81,7 +81,6 @@ public:
 
 private:
     QAudioRecorder *m_AudioRecorder;
-    QAudioProbe *m_Probe;
 
     /**
      * @brief Duration is in seconds.

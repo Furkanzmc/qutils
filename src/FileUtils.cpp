@@ -16,7 +16,7 @@ namespace zmc
 {
 
 ImageQualityWorkerThread::ImageQualityWorkerThread(const QString &imagePath, const int &quality, const QString &newPath, QObject *parent)
-    : QThread(parent)
+    : QThread(this)
     , m_ImagePath(imagePath)
     , m_Quality(quality)
     , m_NewPath(newPath)

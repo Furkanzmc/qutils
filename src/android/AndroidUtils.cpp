@@ -406,7 +406,9 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         return;
     }
 
-    for (AndroidUtils *utils : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
         if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
                 utils->emitBackButtonPressed();
@@ -420,90 +422,90 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
 
 void AndroidUtils::emitAlertDialogClickedSignals(int buttonIndex)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitAlertDialogClicked(buttonIndex);
         }
-
-        utils->emitAlertDialogClicked(buttonIndex);
     }
 }
 
 void AndroidUtils::emitDatePickedSignals(int year, int month, int day)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitDatePicked(year, month, day);
         }
-
-        utils->emitDatePicked(year, month, day);
     }
 }
 
 void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitTimePicked(hourOfDay, minute);
         }
-
-        utils->emitTimePicked(hourOfDay, minute);
     }
 }
 
 void AndroidUtils::emitCameraCapturedSignals(const QString &capturePath)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitCameraCaptured(capturePath);
         }
-
-        utils->emitCameraCaptured(capturePath);
     }
 }
 
 void AndroidUtils::emitFileSelectedSignals(const QString &filePath)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitFileSelected(filePath);
         }
-
-        utils->emitFileSelected(filePath);
     }
 }
 
 void AndroidUtils::emitKeyboardHeightChangedSignals(const int &keyboardHeight)
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitKeyboardHeightChanged(keyboardHeight);
         }
-
-        utils->emitKeyboardHeightChanged(keyboardHeight);
     }
 }
 
 
 void AndroidUtils::emitCameraCaptureCancelledSignals()
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitCameraCaptureCancelled();
         }
-
-        utils->emitCameraCaptureCancelled();
     }
 }
 
 void AndroidUtils::emitFileSelectionCancelledSignals()
 {
-    for (AndroidUtils *utils : m_Instances) {
-        if (utils == nullptr) {
-            continue;
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
+        if (utils) {
+            utils->emitFileSelectionCancelled();
         }
-
-        utils->emitFileSelectionCancelled();
     }
 }
 
@@ -513,7 +515,9 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
         m_URLOpenedWith = url;
     }
     else {
-        for (AndroidUtils *utils : m_Instances) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            AndroidUtils *utils = m_Instances.at(index);
             if (utils && utils->isMainController()) {
                 emit utils->openedWithURL(url);
                 break;
@@ -524,7 +528,9 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
 
 void AndroidUtils::emitOpenedWithoutURLSignal()
 {
-    for (AndroidUtils *utils : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
         if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
             break;
@@ -539,7 +545,9 @@ bool AndroidUtils::isMainController() const
 
 void AndroidUtils::setMainController(bool IsMainController)
 {
-    for (AndroidUtils *utils : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        AndroidUtils *utils = m_Instances.at(index);
         if (utils && utils->isMainController()) {
             utils->setMainController(false);
             break;

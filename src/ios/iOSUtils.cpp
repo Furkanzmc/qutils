@@ -137,7 +137,9 @@ void iOSUtils::emitOpenedWithURLSignal(QString url)
         m_URLOpenedWith = url;
     }
     else {
-        for (iOSUtils *utils : m_Instances) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            iOSUtils *utils = m_Instances.at(index);
             if (utils && utils->isMainController()) {
                 emit utils->openedWithURL(url);
                 break;
@@ -148,7 +150,9 @@ void iOSUtils::emitOpenedWithURLSignal(QString url)
 
 void iOSUtils::emitOpenedWithoutURLSignal()
 {
-    for (iOSUtils *utils : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        iOSUtils *utils = m_Instances.at(index);
         if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
             break;
@@ -163,7 +167,9 @@ bool iOSUtils::isMainController() const
 
 void iOSUtils::setMainController(bool isMain)
 {
-    for (iOSUtils *utils : m_Instances) {
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        iOSUtils *utils = m_Instances.at(index);
         if (utils && utils->isMainController()) {
             utils->setMainController(false);
             break;

@@ -231,24 +231,23 @@ void SettingsManager::restartDatabase()
 void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
 {
     if (oldSettingValue != newSettingValue) {
-        for (SettingsManager *man : m_Instances) {
-            if (man) {
-                man->emitSettingChanged(settingName, oldSettingValue, newSettingValue);
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            SettingsManager *instance = m_Instances.at(index);
+            if (instance) {
+                emit instance->settingChanged(settingName, oldSettingValue, newSettingValue);
             }
         }
     }
 }
 
-void SettingsManager::emitSettingChanged(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
-{
-    emit settingChanged(settingName, oldSettingValue, newSettingValue);
-}
-
 void SettingsManager::emitClearedSignals()
 {
-    for (SettingsManager *man : m_Instances) {
-        if (man) {
-            man->cleared();
+    const int currentCount = m_Instances.count();
+    for (int index = 0; index < currentCount; index++) {
+        SettingsManager *instance = m_Instances.at(index);
+        if (instance) {
+            emit instance->cleared();
         }
     }
 }

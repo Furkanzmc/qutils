@@ -12,7 +12,15 @@ QUTILS_FEATURE_FCM = fcm
 
 !isEmpty(QUTILS_APP_NAME) {
     message("[qutils] App name is set to" $$QUTILS_APP_NAME)
-    DEFINES += QUTILS_APP_NAME="org.cuztech.cuzapp"
+    DEFINES += QUTILS_APP_NAME=$$QUTILS_APP_NAME
+}
+else {
+    message("[qutils] App name is not set.")
+}
+
+!isEmpty(QUTILS_APP_PACKAGE_NAME) {
+    message("[qutils] App package name is set to" $$QUTILS_APP_PACKAGE_NAME)
+    DEFINES += QUTILS_APP_PACKAGE_NAME=$$QUTILS_APP_PACKAGE_NAME
 }
 else {
     message("[qutils] App name is not set.")

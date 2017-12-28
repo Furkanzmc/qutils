@@ -98,7 +98,6 @@ private:
     void restartDatabase();
 
     void emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue);
-    void emitCacheChanged(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue);
 
 signals:
     /**
