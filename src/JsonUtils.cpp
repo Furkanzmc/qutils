@@ -54,18 +54,46 @@ QVariantMap JsonUtils::toVariantMap(const QString &data)
 
 QList<QVariant> JsonUtils::toVariantList(const QString &data)
 {
+    bool hasValidData = false;
     QList<QVariant> list;
-    const QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-    if (doc.isNull() == false && doc.isArray()) {
-        const QJsonArray array = doc.array();
-        const int arraySize = array.size();
 
-        for (int i = 0; i < arraySize; i++) {
-            list.append(array.at(i).toObject().toVariantMap());
+    if (data.length() > 0) {
+        const QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+
+        if (doc.isNull() == false && doc.isArray()) {
+            hasValidData = true;
+            const QJsonArray array = doc.array();
+            const int arraySize = array.size();
+
+            for (int i = 0; i < arraySize; i++) {
+                const QJsonValue value = array.at(i);
+                if (value.isArray()) {
+                    list.append(value.toArray().toVariantList());
+                }
+                else if (value.isBool()) {
+                    list.append(value.toBool());
+                }
+                else if (value.isDouble()) {
+                    list.append(value.toDouble());
+                }
+                else if (value.isNull()) {
+                    list.append(QVariant());
+                }
+                else if (value.isObject()) {
+                    list.append(value.toObject().toVariantMap());
+                }
+                else if (value.isString()) {
+                    list.append(value.toString());
+                }
+                else if (value.isUndefined()) {
+                    list.append(QVariant());
+                }
+            }
         }
     }
-    else {
-        LOG_ERROR("Given data is nat valid to convert to QList<QVariantMap>.");
+
+    if (hasValidData == false) {
+        LOG_ERROR("Given data is nat valid to convert to QList<QVariant>: " << data);
     }
 
     return list;
