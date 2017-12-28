@@ -16,7 +16,7 @@ namespace zmc
 {
 
 ImageQualityWorkerThread::ImageQualityWorkerThread(const QString &imagePath, const int &quality, const QString &newPath, QObject *parent)
-    : QThread(this)
+    : QThread(parent)
     , m_ImagePath(imagePath)
     , m_Quality(quality)
     , m_NewPath(newPath)
@@ -82,7 +82,11 @@ QVariantMap FileUtils::getFileInfo(QString filePath)
         info["completeBaseName"] = fileInfo.completeBaseName();
 
         info["completeSuffix"] = fileInfo.completeSuffix();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        info["created"] = fileInfo.birthTime().toString(Qt::DateFormat::ISODate);
+#else
         info["created"] = fileInfo.created().toString(Qt::DateFormat::ISODate);
+#endif // (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
         info["fileName"] = fileInfo.fileName();
 
         info["size"] = fileInfo.size();
