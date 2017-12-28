@@ -25,20 +25,22 @@ iOSUtils::iOSUtils(QObject *parent)
     m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
     m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCancelledCallback, this);
 
-    if (m_URLOpenedWith.length() > 0) {
-        /*
-         * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
-         * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
-         */
-        QTimer::singleShot(1, std::bind(iOSUtils::emitOpenedWithURLSignal, m_URLOpenedWith));
-        m_URLOpenedWith = "";
-    }
-    else {
-        /*
-         * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
-         * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
-         */
-        QTimer::singleShot(1, std::bind(iOSUtils::emitOpenedWithoutURLSignal));
+    if (isMainController()) {
+        if (m_URLOpenedWith.length() > 0) {
+            /*
+             * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+             * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
+             */
+            QTimer::singleShot(1, std::bind(iOSUtils::emitOpenedWithURLSignal, m_URLOpenedWith));
+            m_URLOpenedWith = "";
+        }
+        else {
+            /*
+             * This is to execute the `emitOpenedWithURLSignals` function with the next cycle.
+             * This is used to make sure that NativeUtils and AndroidUtils can catch the emitted signal.
+             */
+            QTimer::singleShot(1, std::bind(iOSUtils::emitOpenedWithoutURLSignal));
+        }
     }
 
     m_Instances.push_back(this);
