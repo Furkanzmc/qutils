@@ -76,11 +76,13 @@ QString NativeUtils::getStatusBarColor()
 
 void NativeUtils::setStatusBarVisible(bool visible)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->setStatusBarVisible(visible);
-#else
+#elif defined(Q_OS_IOS)
     m_iOSUtils->setStatusBarVisible(visible);
-#endif // Q_OS_ANDROID
+#else
+    Q_UNUSED(visible);
+#endif // defined(Q_OS_ANDROID)
 }
 
 void NativeUtils::setImmersiveMode(bool visible)
