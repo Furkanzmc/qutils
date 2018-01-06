@@ -150,6 +150,19 @@ public:
      */
     void setEnabled(bool enabled);
 
+    /**
+     * @brief Refer to iOSNativeUtils::isStatusBarVisible()
+     * @return bool
+     */
+    Q_INVOKABLE bool isStatusBarVisible() const;
+
+    /**
+     * @brief Refer to iOSNativeUtils::setStatusBarVisible()
+     * @param visible
+     * @return void
+     */
+    Q_INVOKABLE void setStatusBarVisible(bool visible);
+
 signals:
     void alertDialogClicked(int buttonIndex);
     void actionSheetClicked(int buttonIndex);

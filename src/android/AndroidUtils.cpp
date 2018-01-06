@@ -93,6 +93,11 @@ void AndroidUtils::setStatusBarVisible(bool visible)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
+bool AndroidUtils::isStatusBarVisible() const
+{
+    return QAndroidJniObject::callStaticMethod<jboolean>(ANDROID_UTILS_CLASS, "isStatusBarVisible", "()Z") == 1;
+}
+
 void AndroidUtils::setImmersiveMode(bool visible)
 {
     auto runnable = [visible]() {

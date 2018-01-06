@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE QString getStatusBarColor();
     Q_INVOKABLE void setStatusBarVisible(bool visible);
 
+    Q_INVOKABLE bool isStatusBarVisible() const;
     Q_INVOKABLE void setImmersiveMode(bool visible);
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
 

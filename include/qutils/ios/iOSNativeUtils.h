@@ -164,6 +164,14 @@ public:
     void showCamera();
 
     /**
+     * @brief Hide or show the status bar.
+     * In order for this to take effect you need to have `UIViewControllerBasedStatusBarAppearance` set to false in your Info.plist file.
+     * @param visible
+     * @return void
+     */
+    void setStatusBarVisible(bool visible);
+
+    /**
      * @brief Calls the callback for image picker finished for the instance that opened it.
      * @param data
      * @return void
@@ -187,6 +195,12 @@ public:
      * @return bool
      */
     bool isCameraOpen() const;
+
+    /**
+     * @brief Returns true If the status bar is hidden.
+     * @return bool
+     */
+    bool isStatusBarVisible() const;
 
     /**
      * @brief Calls onKeyboardHeightChanged function on every valid instance.

@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE void requestLocationPermission();
 
     Q_INVOKABLE int getLocationAuthorizationStatus();
+    Q_INVOKABLE bool isStatusBarVisible() const;
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);

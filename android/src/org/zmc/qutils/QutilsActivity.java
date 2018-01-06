@@ -231,6 +231,10 @@ public class QutilsActivity extends QtActivity {
         m_IsStatusBarVisible = visible;
     }
 
+    public static boolean isStatusBarVisible() {
+        return m_IsStatusBarVisible;
+    }
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {

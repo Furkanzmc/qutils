@@ -106,6 +106,10 @@ public class AndroidUtils extends QtActivity {
         }
     }
 
+    public static boolean isStatusBarVisible() {
+        return m_MainContext.isStatusBarVisible();
+    }
+
     public static void setImmersiveMode(boolean enabled) {
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = m_MainContext.getWindow().getDecorView();

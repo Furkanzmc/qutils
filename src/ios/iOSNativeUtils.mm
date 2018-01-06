@@ -289,6 +289,12 @@ namespace zmc
         [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
     }
 
+    void iOSNativeUtils::setStatusBarVisible(bool visible)
+    {
+        UIApplication *app = [UIApplication sharedApplication];
+        [app setStatusBarHidden:!visible];
+    }
+
     void iOSNativeUtils::emitImagePickerFinished(QVariantMap data)
     {
         for (iOSNativeUtils *instance : m_Instances) {
@@ -317,6 +323,12 @@ namespace zmc
     bool iOSNativeUtils::isCameraOpen() const
     {
         return m_IsCameraOpen;
+    }
+
+    bool iOSNativeUtils::isStatusBarVisible() const
+    {
+        UIApplication *app = [UIApplication sharedApplication];
+        return [app isStatusBarHidden] == YES;
     }
 
     void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)

@@ -79,7 +79,7 @@ void NativeUtils::setStatusBarVisible(bool visible)
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->setStatusBarVisible(visible);
 #else
-    Q_UNUSED(visible);
+    m_iOSUtils->setStatusBarVisible(visible);
 #endif // Q_OS_ANDROID
 }
 
@@ -246,6 +246,20 @@ int NativeUtils::getLocationAuthorizationStatus()
 #endif // Q_OS_IOS
 
     return status;
+}
+
+bool NativeUtils::isStatusBarVisible() const
+{
+    bool visible = false;
+#ifdef Q_OS_IOS
+    visible = m_iOSUtils->isStatusBarVisible();
+#endif // Q_OS_IOS
+
+#ifdef Q_OS_ANDROID
+    visible = m_AndroidUtils->isStatusBarVisible();
+#endif // Q_OS_ANDROID
+
+    return visible;
 }
 
 bool NativeUtils::isButtonEventsEnabled() const

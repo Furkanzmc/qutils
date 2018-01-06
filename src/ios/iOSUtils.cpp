@@ -199,6 +199,16 @@ void iOSUtils::setEnabled(bool enabled)
     this->blockSignals(!enabled);
 }
 
+bool iOSUtils::isStatusBarVisible() const
+{
+    return m_iOSNative->isStatusBarVisible();
+}
+
+void iOSUtils::setStatusBarVisible(bool visible)
+{
+    m_iOSNative->setStatusBarVisible(visible);
+}
+
 void iOSUtils::imagePickerCancelledCallback()
 {
     emit imageSelectionCancelled();
