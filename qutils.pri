@@ -7,6 +7,9 @@ QT += sql network
 # multimedia: Enables multimedia features.
 # for_mobile: Enables mobile related features.
 
+# QUTILS_APP_NAME: Used for naming auto-generaed files.
+# QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
+
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
 QUTILS_FEATURE_FCM = fcm
 
