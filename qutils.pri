@@ -23,7 +23,7 @@ else {
     DEFINES += QUTILS_APP_PACKAGE_NAME=$$QUTILS_APP_PACKAGE_NAME
 }
 else {
-    message("[qutils] App name is not set.")
+    message("[qutils] App package name is not set.")
 }
 
 contains(QUTILS_FEATURES, multimedia) {
