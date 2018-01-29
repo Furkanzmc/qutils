@@ -90,11 +90,13 @@ public:
     /**
      * @brief Creates a sqlite3 instance and returns it. If there's an error, you can get the error with getLastError().
      * If another database with the same databasePath has been opened before, returns that database connection to avoid multiple connections to the same
-     * database.
+     * database. The connection name for the database is set to the databasePath.
      * @param databasePath
      * @return QSqlDatabase
      */
     QSqlDatabase openDatabase(const QString &databasePath);
+
+    void removeDatabase(const QString &connectionName);
 
     /**
      * @brief Closes the given database
@@ -104,7 +106,7 @@ public:
     void closeDatabase(QSqlDatabase &database);
 
     /**
-     * @brief createTable
+     * @brief Returns true If the operation suceeds or the table already exists.
      * **Example Usage:**
      * @code
      *    SqliteManager man;
@@ -239,7 +241,7 @@ public:
      * @param tableName
      * @param row
      * @paragraph constraints This is required.
-     * @return
+     * @return bool
      */
     bool updateInTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row, const QList<Constraint> &constraints);
 
@@ -248,7 +250,7 @@ public:
      * @param database
      * @param tableName
      * @param constraints
-     * @return
+     * @return bool
      */
     bool deleteInTable(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints);
 
@@ -256,7 +258,7 @@ public:
      * @brief Returns true If a row with the given constraints exists.
      * @param database
      * @param constraints
-     * @return
+     * @return bool
      */
     bool exists(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints);
 

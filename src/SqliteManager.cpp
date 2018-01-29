@@ -17,6 +17,7 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
 {
     QSqlDatabase db;
     if (QSqlDatabase::contains(databasePath)) {
+        LOG("The given database path exists. Returning the existing one.");
         db = QSqlDatabase::database(databasePath);
     }
     else {
@@ -28,6 +29,11 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
     }
 
     return db;
+}
+
+void SqliteManager::removeDatabase(const QString &connectionName)
+{
+    QSqlDatabase::removeDatabase(connectionName);
 }
 
 void SqliteManager::closeDatabase(QSqlDatabase &database)
@@ -45,6 +51,7 @@ bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefini
 
     if (isTableExist(database, tableName)) {
         LOG_ERROR("A table with the name " << tableName << " already exists in the database!");
+        successful = true;
         return successful;
     }
 

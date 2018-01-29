@@ -11,13 +11,13 @@
 #define COL_CACHE_NAME "cache_name"
 #define COL_CACHE_VALUE "cache_value"
 #define COL_CACHE_TYPE "cache_type"
-#define DATABASE_CHECK() do { if (m_Database.isOpen() == false) { openDatabase(); createTable(); } } while (0)
+#define DATABASE_CHECK() do { if (database.isOpen() == false) { LOG_WARNING("Database is not open!"); return false; } } while (0)
 
 namespace zmc
 {
 
 QList<CacheManager *> CacheManager::m_Instances = QList<CacheManager *>();
-QSqlDatabase CacheManager::m_Database = QSqlDatabase();
+bool CacheManager::m_IsTableCreated = false;
 
 CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -32,15 +32,27 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
     if (dir.exists() == false) {
         dir.mkpath(dir.path());
     }
+
+    openDatabase();
+    createTable();
 }
 
 CacheManager::~CacheManager()
 {
     m_Instances[m_InstanceIndex] = nullptr;
+    const int count = std::count_if(m_Instances.begin(), m_Instances.end(), [](CacheManager * instance) {
+        return instance != nullptr;
+    });
+
+    if (count == 0) {
+        LOG("Removing database.");
+        m_SqlManager.removeDatabase(m_DatabaseName);
+    }
 }
 
 bool CacheManager::write(const QString &key, const QVariant &value)
 {
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
     bool successful = false;
@@ -48,11 +60,13 @@ bool CacheManager::write(const QString &key, const QVariant &value)
         std::make_tuple(COL_CACHE_NAME, key, "AND")
     };
 
-    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(m_Database, m_CacheTableName, -1, &constraints);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_CacheTableName, -1, &constraints);
     const bool exists = existingData.size() > 0;
+    const int dataTypeID = value.type();
+
     QMap<QString, QVariant> newMap;
     newMap[COL_CACHE_NAME] = key;
-    const int dataTypeID = value.type();
+
     if (dataTypeID == QVariant::Type::List || dataTypeID == QVariant::Type::StringList) {
         newMap[COL_CACHE_VALUE] = JsonUtils::toJsonString(value.toList());
     }
@@ -62,18 +76,19 @@ bool CacheManager::write(const QString &key, const QVariant &value)
     else {
         newMap[COL_CACHE_VALUE] = value;
     }
+
     newMap[COL_CACHE_TYPE] = QVariant::fromValue<int>(value.type());
 
     if (exists) {
         const QVariantMap oldMap = existingData.at(0);
-        successful = m_SqlManager.updateInTable(m_Database, m_CacheTableName, newMap, constraints);
+        successful = m_SqlManager.updateInTable(database, m_CacheTableName, newMap, constraints);
         QVariant oldValue = oldMap[COL_CACHE_VALUE];
         oldValue.convert(oldMap[COL_CACHE_VALUE].toInt());
 
         emitCacheChangedInAllInstances(key, oldMap[COL_CACHE_VALUE].toString(), newMap[COL_CACHE_VALUE].toString());
     }
     else {
-        successful = m_SqlManager.insertIntoTable(m_Database, m_CacheTableName, newMap);
+        successful = m_SqlManager.insertIntoTable(database, m_CacheTableName, newMap);
         emitCacheChangedInAllInstances(key, "", value);
     }
 
@@ -82,14 +97,16 @@ bool CacheManager::write(const QString &key, const QVariant &value)
 
 QVariant CacheManager::read(const QString &key)
 {
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
     };
 
+
     QVariant value;
-    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(m_Database, m_CacheTableName, -1, &values);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_CacheTableName, -1, &values);
     const bool exists = existingData.size() > 0;
     if (exists) {
         value = existingData.at(0)[COL_CACHE_VALUE];
@@ -110,32 +127,35 @@ QVariant CacheManager::read(const QString &key)
 
 bool CacheManager::remove(const QString &key)
 {
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
     };
 
-    return m_SqlManager.deleteInTable(m_Database, m_CacheTableName, constraints);
+    return m_SqlManager.deleteInTable(database, m_CacheTableName, constraints);
 }
 
 bool CacheManager::exists(const QString &key)
 {
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
     };
 
-    return m_SqlManager.exists(m_Database, m_CacheTableName, constraints);
+    return m_SqlManager.exists(database, m_CacheTableName, constraints);
 }
 
 bool CacheManager::clear()
 {
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
     emit cleared();
-    return m_SqlManager.clearTable(m_Database, m_CacheTableName);
+    return m_SqlManager.clearTable(database, m_CacheTableName);
 }
 
 QString CacheManager::getDatabaseName() const
@@ -176,36 +196,47 @@ QString CacheManager::getWritableLocation() const
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
-void CacheManager::createTable()
+bool CacheManager::createTable()
 {
-    DATABASE_CHECK();
+    if (m_IsTableCreated == false) {
+        QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+        DATABASE_CHECK();
 
-    QList<SqliteManager::ColumnDefinition> columns {
-        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_CACHE_NAME),
-        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::BLOB, COL_CACHE_VALUE),
-        SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, COL_CACHE_TYPE)
-    };
+        QList<SqliteManager::ColumnDefinition> columns {
+            SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_CACHE_NAME),
+            SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::BLOB, COL_CACHE_VALUE),
+            SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, COL_CACHE_TYPE)
+        };
 
-    m_SqlManager.createTable(m_Database, columns, m_CacheTableName);
+        m_IsTableCreated = m_SqlManager.createTable(database, columns, m_CacheTableName);
+    }
+
+    return m_IsTableCreated;
 }
 
 void CacheManager::openDatabase()
 {
-    if (m_Database.isOpen() == false) {
-        m_Database = m_SqlManager.openDatabase(m_DatabaseName);
-        emit databaseOpened();
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    if (database.isOpen() == false) {
+        database = m_SqlManager.openDatabase(m_DatabaseName);
+        if (database.isOpen()) {
+            emit databaseOpened();
+        }
     }
 }
 
 void CacheManager::restartDatabase()
 {
-    if (m_Database.isOpen()) {
-        m_SqlManager.closeDatabase(m_Database);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    if (database.isOpen()) {
+        m_SqlManager.closeDatabase(database);
         emit databaseClosed();
     }
 
-    m_Database = m_SqlManager.openDatabase(m_DatabaseName);
-    emit databaseOpened();
+    database = m_SqlManager.openDatabase(m_DatabaseName);
+    if (database.isOpen()) {
+        emit databaseOpened();
+    }
 }
 
 void CacheManager::emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue)

@@ -89,14 +89,18 @@ public:
 
 private:
     static QList<SettingsManager *> m_Instances;
-    static QSqlDatabase m_Database;
+    static bool m_IsTableCreated;
 
     const int m_InstanceIndex;
     QString m_DatabaseName, m_SettingsTableName;
     zmc::SqliteManager m_SqlManager;
 
 private:
-    void createTable();
+    /**
+     * @brief Creates the table in the database. For this operation, the database must be open.
+     * @return True If the operation suceeds.
+     */
+    bool createTable();
 
     /**
      * @brief Opens the database at m_DatabasePath If it is not open. If it is open, does nothing.
