@@ -17,7 +17,6 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
 {
     QSqlDatabase db;
     if (QSqlDatabase::contains(databasePath)) {
-        LOG("The given database path exists. Returning the existing one.");
         db = QSqlDatabase::database(databasePath);
     }
     else {
