@@ -255,25 +255,25 @@ QString AndroidUtils::getDeviceModel()
     return jniStr.toString();
 }
 
-void AndroidUtils::emitBackButtonPressed()
+void AndroidUtils::emitBackButtonPressed(AndroidButtonEvent *event)
 {
     if (this->signalsBlocked()) {
         return;
     }
 
     if (m_IsButtonEventsEnabled) {
-        emit backButtonPressed();
+        emit backButtonPressed(event);
     }
 }
 
-void AndroidUtils::emitMenuButtonPressed()
+void AndroidUtils::emitMenuButtonPressed(AndroidButtonEvent *event)
 {
     if (this->signalsBlocked()) {
         return;
     }
 
     if (m_IsButtonEventsEnabled) {
-        emit menuButtonPressed();
+        emit menuButtonPressed(event);
     }
 }
 
@@ -414,14 +414,19 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
+    AndroidButtonEvent event;
+    for (int index = currentCount; index > -1; index--) {
+        if (event.isAccepted()) {
+            break;
+        }
+
         AndroidUtils *utils = m_Instances.at(index);
         if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
-                utils->emitBackButtonPressed();
+                utils->emitBackButtonPressed(&event);
             }
             else if (isMenuButton) {
-                utils->emitMenuButtonPressed();
+                utils->emitMenuButtonPressed(&event);
             }
         }
     }

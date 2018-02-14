@@ -14,6 +14,10 @@
 namespace zmc
 {
 
+#ifdef Q_OS_ANDROID
+class AndroidButtonEvent;
+#endif // Q_OS_ANDRID
+
 /**
  * @brief NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
  * platform, the feature will be disabled but it will also not cause a compilation error.
@@ -68,8 +72,13 @@ public:
     void setMainController(bool isMain);
 
 signals:
-    void backButtonPressed();
-    void menuButtonPressed();
+#ifdef Q_OS_ANDROID
+    void backButtonPressed(AndroidButtonEvent *event);
+    void menuButtonPressed(AndroidButtonEvent *event);
+#else
+    void backButtonPressed(void *event);
+    void menuButtonPressed(void *event);
+#endif // Q_OS_ANDRID
     void alertDialogClicked(int buttonIndex);
 
     void datePicked(int year, int month, int day);

@@ -9,6 +9,41 @@
 namespace zmc
 {
 
+/**
+ * @brief The AndroidButtonEvent class can be used to break the button event propagation to the other AndroidUtils classes.
+ * If you set m_IsAccepted to true, the event propagation will be stopped.
+ */
+class AndroidButtonEvent : public QObject
+{
+    Q_OBJECT
+
+    Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted NOTIFY acceptedChanged)
+
+public:
+    AndroidButtonEvent()
+        : m_IsAccepted(false)
+    {
+
+    }
+
+    bool isAccepted() const
+    {
+        return m_IsAccepted;
+    }
+
+    void setAccepted(bool accepted)
+    {
+        m_IsAccepted = accepted;
+    }
+
+signals:
+    // This is just there to prevent warnings, it will not be emitted.
+    void acceptedChanged();
+
+private:
+    bool m_IsAccepted;
+};
+
 class AndroidUtils : public QObject
 {
     Q_OBJECT
@@ -186,12 +221,12 @@ signals:
      * @brief This signaled everytime the back button is pressed. For now, this behaviour overrides the close behaviour of the Window. So you need to manually
      * close it yourself. Only the last instance is informed of the back button signal.
      */
-    void backButtonPressed();
+    void backButtonPressed(AndroidButtonEvent *event);
 
     /**
      * @brief Only the last instance is informed of the menu button signal.
      */
-    void menuButtonPressed();
+    void menuButtonPressed(AndroidButtonEvent *event);
     void alertDialogClicked(int buttonIndex);
 
     void datePicked(int year, int month, int day);
@@ -244,8 +279,8 @@ private:
     bool m_IsButtonEventsEnabled;
 
 private:
-    void emitBackButtonPressed();
-    void emitMenuButtonPressed();
+    void emitBackButtonPressed(AndroidButtonEvent *event);
+    void emitMenuButtonPressed(AndroidButtonEvent *event);
     void emitAlertDialogClicked(int buttonIndex);
 
     void emitDatePicked(int year, int month, int day);
