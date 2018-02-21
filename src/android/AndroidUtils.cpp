@@ -413,7 +413,7 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
         return;
     }
 
-    const int currentCount = m_Instances.count();
+    const int currentCount = m_Instances.count() - 1;
     AndroidButtonEvent event;
     for (int index = currentCount; index > -1; index--) {
         if (event.isAccepted()) {
