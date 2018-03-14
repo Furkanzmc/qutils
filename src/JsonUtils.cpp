@@ -2,7 +2,7 @@
 // Qt
 #include <QJsonDocument>
 #include <QJsonObject>
-#include "QJsonArray"
+#include <QJsonArray>
 // qutils
 #include "qutils/Macros.h"
 
