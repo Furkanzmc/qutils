@@ -160,13 +160,16 @@ public class QutilsActivity extends QtActivity {
                 CppCallbacks.fileSelected(filePath);
             }
         }
-        else {
+        else if (resultCode == RESULT_CANCELED) {
             if (requestCode == Constants.CAMERA_CAPTURE_REQUEST_CODE) {
                 CppCallbacks.cameraCaptureCancelled();
             }
             else if (requestCode == Constants.OPEN_GALLERY_REQUEST_CODE) {
                 CppCallbacks.fileSelectionCancelled();
             }
+        }
+        else {
+            Log.d("org.zmc.quitls", "onActivityResult failed with result code " + String.valueOf(resultCode) + " for request " + String.valueOf(requestCode));
         }
     }
 

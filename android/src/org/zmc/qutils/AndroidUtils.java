@@ -62,7 +62,7 @@ public class AndroidUtils extends QtActivity {
     public static void dispatchTakePictureIntent(String photoName) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
-            m_MainContext.setResult(m_MainContext.RESULT_OK, takePictureIntent);
+            m_MainContext.setResult(QutilsActivity.RESULT_OK, takePictureIntent);
             try {
                 File file = createImageFile();
                 Uri photoURI = null;
@@ -95,11 +95,7 @@ public class AndroidUtils extends QtActivity {
         String imageFileName = "JPEG_" + timeStamp + "_";
 
         File storageDir = m_MainContext.getExternalCacheDir();
-        return File.createTempFile(
-                imageFileName, // Prefix
-                ".jpg",        // Suffix
-                storageDir     // Directory
-        );
+        return new File(storageDir, imageFileName + ".jpg");
     }
 
     public static void dismissKeyboard() {
