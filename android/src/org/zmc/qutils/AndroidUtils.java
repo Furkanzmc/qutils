@@ -1,6 +1,7 @@
 package org.zmc.qutils;
 
 import android.content.Context;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.graphics.Color;
 import android.view.Window;
@@ -25,6 +26,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 // Java
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.io.File;
 import java.io.IOException;
@@ -55,12 +58,46 @@ public class AndroidUtils extends QtActivity {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
             m_MainContext.setResult(m_MainContext.RESULT_OK, takePictureIntent);
-            String filePath = m_MainContext.getExternalCacheDir() + "/" + photoName;
-            File file = new File(filePath);
-            m_MainContext.setCustomData("capture_save_path", filePath);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-            m_MainContext.startActivityForResult(takePictureIntent, Constants.CAMERA_CAPTURE_REQUEST_CODE);
+            try {
+                File file = createImageFile();
+                Uri photoURI = null;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    photoURI = Uri.fromFile(file);
+                }
+                else {
+                    try {
+                        Log.d("org.zmc.qutils", m_MainContext.getPackageName() + ".provider");
+                        photoURI = FileProvider.getUriForFile(m_MainContext, m_MainContext.getPackageName() + ".provider", file);
+                    }
+                    catch (IllegalArgumentException ex) {
+                        Log.d("org.zmc.qutils", ex.getMessage());
+                    }
+                }
+
+                if (photoURI != null) {
+                    m_MainContext.setCustomData("capture_save_path", file.getAbsolutePath());
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    m_MainContext.startActivityForResult(takePictureIntent, Constants.CAMERA_CAPTURE_REQUEST_CODE);
+                }
+            }
+            catch (IOException ex) {
+                Log.d("org.zmc.qutils", ex.getMessage());
+            }
         }
+    }
+
+    static private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+
+        File storageDir = m_MainContext.getExternalCacheDir();
+        File image = File.createTempFile(
+                imageFileName, // Prefix
+                ".jpg",        // Suffix
+                storageDir     // Directory
+        );
+
+        return image;
     }
 
     public static void dismissKeyboard() {
