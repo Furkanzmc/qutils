@@ -66,7 +66,6 @@ public class AndroidUtils extends QtActivity {
                 }
                 else {
                     try {
-                        Log.d("org.zmc.qutils", m_MainContext.getPackageName() + ".provider");
                         photoURI = FileProvider.getUriForFile(m_MainContext, m_MainContext.getPackageName() + ".provider", file);
                     }
                     catch (IllegalArgumentException ex) {
