@@ -1,5 +1,6 @@
 package org.zmc.qutils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
@@ -54,6 +55,10 @@ public class AndroidUtils extends QtActivity {
         m_MainContext = mainActivity;
     }
 
+    /**
+     * Photo name is not used any more. Name is automatically generated.
+     * @param photoName
+     */
     public static void dispatchTakePictureIntent(String photoName) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(m_MainContext.getPackageManager()) != null) {
@@ -74,7 +79,7 @@ public class AndroidUtils extends QtActivity {
                 }
 
                 if (photoURI != null) {
-                    m_MainContext.setCustomData("capture_save_path", file.getAbsolutePath());
+                    QutilsActivity.setCustomData("capture_save_path", file.getAbsolutePath());
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     m_MainContext.startActivityForResult(takePictureIntent, Constants.CAMERA_CAPTURE_REQUEST_CODE);
                 }
@@ -90,13 +95,11 @@ public class AndroidUtils extends QtActivity {
         String imageFileName = "JPEG_" + timeStamp + "_";
 
         File storageDir = m_MainContext.getExternalCacheDir();
-        File image = File.createTempFile(
+        return File.createTempFile(
                 imageFileName, // Prefix
                 ".jpg",        // Suffix
                 storageDir     // Directory
         );
-
-        return image;
     }
 
     public static void dismissKeyboard() {
@@ -127,39 +130,44 @@ public class AndroidUtils extends QtActivity {
     public static void setStatusBarVisible(boolean visible) {
         if (Build.VERSION.SDK_INT < 16) {
             m_MainContext.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        } else {
+        }
+        else {
             View decorView = m_MainContext.getWindow().getDecorView();
-            m_MainContext.setStatusBarVisible(visible);
+            QutilsActivity.setStatusBarVisible(visible);
             // Hide the status bar.
-            if (visible == false) {
+            if (!visible) {
                 decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            } else {
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+                );
+            }
+            else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
     }
 
     public static boolean isStatusBarVisible() {
-        return m_MainContext.isStatusBarVisible();
+        return QutilsActivity.isStatusBarVisible();
     }
 
     public static void setImmersiveMode(boolean enabled) {
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = m_MainContext.getWindow().getDecorView();
-            m_MainContext.setImmersiveModeEnabled(enabled);
+            QutilsActivity.setImmersiveModeEnabled(enabled);
             // Hide the status bar.
             if (enabled) {
                 decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            } else {
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                );
+            }
+            else {
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
@@ -195,7 +203,6 @@ public class AndroidUtils extends QtActivity {
         });
 
         String buttonText = "";
-
         if (properties.containsKey("positive")) {
             buttonText = (String) properties.get("positive");
             builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
@@ -234,7 +241,7 @@ public class AndroidUtils extends QtActivity {
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    CppCallbacks.alertDialogClicked(which);
+                CppCallbacks.alertDialogClicked(which);
                 }
             });
         }
@@ -255,7 +262,7 @@ public class AndroidUtils extends QtActivity {
 
     public static void showTaost(String text, boolean isLongDuration) {
         int duration = Toast.LENGTH_SHORT;
-        if (isLongDuration == true) {
+        if (isLongDuration) {
             duration = Toast.LENGTH_LONG;
         }
 
@@ -264,12 +271,41 @@ public class AndroidUtils extends QtActivity {
     }
 
     public static void openGallery(String fileType) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        String[] mimetypes = fileType.split("\\|");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-        m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
+        String action;
+        if (Build.VERSION.SDK_INT >= 19) {
+            action = Intent.ACTION_OPEN_DOCUMENT;
+        }
+        else {
+            action = Intent.ACTION_CHOOSER;
+        }
+
+        Intent intent = new Intent(action);
+        if (Build.VERSION.SDK_INT >= 19) {
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            if (fileType.contains("|")) {
+                intent.setType("*/*");
+                String[] mimeTypes = fileType.split("\\|");
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            }
+            else {
+                intent.setType(fileType);
+                String[] mimeTypes = new String[1];
+                mimeTypes[0] = fileType;
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+            }
+        }
+        else {
+            intent.putExtra(Intent.EXTRA_TITLE, "Things and Stuff");
+            intent.setType(fileType);
+        }
+
+        try {
+            m_MainContext.startActivityForResult(intent, Constants.OPEN_GALLERY_REQUEST_CODE);
+        }
+        catch (ActivityNotFoundException ex) {
+            Log.d("org.zmc.qutils", "No activity was found to select image: " + ex.getMessage());
+            CppCallbacks.fileSelectionCancelled();
+        }
     }
 
     public static String getStatusBarColor() {
