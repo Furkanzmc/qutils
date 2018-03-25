@@ -14,10 +14,6 @@
 namespace zmc
 {
 
-#ifdef Q_OS_ANDROID
-class AndroidButtonEvent;
-#endif // Q_OS_ANDRID
-
 /**
  * @brief NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
  * platform, the feature will be disabled but it will also not cause a compilation error.
@@ -59,9 +55,11 @@ public:
     Q_INVOKABLE QString getDeviceModel();
     Q_INVOKABLE void requestLocationPermission();
 
-    Q_INVOKABLE int getLocationAuthorizationStatus();
-    Q_INVOKABLE bool isStatusBarVisible() const;
+    Q_INVOKABLE void requestPhotosPermisson();
+    Q_INVOKABLE bool isLocationAuthorizationGranted() const;
+    Q_INVOKABLE bool isPhotosPermissionGranted() const;
 
+    Q_INVOKABLE bool isStatusBarVisible() const;
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
 
@@ -100,6 +98,9 @@ signals:
     void openedWithURL(const QString &url);
     void openedWithoutURL();
     void mainControllerChanged();
+
+    void photosAccessGranted();
+    void photosAccessDenied();
 
 private:
 #ifdef Q_OS_ANDROID

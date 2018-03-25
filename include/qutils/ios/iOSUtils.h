@@ -88,10 +88,34 @@ public:
     Q_INVOKABLE void requestLocationPermission();
 
     /**
+     * @brief See iOSNativeUtils::requestPhotosPermisson.
+     * @return void
+     */
+    Q_INVOKABLE void requestPhotosPermisson();
+
+    /**
      * @brief See iOSNativeUtils::getLocationAuthorizationStatus.
      * @return LocationAuthorizationStatus
      */
     Q_INVOKABLE int getLocationAuthorizationStatus();
+
+    /**
+     * @brief See iOSNativeUtils::getPhotosAuthorizationStatus.
+     * @return PhotosAuthorizationStatus
+     */
+    Q_INVOKABLE int getPhotosAuthorizationStatus();
+
+    /**
+     * @brief Returns True If the LocationAuthorizationStatus is LAAuthorizedAlways or LAAuthorizedWhenInUse.
+     * @return bool
+     */
+    Q_INVOKABLE bool isLocationAuthorizationGranted() const;
+
+    /**
+     * @brief Returns True If the PhotosAuthorizationStatus is PAAuthorized.
+     * @return bool
+     */
+    Q_INVOKABLE bool isPhotosPermissionGranted() const;
 
     /**
      * @brief See iOSNativeUtils::openGallery.
@@ -215,6 +239,16 @@ signals:
      * @brief Emitted when the enabled property changes.
      */
     void enabledChanged();
+
+    /**
+     * @brief Emitted when the photos access permission is granted.
+     */
+    void photosAccessGranted();
+
+    /**
+     * @brief Emitted when the photos access permission is denied.
+     */
+    void photosAccessDenied();
 
 private:
     static QList<iOSUtils *> m_Instances;
