@@ -201,9 +201,8 @@ public:
      * @param selectOrder If it is empty, it is ignored.
      * @return QList<QMap<QString, QVariant>>
      */
-    QList<QMap<QString, QVariant>> getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit = -1,
-                                const QList<Constraint> *constraints = nullptr,
-                                const SelectOrder *selectOrder = nullptr);
+    QList<QMap<QString, QVariant>> getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit = -1,
+                                const QList<Constraint> *constraints = nullptr, const SelectOrder *selectOrder = nullptr);
 
     /**
      * @brief Insert row(s) into the given table.

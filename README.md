@@ -280,3 +280,11 @@ And add these to your `AndroidManifest.xml` file after the `activity` tag.
     </intent-filter>
 </service>
 ```
+
+Also, add the following to the `build.gradle` file as well.
+
+```
+defaultConfig {
+    applicationId "org.my.appid"
+}
+```
