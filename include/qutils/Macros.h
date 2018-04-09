@@ -8,7 +8,7 @@
 // std
 #include <iostream>
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) || defined(Q_OS_WINRT)
 #define FILE_PATH_PREFIX "file:///"
 #else
 #define FILE_PATH_PREFIX "file://"
