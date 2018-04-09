@@ -45,12 +45,12 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
 
 qreal ScreenHelper::dp(const qreal &size)
 {
-    return qMax(1, int(size * m_Ratio));
+    return qMax(1, static_cast<int>(size * m_Ratio));
 }
 
 qreal ScreenHelper::sp(const qreal &size)
 {
-    return qMax(1, int(size * m_RatioFont));
+    return qMax(1, static_cast<int>(size * m_RatioFont));
 }
 
 QString ScreenHelper::getLowResourceFolderName() const
@@ -251,7 +251,7 @@ void ScreenHelper::calculateRatio()
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
     const QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
 #if defined(Q_OS_DESKTOP)
-    m_DesiredHeight = qMin((float)m_RefSize.height(), (float)screenGeometry.height() * 0.8f);
+    m_DesiredHeight = qMin(static_cast<float>(m_RefSize.height()), static_cast<float>(screenGeometry.height()) * 0.8f);
     m_DesiredWidth = getAspectRatioWidth(m_RefSize, m_DesiredHeight);
 #else
     const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
@@ -270,6 +270,8 @@ void ScreenHelper::calculateRatio()
     const float baseDPI = 163.f;
 #elif defined(Q_OS_WIN) || defined(Q_OS_WINRT)
     const float baseDPI = 96.f;
+#elif defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+    const float baseDPI = 113.5f;
 #endif // Q_OS_ANDROID
     m_Ratio = (m_DPI / baseDPI) * m_Scale;
     m_RatioFont = (m_DPI / baseDPI) * m_Scale;
