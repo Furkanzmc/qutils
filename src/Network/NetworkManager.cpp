@@ -15,7 +15,7 @@ namespace zmc
 namespace Network
 {
 
-unsigned int NetworkManager::m_RequestCount = 0;
+int NetworkManager::m_RequestCount = 0;
 
 NetworkManager::NetworkManager(QObject *parent)
     : QObject(parent)
@@ -31,7 +31,7 @@ NetworkManager::~NetworkManager()
 void NetworkManager::sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     QUrl qurl = QUrl(url);
 
     if (queryParams.size() > 0) {
@@ -54,7 +54,7 @@ void NetworkManager::sendGet(const QString &url, RequestCallback callback, const
 void NetworkManager::sendDelete(const QString &url, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -67,7 +67,7 @@ void NetworkManager::sendDelete(const QString &url, RequestCallback callback)
 void NetworkManager::sendPost(const QString &url, const QString &data, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -83,7 +83,7 @@ void NetworkManager::sendPost(const QString &url, const QString &data, RequestCa
 void NetworkManager::sendPut(const QString &url, const QString &data, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -154,7 +154,7 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
     multiPart->setParent(reply);
 
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     reply->setObjectName(QString::number(threadIndex));
     insertCallback(threadIndex, std::move(callback));
 
@@ -245,7 +245,7 @@ int NetworkManager::getAvailableIndex()
         return -1;
     }
 
-    return std::distance(m_Callbacks.begin(), foundIt);
+    return static_cast<int>(std::distance(m_Callbacks.begin(), foundIt));
 }
 
 void NetworkManager::insertCallback(const int &threadIndex, RequestCallback &&callback)

@@ -119,7 +119,7 @@ public:
     void removeHeader(const QString &headerName);
 
 private:
-    static unsigned int m_RequestCount;
+    static int m_RequestCount;
 
     QNetworkAccessManager m_Network;
     QList<RequestCallback> m_Callbacks;
