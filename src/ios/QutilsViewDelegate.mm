@@ -11,6 +11,7 @@
 @implementation QutilsViewDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+#if QUTILS_PHOTOS_ENABLED == 1
     [picker dismissViewControllerAnimated:YES completion:nil];
 
     QVariantMap data;
@@ -48,6 +49,10 @@
     }
 
     zmc::iOSNativeUtils::emitImagePickerFinished(data);
+#else
+    Q_UNUSED(picker);
+    Q_UNUSED(info);
+#endif // QUTILS_PHOTOS_ENABLED == 1
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -59,6 +64,7 @@
 -(NSURL *)getAssetPath:(PHAsset *)asset {
     __block NSURL *fileURL = 0;
 
+#if QUTILS_PHOTOS_ENABLED == 1
     if (asset) {
         // get photo info from this asset
         PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
@@ -74,7 +80,9 @@
              }
          }];
     }
-
+#else
+    Q_UNUSED(fileURL);
+#endif // QUTILS_PHOTOS_ENABLED == 1
     return fileURL;
 }
 
