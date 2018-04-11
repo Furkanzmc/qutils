@@ -12,17 +12,19 @@ namespace Network
 {
 
 struct Response {
-    Response(QString _data, unsigned int _httpCode, QNetworkReply::NetworkError error)
+    Response(QString _data, int _httpCode, QMap<QString, QByteArray> _headers, QNetworkReply::NetworkError error)
         : data(_data)
         , httpCode(_httpCode)
         , networkError(error)
+        , headers(_headers)
     {
 
     }
 
     QString data;
-    unsigned int httpCode;
+    int httpCode;
     QNetworkReply::NetworkError networkError;
+    QMap<QString, QByteArray> headers;
 };
 
 using RequestCallback = std::function<void(const Response &)>;
@@ -130,6 +132,7 @@ signals:
 
 private:
     void onRequestFinished(QNetworkReply *reply);
+    QMap<QString, QByteArray> getResponseHeaders(const QNetworkReply *reply);
     void onReceivedResponse(const Response &response, int threadIndex);
     void onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal);
 

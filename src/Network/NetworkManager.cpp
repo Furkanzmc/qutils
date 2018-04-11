@@ -274,7 +274,12 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
                   "\nNetwork Error code: " << reply->error());
     }
 
-    const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->error());
+    const Response response(
+        reply->readAll(),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+        getResponseHeaders(reply),
+        reply->error()
+    );
 
     bool intConversionOk = false;
     int callbackIndex = reply->objectName().toInt(&intConversionOk);
@@ -283,6 +288,17 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
     }
 
     onReceivedResponse(response, callbackIndex);
+}
+
+QMap<QString, QByteArray> NetworkManager::getResponseHeaders(const QNetworkReply *reply)
+{
+    QMap<QString, QByteArray> headers;
+    const QList<QNetworkReply::RawHeaderPair> &rawHeaders = reply->rawHeaderPairs();
+    for (QNetworkReply::RawHeaderPair pair : rawHeaders) {
+        headers[QString(pair.first)] = pair.second;
+    }
+
+    return headers;
 }
 
 }
