@@ -6,6 +6,13 @@
 namespace zmc
 {
 
+#if defined(Q_OS_IOS)
+class FileUtilsPrivate;
+class iOSUtils;
+#elif defined(Q_OS_ANDROID)
+class AndroidUtils;
+#endif // Q_OS_ANDRID
+
 class ImageQualityWorkerThread : public QThread
 {
     Q_OBJECT
@@ -14,11 +21,11 @@ public:
     ImageQualityWorkerThread(const QString &imagePath, const int &quality, const QString &newPath = "", QObject *parent = nullptr);
 
     void run() override;
-    QString ImagePath() const;
+    QString imagePath() const;
     void setImagePath(const QString &path);
 
-    QString NewPath() const;
-    void setNewPath(const QString &NewPath);
+    QString newPath() const;
+    void setNewPath(const QString &newPath);
 
 signals:
     void resultReady(bool success, const QString &savedPath);
@@ -31,7 +38,9 @@ private:
 
 /**
  * @brief The FileUtils class
- * This class holds functionality that is commonly used for files.
+ * This class holds functionality that is commonly used for files and selection of files.
+ *
+ * You can open the gallery or open a document browser on iOS and Android.
  */
 class FileUtils : public QObject
 {
@@ -39,6 +48,7 @@ class FileUtils : public QObject
 
 public:
     FileUtils(QObject *parent = nullptr);
+    ~FileUtils();
 
     /**
      * @brief Changes the image quality without altering the image size. The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small
@@ -113,10 +123,26 @@ public:
     Q_INVOKABLE bool isLocalFile(const QString &url) const;
 
     /**
+     * @brief Opens the UIDocumentPickerViewController on iOS and the default file browser on Android.
+     * See FileUtilsPrivate::openDocumentPicker() for details on iOS.
+     * documentTypes can be left blank on iOS and it will default to `public.data` but on Android, it is mandatory.
+     * @param documentTypes This is the UTI on iOS and MIME type on Android.
+     * @param selectMultiple
+     * @return bool
+     */
+    Q_INVOKABLE bool openDocumentPicker(const QStringList &documentTypes, bool selectMultiple = false);
+
+    /**
+     * @brief Opens the gallery on iOS and Android. On Android, the MIME type defaults to image/\*. If you want to select files, you can call the
+     * openDocumentPicker() method.
+     */
+    Q_INVOKABLE void openGallery();
+
+    /**
      * @brief Uses QTemporaryFile to generate a temporary file in the Temporary files directory of the current platform. The file template is used to generate
      * a unique name. The file is not automatically removed from the temp directory.
      * @param directory
-     * @return
+     * @return QString
      */
     Q_INVOKABLE static QString getTemporaryFile(const QString &fileTemplate);
 
@@ -129,7 +155,43 @@ public:
     Q_INVOKABLE static QString readFile(QString filePath);
 
 signals:
+    /**
+     * @brief Emitted when the image's quality is changed.
+     * @param success
+     * @param savedPath
+     */
     void imageQualityChanged(bool success, const QString &savedPath);
+
+    /**
+     * @brief Emitted on iOS when the DocumentPickerView is canceled.
+     */
+    void documentPickerCanceled();
+
+    /**
+     * @brief Emitted on iOS when the user selects document(s) using the DocumentPickerView. If selectMultiple multiple was set to true, then you'll get the
+     * paths to all of the files.
+     * @param paths
+     */
+    void documentPicked(const QStringList &paths);
+
+    /**
+     * @brief Emitted when the user selectes a photo from the gallery.
+     * @param photoPath
+     */
+    void photoSelected(const QString &photoPath);
+
+    /**
+     * @brief Emitted when the user cancels the photo selection.
+     */
+    void photoSelectionCanceled();
+
+private:
+#if defined(Q_OS_IOS)
+    FileUtilsPrivate *m_FileUtilsPrivate;
+    iOSUtils *m_iOSUtils;
+#elif defined(Q_OS_ANDROID)
+    AndroidUtils *m_AndroidUtils;
+#endif // Q_OS_ANDROID
 
 private:
     void showImage(int num);

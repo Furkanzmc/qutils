@@ -2,6 +2,8 @@
 
 qutils is a set of tools I'm developing to help me with Qt mobile development. Right now, it is only for Android notifications.
 
+**Note:** The library is in usable form and I've been using it in production with various apps. But it's not as clean as I would like it to be. I started refactoring and once I'm done it will be more expressive, usable and easy to read.
+
 # Configuration Definitions
 
 - `QUTILS_APP_NAME`: This is internally used to name the settings and the cache files. If it's not provided, a default one is used. This is used on both mobile and desktop platforms.
@@ -23,6 +25,105 @@ CONFIG += ENABLE_FCM
 When you send an instant notification, only the `NonitificationManager` that sent the notification will receive `notificationReceived` signal. But this behavior changes when you send a scheduled notification. Scheduled notifications emit the signals according to the `objectName` of the `NotificationManager` that sent it. If a `NotificationManager` has an empty `objectName`, then when the app is opened by tapping on the scheduled notification all of the `NotificationManager` instances are notified about the `Notification`.
 But if `NotificationManager` has an `objectName` only that `NotificationManager` will be signaled.
 
+
+# FileUtils
+
+`FileUtils` is the main class for file manipulation and file/photo selection. File and photo selection only works on mobile devices.
+
+On desktop platforms, you can use the Qt's default file dialog. You can checkout the code documentation to learn which signals are called when.
+
+## Functions
+
+- `FileUtils::changeImageQuality`: You can use this function to reduce the quality of an image to the specified quality. This can be useful when you are uploading a profile photo and you don't want the file to be 5 MB.
+- `FileUtils::getFileInfo`: This will return a `QVariantMap` that contains various information about the file. The available keys are:
+    + `absoluteFilePath`
+    + `baseName`
+    + `completeBaseName`
+    + `completeSuffix`
+    + `created`: The time format is in Qt::DateFormat::ISODate
+    + `fileName`
+    + `size`
+    + `absoluteDirPath`: The result of fileInfo.absoluteDir().absolutePath()
+    + `exists`: If this is false, all the other fields will be missing.
+- `FileUtils::remove`: Deletes the file at the specified path.
+- `FileUtils::exists`: Returns true If the specified file exists.
+- `FileUtils::copy`: Copies the file from one location to another.
+- `FileUtils::getFileChecksum`: Returns the file's checksum using `QCryptographicHash::Algorithm::Md5`.
+- `FileUtils::isValidURL`: Returns true if the URL is non-empty and valid; otherwise returns false. Calls the QUrl::isValid.
+- `FileUtils::isLocalFile`: Returns true if this URL is pointing to a local file path. A URL is a local file path if the scheme is "file". Calls the QUrl::isLocalFile.
+- `FileUtils::openDocumentPicker`: This works on iOS and Android. On iOS, it will open the `UIDocumentPickerView` and on Android it will open the default file picker. You can set different file types that can be selected using the document picker on both iOS and Android. If you leave `documentTypes` empy on iOS, it will default to `public.data`. On Android, `documentTypes` is required.
+- `FileUtils::openGallery`: Opens the photo gallery on iOS and Android. This does not check for permissions on each platform, so make sure that you have acess to user's photo library before calling this.
+- `FileUtils::getTemporaryFile`: Returns the file path to a temporary file that you can use. This file is created using `QTemporaryFile` and it is not automatically removed.
+- `FileUtils::readFile`: Reads the content of the given file and returns it as `QString`.
+
+## Notes
+
+`FileUtils::openGallery` and `FileUtils::openDocumentPicker` can open files from any type of source but on Androıd only the local files are supported as of now. So, even though you can see Google Drive as the source in Android the selected file path will be empty.
+
+## Example Usage
+
+```qml
+Window {
+    id: window
+    visible: true
+    width: 640
+    height: 480
+    color: "red"
+    title: qsTr("Hello World")
+
+    Text {
+        id: lb
+        width: parent.width
+        anchors.centerIn: parent
+        font.pointSize: 20
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        color: "black"
+    }
+
+    Image {
+        id: img
+        anchors.centerIn: parent
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            lb.text = "";
+            var types = undefined;
+            if (Q_OS_IOS) {
+                types = ["public.data"];
+            }
+            else if (Q_OS_ANDROID) {
+                types = ["image/*"];
+            }
+
+            fileUtils.openDocumentPicker(types, false);
+        }
+        onPressAndHold: {
+            fileUtils.openGallery();
+        }
+    }
+
+    FileUtils {
+        id: fileUtils
+        onDocumentPickerCanceled: {
+            lb.text = "Canceled!";
+        }
+        onPhotoSelected: {
+            img.source = photoPath;
+        }
+        onPhotoSelectionCanceled: {
+            lb.text = "Photo Canceled!";
+        }
+        onDocumentPicked: {
+            lb.text = JSON.stringify(paths);
+            if (paths.length > 0) {
+                img.source = paths[0];
+            }
+        }
+    }
+}
+```
 
 # Android Features
 

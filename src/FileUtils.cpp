@@ -11,6 +11,12 @@
 #include <QStandardPaths>
 // Local
 #include "qutils/Macros.h"
+#if defined(Q_OS_IOS)
+#  include "qutils/ios/FileUtils_Private.h"
+#  include "qutils/ios/iOSUtils.h"
+#elif defined(Q_OS_ANDROID)
+#  include "qutils/android/AndroidUtils.h"
+#endif // Q_OS_ANDRID
 
 namespace zmc
 {
@@ -46,8 +52,33 @@ void ImageQualityWorkerThread::run()
 
 FileUtils::FileUtils(QObject *parent)
     : QObject(parent)
+#if defined(Q_OS_IOS)
+    , m_FileUtilsPrivate(new FileUtilsPrivate())
+    , m_iOSUtils(new iOSUtils(this))
+#elif defined(Q_OS_ANDROID)
+    , m_AndroidUtils(new AndroidUtils(this))
+#endif // Q_OS_IOS
 {
+#if defined(Q_OS_IOS)
+    m_FileUtilsPrivate->onDocumentPickerCanceled = std::bind(&FileUtils::documentPickerCanceled, this);
+    m_FileUtilsPrivate->onDocumentPicked = std::bind(&FileUtils::documentPicked, this, std::placeholders::_1);
 
+    connect(m_iOSUtils, &iOSUtils::imageSelected, this, &FileUtils::photoSelected);
+    connect(m_iOSUtils, &iOSUtils::imageSelectionCancelled, this, &FileUtils::photoSelectionCanceled);
+#elif defined(Q_OS_ANDROID)
+    connect(m_AndroidUtils, &AndroidUtils::photoSelected, this, &FileUtils::photoSelected);
+    connect(m_AndroidUtils, &AndroidUtils::photoSelectionCanceled, this, &FileUtils::photoSelectionCanceled);
+
+    connect(m_AndroidUtils, &AndroidUtils::fileSelected, this, &FileUtils::documentPicked);
+    connect(m_AndroidUtils, &AndroidUtils::fileSelectionCancelled, this, &FileUtils::documentPickerCanceled);
+#endif // Q_OS_ANDROID
+}
+
+FileUtils::~FileUtils()
+{
+#if defined(Q_OS_IOS)
+    delete m_FileUtilsPrivate;
+#endif // Q_OS_IOS
 }
 
 void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int &quality)
@@ -171,6 +202,32 @@ bool FileUtils::isLocalFile(const QString &url) const
 {
     QUrl urlObject(url);
     return urlObject.isLocalFile();
+}
+
+bool FileUtils::openDocumentPicker(const QStringList &documentTypes, bool selectMultiple)
+{
+    bool opened = false;
+#if defined(Q_OS_IOS)
+    opened = m_FileUtilsPrivate->openDocumentPicker(documentTypes, selectMultiple);
+#elif defined(Q_OS_ANDROID)
+    Q_UNUSED(selectMultiple);
+    opened = true;
+    m_AndroidUtils->openDocumentPicker(documentTypes.join("|"));
+#else
+    Q_UNUSED(selectMultiple);
+    Q_UNUSED(documentTypes);
+#endif // Q_OS_IOS
+
+    return opened;
+}
+
+void FileUtils::openGallery()
+{
+#if defined(Q_OS_ANDROID)
+    m_AndroidUtils->openGallery();
+#elif defined(Q_OS_IOS)
+    m_iOSUtils->openGallery();
+#endif // Q_OS_ANDROID
 }
 
 QString FileUtils::getTemporaryFile(const QString &fileTemplate)

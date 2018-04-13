@@ -128,12 +128,16 @@ ios {
 
     OBJECTIVE_HEADERS += \
         $$PWD/include/qutils/ios/iOSNativeUtils.h \
-        $$PWD/include/qutils/ios/QutilsViewDelegate.h
+        $$PWD/include/qutils/ios/QutilsViewDelegate.h \
+        $$PWD/include/qutils/ios/DocumentPicker.h \
+        $$PWD/include/qutils/ios/FileUtils_Private.h
 
     OBJECTIVE_SOURCES += \
         $$PWD/src/ios/iOSNativeUtils.mm \
         $$PWD/src/ios/AppDelegate.mm \
-        $$PWD/src/ios/QutilsViewDelegate.mm
+        $$PWD/src/ios/QutilsViewDelegate.mm \
+        $$PWD/src/ios/FileUtils_Private.mm \
+        $$PWD/src/ios/DocumentPicker.mm
 
     HEADERS += \
         $$PWD/include/qutils/ios/iOSUtils.h
@@ -162,6 +166,7 @@ HEADERS += \
     $$PWD/include/qutils/QutilsLog.h \
     $$PWD/include/qutils/FileUtils.h \
     $$PWD/include/qutils/CppTypes.h
+
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
     $$PWD/src/TranslationHelper.cpp \
