@@ -165,7 +165,8 @@ HEADERS += \
     $$PWD/include/qutils/DateManager.h \
     $$PWD/include/qutils/QutilsLog.h \
     $$PWD/include/qutils/FileUtils.h \
-    $$PWD/include/qutils/CppTypes.h
+    $$PWD/include/qutils/CppTypes.h \
+    $$PWD/include/qutils/QutilsPlugin.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -183,7 +184,8 @@ SOURCES += \
     $$PWD/src/NotificationClient.cpp \
     $$PWD/src/Notification.cpp \
     $$PWD/src/QutilsLog.cpp \
-    $$PWD/src/FileUtils.cpp
+    $$PWD/src/FileUtils.cpp \
+    $$PWD/src/QutilsPlugin.cpp
 
 equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \
@@ -191,6 +193,11 @@ equals(QUTILS_NO_MULTIMEDIA, true) {
 
     SOURCES += \
         $$PWD/src/AudioRecorder.cpp
+
+    DEFINES +=QUTILS_MULTIMEDIA_ENABLED=1
+}
+else {
+    DEFINES +=QUTILS_MULTIMEDIA_ENABLED=0
 }
 
 INCLUDEPATH += $$PWD/include

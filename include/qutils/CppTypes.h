@@ -1,12 +1,8 @@
 #pragma once
 #include <QObject>
-#include <qqml.h>
 
 namespace zmc
 {
-
-#pragma once
-#include <QObject>
 
 /**
  * @brief This will contain some useful enums that are not directly exposed to QML by Qt.
@@ -60,11 +56,6 @@ public:
         : QObject(parent)
     {
 
-    }
-
-    static void registerType()
-    {
-        qmlRegisterUncreatableType<CppTypes>("qutils.CppTypes", 1, 0, "CppTypes", "Error: only enums");
     }
 
 signals:
