@@ -11,6 +11,9 @@
 #include <QStandardPaths>
 // Local
 #include "qutils/Macros.h"
+#if defined(Q_OS_IOS)
+#include "qutils/ios/FileUtils_Private.h"
+#endif // Q_OS_IOS
 
 namespace zmc
 {
@@ -46,8 +49,21 @@ void ImageQualityWorkerThread::run()
 
 FileUtils::FileUtils(QObject *parent)
     : QObject(parent)
+#if defined(Q_OS_IOS)
+    , m_FileUtilsPrivate(new FileUtilsPrivate())
+#endif // Q_OS_IOS
 {
+#if defined(Q_OS_IOS)
+    m_FileUtilsPrivate->onDocumentPickerCanceled = std::bind(&FileUtils::documentPickerCanceled, this);
+    m_FileUtilsPrivate->onDocumentPicked = std::bind(&FileUtils::documentPicked, this, std::placeholders::_1);
+#endif // Q_OS_IOS
+}
 
+FileUtils::~FileUtils()
+{
+#if defined(Q_OS_IOS)
+    delete m_FileUtilsPrivate;
+#endif // Q_OS_IOS
 }
 
 void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int &quality)
@@ -171,6 +187,16 @@ bool FileUtils::isLocalFile(const QString &url) const
 {
     QUrl urlObject(url);
     return urlObject.isLocalFile();
+}
+
+bool FileUtils::openDocumentPicker(const QStringList &documentTypes, bool selectMultiple)
+{
+    bool opened = false;
+#if defined(Q_OS_IOS)
+    m_FileUtilsPrivate->openDocumentPicker(documentTypes, selectMultiple);
+#endif // Q_OS_IOS
+
+    return opened;
 }
 
 QString FileUtils::getTemporaryFile(const QString &fileTemplate)

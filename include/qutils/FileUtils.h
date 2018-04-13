@@ -6,6 +6,10 @@
 namespace zmc
 {
 
+#if defined(Q_OS_IOS)
+class FileUtilsPrivate;
+#endif // Q_OS_IOS
+
 class ImageQualityWorkerThread : public QThread
 {
     Q_OBJECT
@@ -39,6 +43,7 @@ class FileUtils : public QObject
 
 public:
     FileUtils(QObject *parent = nullptr);
+    ~FileUtils();
 
     /**
      * @brief Changes the image quality without altering the image size. The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small
@@ -113,6 +118,12 @@ public:
     Q_INVOKABLE bool isLocalFile(const QString &url) const;
 
     /**
+     * @brief See FileUtilsPrivate::openDocumentPicker()
+     * @return bool
+     */
+    Q_INVOKABLE bool openDocumentPicker(const QStringList &documentTypes, bool selectMultiple = false);
+
+    /**
      * @brief Uses QTemporaryFile to generate a temporary file in the Temporary files directory of the current platform. The file template is used to generate
      * a unique name. The file is not automatically removed from the temp directory.
      * @param directory
@@ -130,6 +141,13 @@ public:
 
 signals:
     void imageQualityChanged(bool success, const QString &savedPath);
+    void documentPickerCanceled();
+    void documentPicked(const QStringList &paths);
+
+private:
+#if defined(Q_OS_IOS)
+    FileUtilsPrivate *m_FileUtilsPrivate;
+#endif // Q_OS_IOS
 
 private:
     void showImage(int num);
