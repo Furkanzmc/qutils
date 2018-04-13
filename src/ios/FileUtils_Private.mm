@@ -26,6 +26,7 @@ bool FileUtilsPrivate::openDocumentPicker(const QStringList &documentTypes, bool
 {
     bool opened = false;
     if (!m_IsDocumentPickerOpen) {
+        opened = true;
         m_IsDocumentPickerOpen = true;
         m_IsInvokerInstance = true;
         [m_DocumentPicker showDocumentPicker:documentTypes allowMultiple:selectMultiple];
