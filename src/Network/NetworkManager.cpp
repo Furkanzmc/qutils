@@ -15,7 +15,7 @@ namespace zmc
 namespace Network
 {
 
-unsigned int NetworkManager::m_RequestCount = 0;
+int NetworkManager::m_RequestCount = 0;
 
 NetworkManager::NetworkManager(QObject *parent)
     : QObject(parent)
@@ -31,7 +31,7 @@ NetworkManager::~NetworkManager()
 void NetworkManager::sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     QUrl qurl = QUrl(url);
 
     if (queryParams.size() > 0) {
@@ -51,10 +51,33 @@ void NetworkManager::sendGet(const QString &url, RequestCallback callback, const
     insertCallback(threadIndex, std::move(callback));
 }
 
+void NetworkManager::sendHead(const QString &url, RequestCallback callback, const QVariantMap &queryParams)
+{
+    const int availableIndex = getAvailableIndex();
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    QUrl qurl = QUrl(url);
+
+    if (queryParams.size() > 0) {
+        QUrlQuery query;
+        for (auto it = queryParams.constBegin(); it != queryParams.constEnd(); it++) {
+            query.addQueryItem(it.key(), it.value().toString());
+        }
+
+        qurl.setQuery(query);
+    }
+
+    QNetworkRequest request(qurl);
+    setHeaders(request);
+    QNetworkReply *reply = m_Network.head(request);
+
+    reply->setObjectName(QString::number(threadIndex));
+    insertCallback(threadIndex, std::move(callback));
+}
+
 void NetworkManager::sendDelete(const QString &url, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -67,7 +90,7 @@ void NetworkManager::sendDelete(const QString &url, RequestCallback callback)
 void NetworkManager::sendPost(const QString &url, const QString &data, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -83,7 +106,7 @@ void NetworkManager::sendPost(const QString &url, const QString &data, RequestCa
 void NetworkManager::sendPut(const QString &url, const QString &data, RequestCallback callback)
 {
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     const QUrl qurl = QUrl(url);
     QNetworkRequest request(qurl);
     setHeaders(request);
@@ -154,7 +177,7 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
     multiPart->setParent(reply);
 
     const int availableIndex = getAvailableIndex();
-    const unsigned int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     reply->setObjectName(QString::number(threadIndex));
     insertCallback(threadIndex, std::move(callback));
 
@@ -245,7 +268,7 @@ int NetworkManager::getAvailableIndex()
         return -1;
     }
 
-    return std::distance(m_Callbacks.begin(), foundIt);
+    return static_cast<int>(std::distance(m_Callbacks.begin(), foundIt));
 }
 
 void NetworkManager::insertCallback(const int &threadIndex, RequestCallback &&callback)
@@ -274,7 +297,12 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
                   "\nNetwork Error code: " << reply->error());
     }
 
-    const Response response(reply->readAll(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(), reply->error());
+    const Response response(
+        reply->readAll(),
+        reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+        getResponseHeaders(reply),
+        reply->error()
+    );
 
     bool intConversionOk = false;
     int callbackIndex = reply->objectName().toInt(&intConversionOk);
@@ -283,6 +311,17 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
     }
 
     onReceivedResponse(response, callbackIndex);
+}
+
+QMap<QString, QByteArray> NetworkManager::getResponseHeaders(const QNetworkReply *reply)
+{
+    QMap<QString, QByteArray> headers;
+    const QList<QNetworkReply::RawHeaderPair> &rawHeaders = reply->rawHeaderPairs();
+    for (QNetworkReply::RawHeaderPair pair : rawHeaders) {
+        headers[QString(pair.first)] = pair.second;
+    }
+
+    return headers;
 }
 
 }

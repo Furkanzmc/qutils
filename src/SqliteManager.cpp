@@ -204,9 +204,9 @@ QList<QMap<QString, QVariant> > SqliteManager::executeSelectQuery(QSqlDatabase &
     else {
         while (query.next()) {
             const QSqlRecord record = query.record();
-            const unsigned int count = record.count();
+            const int count = record.count();
             QVariantMap resultMap;
-            for (unsigned int columnIndex = 0; columnIndex < count; columnIndex++) {
+            for (int columnIndex = 0; columnIndex < count; columnIndex++) {
                 resultMap[record.fieldName(columnIndex)] = record.value(columnIndex);
             }
 
@@ -217,7 +217,7 @@ QList<QMap<QString, QVariant> > SqliteManager::executeSelectQuery(QSqlDatabase &
     return resultList;
 }
 
-QList<QMap<QString, QVariant> > SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const unsigned int &limit,
+QList<QMap<QString, QVariant> > SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit,
         const QList<Constraint> *constraints, const SelectOrder *selectOrder)
 {
     if (database.isOpen() == false) {

@@ -15,6 +15,27 @@ namespace zmc
 QList<AndroidUtils *> AndroidUtils::m_Instances = QList<AndroidUtils *>();
 QString AndroidUtils::m_URLOpenedWith = "";
 
+AndroidButtonEvent::AndroidButtonEvent(QObject *parent)
+    : QObject(parent)
+    , m_IsAccepted(false)
+{
+
+}
+
+bool AndroidButtonEvent::isAccepted() const
+{
+    return m_IsAccepted;
+}
+
+void AndroidButtonEvent::setAccepted(bool accepted)
+{
+    const bool changed = m_IsAccepted != accepted;
+    if (changed) {
+        m_IsAccepted = accepted;
+        emit acceptedChanged();
+    }
+}
+
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_Instances.size())
@@ -414,22 +435,24 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     const int currentCount = m_Instances.count() - 1;
-    AndroidButtonEvent event;
+    AndroidButtonEvent *event = new AndroidButtonEvent();
     for (int index = currentCount; index > -1; index--) {
-        if (event.isAccepted()) {
-            break;
-        }
-
         AndroidUtils *utils = m_Instances.at(index);
         if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
-                utils->emitBackButtonPressed(&event);
+                utils->emitBackButtonPressed(event);
             }
             else if (isMenuButton) {
-                utils->emitMenuButtonPressed(&event);
+                utils->emitMenuButtonPressed(event);
+            }
+
+            if (event->isAccepted()) {
+                break;
             }
         }
     }
+
+    event->deleteLater();
 }
 
 void AndroidUtils::emitAlertDialogClickedSignals(int buttonIndex)

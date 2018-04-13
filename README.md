@@ -26,6 +26,7 @@ But if `NotificationManager` has an `objectName` only that `NotificationManager`
 
 # Android Features
 
+
 ## How to Use in Your Project
 
 The best way I know of doing this is to add the following line to your `gradle.properties` file:
@@ -41,6 +42,25 @@ java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java', qutilsDir + '/src']
 ```
 
 I'm not really experienced in Android development, so anyone out there with experience please tell me how to better package the library. :D
+
+## File Provider
+
+**res/xml/file_paths.xml**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="my_images" path="Android/data/org.example.app/cache" />
+</paths>
+```
+
+**AndroidManifest.xml**
+
+```
+<provider android:name="android.support.v4.content.FileProvider" android:authorities="org.example.app.provider" android:exported="false" android:grantUriPermissions="true">
+    <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+</provider>
+```
 
 ## Notifications
 
@@ -259,4 +279,12 @@ And add these to your `AndroidManifest.xml` file after the `activity` tag.
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
     </intent-filter>
 </service>
+```
+
+Also, add the following to the `build.gradle` file as well.
+
+```
+defaultConfig {
+    applicationId "org.my.appid"
+}
 ```

@@ -12,17 +12,19 @@ namespace Network
 {
 
 struct Response {
-    Response(QString _data, unsigned int _httpCode, QNetworkReply::NetworkError error)
+    Response(QString _data, int _httpCode, QMap<QString, QByteArray> _headers, QNetworkReply::NetworkError error)
         : data(_data)
         , httpCode(_httpCode)
         , networkError(error)
+        , headers(_headers)
     {
 
     }
 
     QString data;
-    unsigned int httpCode;
+    int httpCode;
     QNetworkReply::NetworkError networkError;
+    QMap<QString, QByteArray> headers;
 };
 
 using RequestCallback = std::function<void(const Response &)>;
@@ -44,6 +46,15 @@ public:
      * @param callback
      */
     void sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams = QVariantMap());
+
+    /**
+     * @brief Sends a head request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
+     * appended to the end of the URL.
+     * @param url
+     * @param queryParams
+     * @param callback
+     */
+    void sendHead(const QString &url, RequestCallback callback, const QVariantMap &queryParams = QVariantMap());
 
     /**
      * @brief Sends a delete request. When the request is finished, the callback is called.
@@ -119,7 +130,7 @@ public:
     void removeHeader(const QString &headerName);
 
 private:
-    static unsigned int m_RequestCount;
+    static int m_RequestCount;
 
     QNetworkAccessManager m_Network;
     QList<RequestCallback> m_Callbacks;
@@ -130,6 +141,7 @@ signals:
 
 private:
     void onRequestFinished(QNetworkReply *reply);
+    QMap<QString, QByteArray> getResponseHeaders(const QNetworkReply *reply);
     void onReceivedResponse(const Response &response, int threadIndex);
     void onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal);
 

@@ -20,21 +20,10 @@ class AndroidButtonEvent : public QObject
     Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted NOTIFY acceptedChanged)
 
 public:
-    AndroidButtonEvent()
-        : m_IsAccepted(false)
-    {
+    AndroidButtonEvent(QObject *parent = nullptr);
 
-    }
-
-    bool isAccepted() const
-    {
-        return m_IsAccepted;
-    }
-
-    void setAccepted(bool accepted)
-    {
-        m_IsAccepted = accepted;
-    }
+    bool isAccepted() const;
+    void setAccepted(bool accepted);
 
 signals:
     // This is just there to prevent warnings, it will not be emitted.

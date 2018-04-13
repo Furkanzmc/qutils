@@ -8,7 +8,7 @@
 // std
 #include <iostream>
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) || defined(Q_OS_WINRT)
 #define FILE_PATH_PREFIX "file:///"
 #else
 #define FILE_PATH_PREFIX "file://"
@@ -17,7 +17,7 @@
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 
-#if (!defined(Q_OS_IOS) && !defined(Q_OS_ANDROID)) && (defined(Q_OS_WIN) || defined(Q_OS_MAC))
+#if (!defined(Q_OS_IOS) && !defined(Q_OS_ANDROID)) && (defined(Q_OS_WIN) || defined(Q_OS_MAC) || defined(Q_OS_WINRT))
 #define Q_OS_DESKTOP
 #endif // Desktop Platform
 

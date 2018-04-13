@@ -40,7 +40,7 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
 CacheManager::~CacheManager()
 {
     m_Instances[m_InstanceIndex] = nullptr;
-    const int count = std::count_if(m_Instances.begin(), m_Instances.end(), [](CacheManager * instance) {
+    const long long count = std::count_if(m_Instances.begin(), m_Instances.end(), [](CacheManager * instance) {
         return instance != nullptr;
     });
 
@@ -62,7 +62,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
 
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_CacheTableName, -1, &constraints);
     const bool exists = existingData.size() > 0;
-    const int dataTypeID = value.type();
+    const QVariant::Type dataTypeID = value.type();
 
     QMap<QString, QVariant> newMap;
     newMap[COL_CACHE_NAME] = key;
@@ -77,7 +77,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
         newMap[COL_CACHE_VALUE] = value;
     }
 
-    newMap[COL_CACHE_TYPE] = QVariant::fromValue<int>(value.type());
+    newMap[COL_CACHE_TYPE] = QVariant::fromValue<int>(static_cast<int>(value.type()));
 
     if (exists) {
         const QVariantMap oldMap = existingData.at(0);
