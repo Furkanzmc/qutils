@@ -27,8 +27,6 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
 
-    connect(m_AndroidUtils, &AndroidUtils::fileSelected, this, &NativeUtils::fileSelected);
-    connect(m_AndroidUtils, &AndroidUtils::fileSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
     connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 
     connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
@@ -46,9 +44,6 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 
     connect(m_iOSUtils, &iOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
-    connect(m_iOSUtils, &iOSUtils::imageSelected, this, &NativeUtils::fileSelected);
-    connect(m_iOSUtils, &iOSUtils::imageSelectionCancelled, this, &NativeUtils::fileSelectionCancelled);
-
     connect(m_iOSUtils, &iOSUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
     connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
@@ -166,18 +161,6 @@ void NativeUtils::showActionSheet(const QString &title, const QString &message, 
     Q_UNUSED(message);
     Q_UNUSED(buttons);
 #endif // Q_OS_IOS
-}
-
-void NativeUtils::openGallery(const QString &fileType)
-{
-#if defined(Q_OS_ANDROID)
-    m_AndroidUtils->openGallery(fileType);
-#elif defined(Q_OS_IOS)
-    m_iOSUtils->openGallery();
-    Q_UNUSED(fileType);
-#else
-    Q_UNUSED(fileType);
-#endif // Q_OS_ANDROID
 }
 
 void NativeUtils::dismissKeyboard()

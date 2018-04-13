@@ -44,6 +44,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
+    , m_IsDocumentPickerShown(false)
     , m_IsMainController(false)
     , m_IsButtonEventsEnabled(false)
 {
@@ -236,13 +237,32 @@ void AndroidUtils::showToast(const QString &text, bool isLongDuration)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
-void AndroidUtils::openGallery(const QString &fileType)
+void AndroidUtils::openGallery()
 {
     if (this->signalsBlocked()) {
         return;
     }
 
     m_IsGalleryShown = true;
+    auto runnable = []() {
+        const QAndroidJniObject jniStr = QAndroidJniObject::fromString("image/*");
+        QAndroidJniObject::callStaticMethod<void>(
+            ANDROID_UTILS_CLASS,
+            "openGallery",
+            "(Ljava/lang/String;)V",
+            jniStr.object<jstring>());
+    };
+
+    QtAndroid::runOnAndroidThreadSync(runnable);
+}
+
+void AndroidUtils::openDocumentPicker(const QString &fileType)
+{
+    if (this->signalsBlocked()) {
+        return;
+    }
+
+    m_IsDocumentPickerShown = true;
     auto runnable = [fileType]() {
         const QAndroidJniObject jniStr = QAndroidJniObject::fromString(fileType);
         QAndroidJniObject::callStaticMethod<void>(
@@ -340,11 +360,19 @@ void AndroidUtils::emitCameraCaptured(const QString &capturePath)
     }
 }
 
-void AndroidUtils::emitFileSelected(const QString &filePath)
+void AndroidUtils::emitFileSelected(QString filePath)
 {
+    if (filePath.startsWith(FILE_PATH_PREFIX) == false) {
+        filePath.prepend(FILE_PATH_PREFIX);
+    }
+
     if (m_IsGalleryShown) {
         m_IsGalleryShown = false;
-        emit fileSelected(filePath);
+        emit photoSelected(filePath);
+    }
+    else if (m_IsDocumentPickerShown) {
+        m_IsDocumentPickerShown = false;
+        emit fileSelected(QStringList(filePath));
     }
 }
 
@@ -353,6 +381,10 @@ void AndroidUtils::emitFileSelectionCancelled()
     if (m_IsGalleryShown) {
         m_IsGalleryShown = false;
         emit fileSelectionCancelled();
+    }
+    else if (m_IsDocumentPickerShown) {
+        m_IsDocumentPickerShown = false;
+        emit photoSelectionCanceled();
     }
 }
 

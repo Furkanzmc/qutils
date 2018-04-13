@@ -120,11 +120,18 @@ public:
 
     /**
      * @brief Opens the gallery for an pick file operation. If m_IsEnabled is false, you cannot use this function.
+     * The MIME type defaults to image/\*.
+     * @return void
+     */
+    Q_INVOKABLE void openGallery();
+
+    /**
+     * @brief Opens the gallery for an pick file operation. If m_IsEnabled is false, you cannot use this function.
      * You can split the MIME types with "|" to set multiple MIME types. Example: `application/pdf|image/jpeg|text/plain`.
      * @param fileType The MIME type for the type of file to be selected.
      * @return void
      */
-    Q_INVOKABLE void openGallery(const QString &fileType = "image/*");
+    Q_INVOKABLE void openDocumentPicker(const QString &fileType);
 
     /**
      * @brief Dismisses the keyboard from the view.
@@ -226,10 +233,12 @@ signals:
     void cameraCaptured(const QString &capturePath);
     void cameraCaptureCancelled();
 
-    void fileSelected(const QString &filePath);
+    void fileSelected(const QStringList &filePaths);
     void fileSelectionCancelled();
-    void keyboardHeightChanged(int keyboardHeight);
+    void photoSelected(const QString &filePath);
+    void photoSelectionCanceled();
 
+    void keyboardHeightChanged(int keyboardHeight);
     void buttonEventsEnabledChanged();
     void enabledChanged();
 
@@ -261,6 +270,7 @@ private:
          m_IsTimePickerShown,
          m_IsCameraShown,
          m_IsGalleryShown,
+         m_IsDocumentPickerShown,
          m_IsMainController;
     /**
      * @brief The default value is false. This is used to determine which instance to send the backButtonPressed signal.
@@ -277,7 +287,7 @@ private:
     void emitCameraCaptured(const QString &capturePath);
 
     void emitCameraCaptureCancelled();
-    void emitFileSelected(const QString &filePath);
+    void emitFileSelected(QString filePath);
     void emitFileSelectionCancelled();
 
     void emitKeyboardHeightChanged(const int &keyboardHeight);

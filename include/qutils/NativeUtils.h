@@ -45,27 +45,25 @@ public:
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
     Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
-    Q_INVOKABLE void openGallery(const QString &fileType = "image/*");
-
     Q_INVOKABLE void dismissKeyboard();
+
     Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);
     Q_INVOKABLE bool isiPad() const;
-
     Q_INVOKABLE void openSafari(const QString &url);
+
     Q_INVOKABLE QString getDeviceModel();
     Q_INVOKABLE void requestLocationPermission();
-
     Q_INVOKABLE void requestPhotosPermisson();
+
     Q_INVOKABLE bool isLocationAuthorizationGranted() const;
     Q_INVOKABLE bool isPhotosPermissionGranted() const;
-
     Q_INVOKABLE bool isStatusBarVisible() const;
+
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);
-
     bool isEnabled() const;
-    void setEnabled(bool enabled);
 
+    void setEnabled(bool enabled);
     bool isMainController() const;
     void setMainController(bool isMain);
 
@@ -88,17 +86,14 @@ signals:
     void cameraCaptureCancelled();
 
     void actionSheetClicked(int buttonIndex);
-    void fileSelected(const QString &filePath);
-    void fileSelectionCancelled();
-
     void keyboardHeightChanged(int keyboardHeight);
     void buttonEventsEnabledChanged();
-    void enabledChanged();
 
+    void enabledChanged();
     void openedWithURL(const QString &url);
     void openedWithoutURL();
-    void mainControllerChanged();
 
+    void mainControllerChanged();
     void photosAccessGranted();
     void photosAccessDenied();
 
