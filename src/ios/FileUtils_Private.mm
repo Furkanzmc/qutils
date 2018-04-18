@@ -61,7 +61,7 @@ FileUtilsPrivate *FileUtilsPrivate::getInvokerInstance()
     const int count = m_Instances.size();
     for (int index = 0; index < count; index++) {
         FileUtilsPrivate *tmpInstance = m_Instances.at(index);
-        if (tmpInstance->m_IsInvokerInstance) {
+        if (tmpInstance && tmpInstance->m_IsInvokerInstance) {
             instance = tmpInstance;
             break;
         }
