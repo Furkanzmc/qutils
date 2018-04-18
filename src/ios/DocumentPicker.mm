@@ -29,10 +29,9 @@
 
     UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:nsTypes inMode:UIDocumentPickerModeImport];
     picker.delegate = self;
-#if defined(__IPHONE_11_0)
-    picker.allowsMultipleSelection = allowMultiple;
-#endif // __IPHONE_11_0
-
+    if (@available(iOS 11.0, *)) {
+        picker.allowsMultipleSelection = allowMultiple;
+    }
     UIApplication *app = [UIApplication sharedApplication];
     UIViewController *rootView = [[app keyWindow] rootViewController];
     [rootView presentViewController:picker animated:YES completion:nil];
