@@ -29,15 +29,17 @@ namespace zmc
         , m_IsPhotoAccessPermissionRequested(false)
         , m_IsCameraOpen(false)
     {
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
-            Q_UNUSED(note);
-            iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
-        }];
+        if (m_Instances.size() == 0) {
+            [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
+                Q_UNUSED(note);
+                iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
+            }];
 
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
-            const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
-            iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
-        }];
+            [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
+                const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+                iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
+            }];
+        }
 
         m_Instances.append(this);
     }
