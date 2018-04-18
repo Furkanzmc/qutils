@@ -101,6 +101,8 @@ void QutilsPlugin::setPlatformContextProperties(QQmlContext *context)
 #else
     context->setContextProperty("Q_OS_DESKTOP", QVariant(false));
 #endif // Q_OS_DESKTOP
+
+    context->setContextProperty("FILE_PATH_PREFIX", QVariant(FILE_PATH_PREFIX));
 }
 
 static void startupFunctionQutils()
