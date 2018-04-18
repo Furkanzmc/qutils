@@ -43,10 +43,10 @@
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-    (void)controller;
+    Q_UNUSED(controller);
     QStringList paths;
     for (NSURL *url in urls) {
-        paths.append(QString::fromNSString(url.absoluteString));
+        paths.append(QString::fromNSString([url.absoluteString stringByRemovingPercentEncoding]));
     }
 
     zmc::FileUtilsPrivate::invokeDocumentPicked(paths);
