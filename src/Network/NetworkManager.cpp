@@ -143,11 +143,16 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
         const QString contentDisposition = QString("form-data; name=\"%1\"; filename=\"%2\"").arg(it.key()).arg(file->fileName());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, contentDisposition);
 
-        file->open(QIODevice::ReadOnly);
-        filePart.setBodyDevice(file);
-        filePart.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
-        // We cannot delete the file now, so delete it with the multiPart
-        file->setParent(multiPart);
+        if (file->open(QIODevice::ReadOnly)) {
+            filePart.setBodyDevice(file);
+            filePart.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
+            // We cannot delete the file now, so delete it with the multiPart
+            file->setParent(multiPart);
+        }
+        else {
+            LOG_ERROR("Cannot open the file " << filePath << " for reading. Error String: " << file->errorString());
+            file->deleteLater();
+        }
 
         multiPart->append(filePart);
     }
