@@ -40,9 +40,8 @@ void ImageQualityWorkerThread::run()
     }
     else {
         QImage img(m_ImagePath);
-        img.save(&file, nullptr, m_Quality);
+        success = img.save(&file, nullptr, m_Quality);
         file.close();
-        success = true;
     }
 
     emit resultReady(success, m_NewPath);
