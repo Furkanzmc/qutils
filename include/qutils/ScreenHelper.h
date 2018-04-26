@@ -32,22 +32,23 @@ class ScreenHelper : public QObject
     Q_OBJECT
 
 public:
+    Q_PROPERTY(float dpi READ dpi CONSTANT)
     Q_PROPERTY(bool ldpi READ isLDPI CONSTANT)
     Q_PROPERTY(bool mdpi READ isMDPI CONSTANT)
-    Q_PROPERTY(bool hdpi READ isHDPI CONSTANT)
 
+    Q_PROPERTY(bool hdpi READ isHDPI CONSTANT)
     Q_PROPERTY(bool xhdpi READ isXHDPI CONSTANT)
     Q_PROPERTY(bool xxhdpi READ isXXHDPI CONSTANT)
-    Q_PROPERTY(bool xxxhdpi READ isXXXHDPI CONSTANT)
 
+    Q_PROPERTY(bool xxxhdpi READ isXXXHDPI CONSTANT)
     Q_PROPERTY(float desiredWidth READ getDesiredWidth CONSTANT)
     Q_PROPERTY(float desiredHeight READ getDesiredHeight CONSTANT)
-    Q_PROPERTY(float sizeInInches READ getSizeInInches CONSTANT)
 
+    Q_PROPERTY(float sizeInInches READ getSizeInInches CONSTANT)
     Q_PROPERTY(bool small READ isSmallSize CONSTANT)
     Q_PROPERTY(bool normal READ isNormalSize CONSTANT)
-    Q_PROPERTY(bool large READ isLargeSize CONSTANT)
 
+    Q_PROPERTY(bool large READ isLargeSize CONSTANT)
     Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
 
 public:
@@ -107,6 +108,7 @@ public:
     float getDesiredWidth() const;
 
     float getSizeInInches() const;
+    float dpi() const;
 
 private:
     const QRect m_ScreenRect;

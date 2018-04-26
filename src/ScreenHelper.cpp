@@ -196,6 +196,11 @@ float ScreenHelper::getSizeInInches() const
     return m_SizeInInches;
 }
 
+float ScreenHelper::dpi() const
+{
+    return  m_DPI;
+}
+
 bool ScreenHelper::isLDPI() const
 {
     return (m_DPI / m_MediumDPIValue) <= (m_LowDPIValue / m_MediumDPIValue);
