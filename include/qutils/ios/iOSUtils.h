@@ -220,7 +220,6 @@ signals:
     /**
      * @brief Emitted when m_IsMainController is changed.
      * @return void
-     *
      */
     void mainControllerChanged();
 
