@@ -146,6 +146,11 @@ ios {
         $$PWD/src/ios/iOSUtils.cpp
 }
 
+osx {
+    HEADERS += $$PWD/include/qutils/macos/MacOSUtils.h
+    SOURCES += $$PWD/src/macos/MacOSUtils.cpp
+}
+
 HEADERS += \
     $$PWD/include/qutils/ScreenHelper.h \
     $$PWD/include/qutils/QMLRefresh.h \

@@ -10,6 +10,9 @@
 #ifdef Q_OS_IOS
 #include "qutils/ios/iOSUtils.h"
 #endif // Q_OS_IOS
+#ifdef Q_OS_MAC
+#include "qutils/macos/MacOSUtils.h"
+#endif // Q_OS_MAC
 
 namespace zmc
 {
@@ -104,6 +107,9 @@ private:
 #ifdef Q_OS_IOS
     iOSUtils *m_iOSUtils;
 #endif // Q_OS_IOS
+#ifdef Q_OS_MAC
+    MacOSUtils *m_MacOSUtils;
+#endif // Q_OS_MAC
 };
 
 }

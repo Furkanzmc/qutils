@@ -13,6 +13,9 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_IOS
     , m_iOSUtils(new iOSUtils(this))
 #endif // Q_OS_IOS
+#ifdef Q_OS_MAC
+    , m_MacOSUtils(new MacOSUtils(this))
+#endif // Q_OS_IOS
 {
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
@@ -50,6 +53,11 @@ NativeUtils::NativeUtils(QObject *parent)
 
     connect(m_iOSUtils, &iOSUtils::photosAccessGranted, this, &NativeUtils::photosAccessGranted);
     connect(m_iOSUtils, &iOSUtils::photosAccessDenied, this, &NativeUtils::photosAccessDenied);
+#endif // Q_OS_IOS
+
+#ifdef Q_OS_MAC
+    connect(m_MacOSUtils, &MacOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
+    connect(m_MacOSUtils, &MacOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
 #endif // Q_OS_IOS
 }
 
@@ -320,6 +328,8 @@ void NativeUtils::setMainController(bool isMain)
     m_iOSUtils->setMainController(isMain);
 #elif defined(Q_OS_ANDROID)
     m_AndroidUtils->setMainController(isMain);
+#elif defined(Q_OS_MAC)
+    m_MacOSUtils->setMainController(isMain);
 #else
     Q_UNUSED(isMain);
 #endif // Q_OS_ANDROID
