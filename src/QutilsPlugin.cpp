@@ -1,7 +1,8 @@
 #include "qutils/QutilsPlugin.h"
-#include <QtQml/qqml.h>
+// Qt
 #include <QCoreApplication>
-// qutils
+#include <QtQml/qqml.h>
+// Local
 #include "qutils/NotificationClient.h"
 #include "qutils/TranslationHelper.h"
 #include "qutils/SettingsManager.h"
@@ -15,10 +16,10 @@
 #include "qutils/CppTypes.h"
 #include "qutils/Macros.h"
 #if QUTILS_MULTIMEDIA_ENABLED
-#include "qutils/AudioRecorder.h"
+#  include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
 #ifdef Q_OS_DESKTOP
-#include "qutils/QMLRefresh.h"
+#  include "qutils/QMLRefresh.h"
 #endif // Q_OS_DESKTOP
 
 QutilsPlugin::QutilsPlugin(QObject *parent)

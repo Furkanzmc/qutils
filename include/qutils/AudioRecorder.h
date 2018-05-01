@@ -1,13 +1,13 @@
 #pragma once
-#include <QObject>
+// Qt
 #include <QMediaRecorder>
+#include <QObject>
 #include <QUrl>
 
 // Forward Declerations
 class QAudioRecorder;
-class QAudioProbe;
 class QAudioBuffer;
-
+class QAudioProbe;
 class QAudioLevel;
 
 namespace zmc
@@ -42,7 +42,16 @@ public:
      * @param location
      */
     void setOutputPath(QString location);
+
+    /**
+     * @brief Returns the output path for the recording.
+     * @return QString
+     */
     QString getOutputPath() const;
+
+    /**
+     * @brief Pauses the recording. Depending on platform recording pause may be not supported, in this case the recorder state stays unchanged.
+     */
     Q_INVOKABLE void pause();
 
     /**
@@ -72,7 +81,7 @@ public:
 
     /**
      * @brief Returns true If the recording is currently saved on the file system.
-     * @return
+     * @return bool
      */
     bool hasValidRecording() const;
 

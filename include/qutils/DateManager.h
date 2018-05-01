@@ -1,6 +1,8 @@
 #pragma once
-#include <QObject>
+// Qt
 #include <QDateTime>
+#include <QObject>
+// Local
 #include "qutils/Macros.h"
 
 namespace zmc
@@ -13,6 +15,7 @@ namespace zmc
 class DateManager : public QObject
 {
     Q_OBJECT
+
 public:
     explicit DateManager(QObject *parent = 0);
 

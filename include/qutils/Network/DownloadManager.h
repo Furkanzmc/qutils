@@ -1,11 +1,11 @@
 #pragma once
+// Qt
 #include <QObject>
 
 // Forward declerations
-class QSslError;
-class QNetworkReply;
 class QNetworkAccessManager;
-
+class QNetworkReply;
+class QSslError;
 class QIODevice;
 
 namespace zmc

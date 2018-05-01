@@ -1,21 +1,22 @@
 #pragma once
+// Qt
 #include <QObject>
 #include <QColor>
-// qutils
+// Local
 #include "qutils/Macros.h"
-#ifdef Q_OS_ANDROID
-// qutils
-#include "qutils/android/AndroidUtils.h"
-#endif // Q_OS_ANDRID
-#ifdef Q_OS_IOS
-#include "qutils/ios/iOSUtils.h"
-#endif // Q_OS_IOS
-#ifdef Q_OS_MAC
-#include "qutils/macos/MacOSUtils.h"
-#endif // Q_OS_MAC
 
 namespace zmc
 {
+
+#ifdef Q_OS_ANDROID
+class AndroidUtils;
+#endif // Q_OS_ANDRID
+#ifdef Q_OS_IOS
+class iOSUtils;
+#endif // Q_OS_IOS
+#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+class MacOSUtils;
+#endif // Q_OS_MAC
 
 /**
  * @brief NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
@@ -107,7 +108,7 @@ private:
 #ifdef Q_OS_IOS
     iOSUtils *m_iOSUtils;
 #endif // Q_OS_IOS
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
     MacOSUtils *m_MacOSUtils;
 #endif // Q_OS_MAC
 };

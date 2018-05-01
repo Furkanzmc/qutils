@@ -1,5 +1,8 @@
 #pragma once
+// Qt
 #include <QObject>
+
+// Forward Declerations
 class QTranslator;
 
 namespace zmc

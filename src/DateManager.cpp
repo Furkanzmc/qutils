@@ -1,8 +1,8 @@
 #include "qutils/DateManager.h"
 // Qt
+#include <QTimeZone>
 #include <QLocale>
 #include <QDebug>
-#include <QTimeZone>
 
 namespace zmc
 {

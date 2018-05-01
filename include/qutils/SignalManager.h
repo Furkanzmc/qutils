@@ -1,7 +1,8 @@
 #pragma once
+// Qt
+#include <QVariant>
 #include <QObject>
 #include <QVector>
-#include <QVariant>
 
 namespace zmc
 {
@@ -13,6 +14,7 @@ namespace zmc
 class SignalManager : public QObject
 {
     Q_OBJECT
+
 public:
     explicit SignalManager(QObject *parent = nullptr);
     ~SignalManager();

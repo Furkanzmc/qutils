@@ -1,11 +1,11 @@
 #include "qutils/SettingsManager.h"
-#include "qutils/JsonUtils.h"
 // Qt
 #include <QLocale>
 #include <QStandardPaths>
 #include <QList>
 #include <QDir>
-// qutils
+// Local
+#include "qutils/JsonUtils.h"
 #include "qutils/Macros.h"
 
 #define COL_SETTING_NAME "setting_name"

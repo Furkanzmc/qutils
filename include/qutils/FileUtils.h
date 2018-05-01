@@ -1,7 +1,8 @@
 #pragma once
+// Qt
+#include <QVariantMap>
 #include <QObject>
 #include <QThread>
-#include <QVariantMap>
 
 namespace zmc
 {

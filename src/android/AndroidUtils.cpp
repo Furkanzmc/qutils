@@ -1,8 +1,8 @@
 #include "qutils/android/AndroidUtils.h"
 // Qt
-#include <QDebug>
 #include <QGuiApplication>
 #include <QtAndroid>
+#include <QDebug>
 #include <QTimer>
 // qutils
 #include "qutils/Macros.h"

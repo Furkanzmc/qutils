@@ -1,8 +1,9 @@
 #pragma once
+// Qt
+#include <QVariantMap>
+#include <QDateTime>
 #include <QObject>
 #include <QColor>
-#include <QDateTime>
-#include <QVariantMap>
 
 namespace zmc
 {

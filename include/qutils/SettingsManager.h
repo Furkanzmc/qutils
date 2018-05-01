@@ -1,9 +1,9 @@
 #pragma once
 // Qt
 #include <QObject>
-// qutils
-#include "qutils/Macros.h"
+// Local
 #include "qutils/SqliteManager.h"
+#include "qutils/Macros.h"
 
 #ifdef QUTILS_APP_NAME
 #define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"

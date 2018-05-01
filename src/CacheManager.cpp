@@ -1,11 +1,11 @@
 #include "qutils/CacheManager.h"
-#include "qutils/JsonUtils.h"
 // Qt
-#include <QLocale>
 #include <QStandardPaths>
+#include <QLocale>
 #include <QList>
 #include <QDir>
-// qutils
+// Local
+#include "qutils/JsonUtils.h"
 #include "qutils/Macros.h"
 
 #define COL_CACHE_NAME "cache_name"

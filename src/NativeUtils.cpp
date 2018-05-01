@@ -1,6 +1,16 @@
 #include "qutils/NativeUtils.h"
 // Qt
 #include <QStandardPaths>
+// Local
+#ifdef Q_OS_ANDROID
+#  include "qutils/android/AndroidUtils.h"
+#endif // Q_OS_ANDRID
+#ifdef Q_OS_IOS
+#  include "qutils/ios/iOSUtils.h"
+#endif // Q_OS_IOS
+#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#  include "qutils/macos/MacOSUtils.h"
+#endif // Q_OS_MAC
 
 namespace zmc
 {
@@ -13,9 +23,9 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_IOS
     , m_iOSUtils(new iOSUtils(this))
 #endif // Q_OS_IOS
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
     , m_MacOSUtils(new MacOSUtils(this))
-#endif // Q_OS_IOS
+#endif // Q_OS_MAC
 {
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
@@ -55,10 +65,10 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::photosAccessDenied, this, &NativeUtils::photosAccessDenied);
 #endif // Q_OS_IOS
 
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
     connect(m_MacOSUtils, &MacOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
     connect(m_MacOSUtils, &MacOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
-#endif // Q_OS_IOS
+#endif // Q_OS_MAC
 }
 
 void NativeUtils::setStatusBarColor(QColor color)

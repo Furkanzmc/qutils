@@ -1,10 +1,4 @@
-//
-//  DocumentPicker.h
-//
-//  Created by Furkan Üzümcü on 12-04-2018.
-//  Copyright © 2018 Cuz Translation. All rights reserved.
-//
-
+#pragma once
 #import <UIKit/UIKit.h>
 #import "qutils/ios/FileUtils_Private.h"
 

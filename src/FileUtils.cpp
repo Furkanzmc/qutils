@@ -1,22 +1,22 @@
 #include "qutils/FileUtils.h"
 // Qt
-#include <QFile>
-#include <QDir>
-#include <QFileInfo>
-#include <QImage>
-#include <QDateTime>
 #include <QCryptographicHash>
-#include <QUrl>
 #include <QTemporaryFile>
 #include <QStandardPaths>
+#include <QFileInfo>
+#include <QDateTime>
+#include <QImage>
+#include <QFile>
+#include <QDir>
+#include <QUrl>
 // Local
-#include "qutils/Macros.h"
 #if defined(Q_OS_IOS)
 #  include "qutils/ios/FileUtils_Private.h"
 #  include "qutils/ios/iOSUtils.h"
 #elif defined(Q_OS_ANDROID)
 #  include "qutils/android/AndroidUtils.h"
 #endif // Q_OS_ANDRID
+#include "qutils/Macros.h"
 
 namespace zmc
 {

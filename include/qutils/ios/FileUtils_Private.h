@@ -1,3 +1,4 @@
+#pragma once
 // Qt
 #include <QStringList>
 #include <QVariantList>

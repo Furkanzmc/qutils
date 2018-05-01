@@ -2,13 +2,13 @@
 // std
 #include <cmath>
 // Qt
-#include <QAudioProbe>
 #include <QAudioRecorder>
-#include <QDir>
 #include <QMediaRecorder>
 #include <QStandardPaths>
+#include <QAudioProbe>
 #include <QTimer>
-// qutils
+#include <QDir>
+// Local
 #include "qutils/Macros.h"
 
 namespace zmc

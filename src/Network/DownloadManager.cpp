@@ -1,17 +1,17 @@
 #include "qutils/Network/DownloadManager.h"
-// qutils
-#include "qutils/Macros.h"
 // Qt
-#include <QFile>
-#include <QFileInfo>
-#include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QFileInfo>
 #ifndef QT_NO_SSL
 #include <QSslError>
 #endif // QT_NO_SSL
+#include <QFile>
+#include <QList>
 #include <QUrl>
+// Local
+#include "qutils/Macros.h"
 
 namespace zmc
 {

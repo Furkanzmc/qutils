@@ -2,10 +2,10 @@
 // Qt
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QHttpPart>
-#include <QFile>
 #include <QMimeDatabase>
+#include <QHttpPart>
 #include <QUrlQuery>
+#include <QFile>
 // qutils
 #include "qutils/Macros.h"
 

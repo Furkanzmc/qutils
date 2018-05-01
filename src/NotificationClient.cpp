@@ -3,29 +3,29 @@
 #include <functional>
 // Qt
 #ifdef Q_OS_ANDROID
-#include <QtAndroidExtras/QAndroidJniObject>
+#  include <QtAndroidExtras/QAndroidJniObject>
 #endif // Q_OS_ANDROID
 #include <QGuiApplication>
+#include <QMetaMethod>
+#include <QDateTime>
 #include <QThread>
 #include <QTimer>
-#include <QDateTime>
-#include <QMetaMethod>
 // Local
-#include "qutils/Notification.h"
 #ifdef Q_OS_ANDROID
-#include "qutils/android/JNICallbacks.h"
+#  include "qutils/android/JNICallbacks.h"
 #endif // Q_OS_ANDROID
 #ifdef Q_OS_IOS
-#include "qutils/ios/iOSNativeUtils.h"
+#  include "qutils/ios/iOSNativeUtils.h"
 #endif // Q_OS_IOS
+#include "qutils/Notification.h"
 #include "qutils/Macros.h"
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
 
 #ifdef Q_OS_ANDROID
-#define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
-#define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
+#  define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
+#  define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
 #endif // Q_OS_ANDROID
 
 namespace zmc

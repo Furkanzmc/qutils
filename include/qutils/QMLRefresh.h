@@ -1,11 +1,12 @@
 #pragma once
-#include <QObject>
-#include <QQmlApplicationEngine>
-#include <QTimer>
-#include <QQuickWindow>
-#include <QDebug>
-// STD
+// std
 #include <functional>
+// Qt
+#include <QQmlApplicationEngine>
+#include <QQuickWindow>
+#include <QObject>
+#include <QTimer>
+#include <QDebug>
 
 namespace zmc
 {

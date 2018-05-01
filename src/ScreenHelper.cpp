@@ -1,4 +1,6 @@
 #include "qutils/ScreenHelper.h"
+// std
+#include <cmath>
 // Qt
 #include <QGuiApplication>
 #include <QScreen>
@@ -6,8 +8,7 @@
 #ifdef QT_DEBUG
 #include <QDebug>
 #endif // QT_DEBUG
-#include <cmath>
-// zmc
+// Local
 #include "qutils/Macros.h"
 
 namespace zmc

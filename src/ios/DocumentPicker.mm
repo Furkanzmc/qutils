@@ -1,10 +1,3 @@
-//
-//  DocumentPicker.m
-//
-//  Created by Furkan Üzümcü on 12-04-2018.
-//  Copyright © 2018 Cuz Translation. All rights reserved.
-//
-
 #import "qutils/ios/DocumentPicker.h"
 
 @interface DocumentPicker()

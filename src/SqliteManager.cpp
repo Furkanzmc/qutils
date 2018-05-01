@@ -1,8 +1,9 @@
 #include "qutils/SqliteManager.h"
-#include "qutils/Macros.h"
 // Qt
-#include <QSqlQuery>
 #include <QSqlRecord>
+#include <QSqlQuery>
+// Local
+#include "qutils/Macros.h"
 
 namespace zmc
 {

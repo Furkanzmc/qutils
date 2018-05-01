@@ -1,8 +1,8 @@
 #include "qutils/macos/MacOSUtils.h"
 // Qt
-#include <QTimer>
 #include <QGuiApplication>
 #include <QFileOpenEvent>
+#include <QTimer>
 // Local
 #include "qutils/Macros.h"
 

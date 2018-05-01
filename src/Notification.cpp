@@ -1,6 +1,6 @@
 #include "qutils/Notification.h"
-// Qt
-#include <QDebug>
+// Local
+#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -51,7 +51,7 @@ Notification Notification::fromVariantMap(const QVariantMap &data)
     Notification notification;
 
     if (data.find("title") == data.end() || data.find("text") == data.end()) {
-        qDebug() << "The `title` or `text` keys cannot be found. Returning an empty Notification object.";
+        LOG("The `title` or `text` keys cannot be found. Returning an empty Notification object.");
         return notification;
     }
 
