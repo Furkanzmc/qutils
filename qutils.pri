@@ -211,6 +211,20 @@ else {
     DEFINES +=QUTILS_MULTIMEDIA_ENABLED=0
 }
 
+IS_ON_DESKTOP = false
+win32 {
+    IS_ON_DESKTOP = true
+}
+
+osx {
+    IS_ON_DESKTOP = true
+}
+
+equals(IS_ON_DESKTOP, true) {
+    HEADERS += $$PWD/include/qutils/UpdateChecker.h
+    SOURCES += $$PWD/src/UpdateChecker.cpp
+}
+
 INCLUDEPATH += $$PWD/include
 
 DISTFILES += \
