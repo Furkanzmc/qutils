@@ -33,23 +33,26 @@ void QutilsPlugin::registerQutils(const char *uri)
     Q_ASSERT(QString(uri) == QString("qutils"));
 
 #if QUTILS_MULTIMEDIA_ENABLED
-    qmlRegisterType<zmc::AudioRecorder>("qutils", 1, 0, "AudioRecorder");
+    qmlRegisterType<zmc::AudioRecorder>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "AudioRecorder");
 #endif // QUTILS_MULTIMEDIA_ENABLED
 
-    qmlRegisterType<zmc::CacheManager>("qutils", 1, 0, "CacheManager");
-    qmlRegisterUncreatableType<zmc::CppTypes>("qutils", 1, 0, "CppTypes", "Error: only enums");
-    qmlRegisterType<zmc::DateManager>("qutils", 1, 0, "DateManager");
+    qmlRegisterType<zmc::CacheManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CacheManager");
+    qmlRegisterUncreatableType<zmc::CppTypes>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CppTypes", "Error: only enums");
+    qmlRegisterType<zmc::DateManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DateManager");
 
-    qmlRegisterType<zmc::FileUtils>("qutils", 1, 0, "FileUtils");
-    qmlRegisterType<zmc::NativeUtils>("qutils", 1, 0, "NativeUtils");
-    qmlRegisterType<zmc::NotificationClient>("qutils", 1, 0, "NotificationClient");
+    qmlRegisterType<zmc::FileUtils>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "FileUtils");
+    qmlRegisterType<zmc::NativeUtils>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NativeUtils");
+    qmlRegisterType<zmc::NotificationClient>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NotificationClient");
 
-    qmlRegisterType<zmc::QutilsLog>("qutils", 1, 0, "QutilsLog");
-    qmlRegisterType<zmc::ScreenHelper>("qutils", 1, 0, "ScreenHelper");
-    qmlRegisterType<zmc::SettingsManager>("qutils", 1, 0, "SettingsManager");
+    qmlRegisterType<zmc::QutilsLog>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QutilsLog");
+    qmlRegisterType<zmc::ScreenHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "ScreenHelper");
+    qmlRegisterType<zmc::SettingsManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SettingsManager");
 
-    qmlRegisterType<zmc::SignalManager>("qutils", 1, 0, "SignalManager");
-    qmlRegisterType<zmc::TranslationHelper>("qutils", 1, 0, "TranslationHelper");
+    qmlRegisterType<zmc::SignalManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
+    qmlRegisterType<zmc::TranslationHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
+#ifdef Q_OS_DESKTOP
+    qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
+#endif // Q_OS_DESKTOP
 }
 
 void QutilsPlugin::registerTypes(const char *uri)
