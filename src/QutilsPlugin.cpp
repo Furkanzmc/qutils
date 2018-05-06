@@ -19,7 +19,7 @@
 #  include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
 #ifdef Q_OS_DESKTOP
-#  include "qutils/QMLRefresh.h"
+#  include "qutils/UpdateChecker.h"
 #endif // Q_OS_DESKTOP
 
 QutilsPlugin::QutilsPlugin(QObject *parent)
