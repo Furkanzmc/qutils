@@ -76,6 +76,8 @@ private:
  * If the maintance tools returns an XML containing the update information, the `updateAvailable()` signal will be emitted.
  * The name of the maintance tools can vary depending on your configiguration.
  * The the fault maintance tool name is "maintenancetool".
+ *
+ * This class will also be available for non-desktop platforms but will have no functionalty.
  */
 class UpdateChecker : public QObject
 {
@@ -105,6 +107,13 @@ public:
      * @return void
      */
     void setMaintenanceToolName(const QString &name);
+
+    /**
+     * @brief Startes the updater in a separate process.
+     * @param silentUpdate If set to true, the silent update will begin without the updater UI.
+     * @return True If the update starts sucessfuly, otherwıse returns false.
+     */
+    Q_INVOKABLE bool startUpdater(bool silentUpdate);
 
 signals:
     /**
