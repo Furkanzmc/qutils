@@ -276,7 +276,7 @@ void ScreenHelper::calculateRatio()
     const float baseDPI = 163.f;
 #elif defined(Q_OS_WIN) || defined(Q_OS_WINRT)
     const float baseDPI = 96.f;
-#elif defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#elif defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
     const float baseDPI = 113.5f;
 #endif // Q_OS_ANDROID
     m_Ratio = (m_DPI / baseDPI) * m_Scale;

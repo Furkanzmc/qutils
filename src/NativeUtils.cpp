@@ -8,9 +8,9 @@
 #ifdef Q_OS_IOS
 #  include "qutils/ios/iOSUtils.h"
 #endif // Q_OS_IOS
-#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
 #  include "qutils/macos/MacOSUtils.h"
-#endif // Q_OS_MAC
+#endif // Q_OS_MACOS
 
 namespace zmc
 {
@@ -23,9 +23,9 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_IOS
     , m_iOSUtils(new iOSUtils(this))
 #endif // Q_OS_IOS
-#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     , m_MacOSUtils(new MacOSUtils(this))
-#endif // Q_OS_MAC
+#endif // Q_OS_MACOS
 {
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
@@ -65,10 +65,10 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::photosAccessDenied, this, &NativeUtils::photosAccessDenied);
 #endif // Q_OS_IOS
 
-#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     connect(m_MacOSUtils, &MacOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
     connect(m_MacOSUtils, &MacOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
-#endif // Q_OS_MAC
+#endif // Q_OS_MACOS
 }
 
 void NativeUtils::setStatusBarColor(QColor color)
@@ -230,7 +230,7 @@ QString NativeUtils::getDeviceModel()
     model = "windows";
 #endif // Q_OS_WINDOWS
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
     model = "macOS";
 #endif // Q_OS_WINDOWS
 
@@ -338,7 +338,7 @@ void NativeUtils::setMainController(bool isMain)
     m_iOSUtils->setMainController(isMain);
 #elif defined(Q_OS_ANDROID)
     m_AndroidUtils->setMainController(isMain);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
     m_MacOSUtils->setMainController(isMain);
 #else
     Q_UNUSED(isMain);

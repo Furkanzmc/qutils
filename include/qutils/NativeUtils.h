@@ -14,9 +14,9 @@ class AndroidUtils;
 #ifdef Q_OS_IOS
 class iOSUtils;
 #endif // Q_OS_IOS
-#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
 class MacOSUtils;
-#endif // Q_OS_MAC
+#endif // Q_OS_MACOS
 
 /**
  * @brief NativeUtils class is used as a main source of entry to both Android and iOS features. When a feature is not supported on the current development
@@ -108,9 +108,9 @@ private:
 #ifdef Q_OS_IOS
     iOSUtils *m_iOSUtils;
 #endif // Q_OS_IOS
-#if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
+#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     MacOSUtils *m_MacOSUtils;
-#endif // Q_OS_MAC
+#endif // Q_OS_MACOS
 };
 
 }

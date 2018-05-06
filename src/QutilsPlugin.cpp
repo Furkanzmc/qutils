@@ -61,11 +61,11 @@ void QutilsPlugin::registerTypes(const char *uri)
 
 void QutilsPlugin::setPlatformContextProperties(QQmlContext *context)
 {
-#ifdef Q_OS_MAC
-    context->setContextProperty("Q_OS_MAC", QVariant(true));
+#ifdef Q_OS_MACOS
+    context->setContextProperty("Q_OS_MACOS", QVariant(true));
 #else
-    context->setContextProperty("Q_OS_MAC", QVariant(false));
-#endif // Q_OS_MAC
+    context->setContextProperty("Q_OS_MACOS", QVariant(false));
+#endif // Q_OS_MACOS
 
 #if defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
     context->setContextProperty("Q_OS_WIN", QVariant(true));
