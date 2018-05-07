@@ -84,7 +84,9 @@ class UpdateChecker : public QObject
     Q_OBJECT
     Q_PROPERTY(QString maintenanceToolName READ maintenanceToolName WRITE setMaintenanceToolName NOTIFY maintenanceToolNameChanged)
 
+#ifdef Q_OS_DESKTOP
     Q_ENUM(QProcess::ProcessError)
+#endif // Q_OS_DESKTOP
 
 public:
     explicit UpdateChecker(QObject *parent = nullptr);
@@ -134,7 +136,9 @@ signals:
 
 private:
     QString m_MaintenanceToolName;
+#ifdef Q_OS_DESKTOP
     QProcess m_Process;
+#endif // Q_OS_DESKTOP
 
 private:
     /**
@@ -142,6 +146,7 @@ private:
      */
     QString getMaintenanceToolPath() const;
 
+#ifdef Q_OS_DESKTOP
     /**
      * @brief Handles the case where the process finishes succesfuly.
      * @param exitCode
@@ -149,19 +154,24 @@ private:
      * @return void
      */
     void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+#endif // Q_OS_DESKTOP
 
+#ifdef Q_OS_DESKTOP
     /**
      * @brief Handles the QProcess errors.
      * @param error
      */
     void onProcessErrorOcurred(QProcess::ProcessError error);
+#endif // Q_OS_DESKTOP
 
+#ifdef Q_OS_DESKTOP
     /**
      * @brief Parses the update output and returns a list of update information.
      * @param output
      * @return QList<UpdateInfo *>
      */
     QList<zmc::UpdateInfo *> parseOutPut(const QByteArray &output);
+#endif // Q_OS_DESKTOP
 };
 
 }

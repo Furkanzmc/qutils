@@ -177,7 +177,8 @@ HEADERS += \
     $$PWD/include/qutils/QutilsLog.h \
     $$PWD/include/qutils/FileUtils.h \
     $$PWD/include/qutils/CppTypes.h \
-    $$PWD/include/qutils/QutilsPlugin.h
+    $$PWD/include/qutils/QutilsPlugin.h \
+    $$PWD/include/qutils/UpdateChecker.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -196,7 +197,8 @@ SOURCES += \
     $$PWD/src/Notification.cpp \
     $$PWD/src/QutilsLog.cpp \
     $$PWD/src/FileUtils.cpp \
-    $$PWD/src/QutilsPlugin.cpp
+    $$PWD/src/QutilsPlugin.cpp \
+    $$PWD/src/UpdateChecker.cpp
 
 equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \
@@ -209,20 +211,6 @@ equals(QUTILS_NO_MULTIMEDIA, true) {
 }
 else {
     DEFINES +=QUTILS_MULTIMEDIA_ENABLED=0
-}
-
-IS_ON_DESKTOP = false
-win32 {
-    IS_ON_DESKTOP = true
-}
-
-osx {
-    IS_ON_DESKTOP = true
-}
-
-equals(IS_ON_DESKTOP, true) {
-    HEADERS += $$PWD/include/qutils/UpdateChecker.h
-    SOURCES += $$PWD/src/UpdateChecker.cpp
 }
 
 INCLUDEPATH += $$PWD/include

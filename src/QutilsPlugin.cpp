@@ -6,6 +6,7 @@
 #include "qutils/NotificationClient.h"
 #include "qutils/TranslationHelper.h"
 #include "qutils/SettingsManager.h"
+#include "qutils/UpdateChecker.h"
 #include "qutils/SignalManager.h"
 #include "qutils/CacheManager.h"
 #include "qutils/ScreenHelper.h"
@@ -18,9 +19,6 @@
 #if QUTILS_MULTIMEDIA_ENABLED
 #  include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
-#ifdef Q_OS_DESKTOP
-#  include "qutils/UpdateChecker.h"
-#endif // Q_OS_DESKTOP
 
 QutilsPlugin::QutilsPlugin(QObject *parent)
     : QQmlExtensionPlugin(parent)
@@ -50,9 +48,7 @@ void QutilsPlugin::registerQutils(const char *uri)
 
     qmlRegisterType<zmc::SignalManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
     qmlRegisterType<zmc::TranslationHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
-#ifdef Q_OS_DESKTOP
     qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
-#endif // Q_OS_DESKTOP
 }
 
 void QutilsPlugin::registerTypes(const char *uri)

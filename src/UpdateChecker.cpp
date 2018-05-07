@@ -97,6 +97,8 @@ void UpdateChecker::setMaintenanceToolName(const QString &name)
         m_MaintenanceToolName = name;
         emit maintenanceToolNameChanged();
     }
+#else
+    Q_UNUSED(name);
 #endif // Q_OS_DESKTOP
 }
 
@@ -113,6 +115,9 @@ bool UpdateChecker::startUpdater(bool silentUpdate)
 
     const QString toolPath = getMaintenanceToolPath();
     return QProcess::startDetached(toolPath, arguments);
+#else
+    Q_UNUSED(silentUpdate);
+    return true;
 #endif // Q_OS_DESKTOP
 }
 
@@ -138,9 +143,9 @@ QString UpdateChecker::getMaintenanceToolPath() const
     return absolutePath;
 }
 
+#ifdef Q_OS_DESKTOP
 void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-#ifdef Q_OS_DESKTOP
     Q_UNUSED(exitCode);
     if (exitStatus == QProcess::NormalExit) {
         const QByteArray output = m_Process.readAll();
@@ -158,20 +163,19 @@ void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitSta
             }
         }
     }
-#else
-    Q_UNUSED(exitCode);
-    Q_UNUSED(exitStatus);
-#endif // Q_OS_DESKTOP
 }
+#endif // Q_OS_DESKTOP
 
+#ifdef Q_OS_DESKTOP
 void UpdateChecker::onProcessErrorOcurred(QProcess::ProcessError error)
 {
     emit errorOcurred(error);
 }
+#endif // Q_OS_DESKTOP
 
+#ifdef Q_OS_DESKTOP
 QList<zmc::UpdateInfo *> UpdateChecker::parseOutPut(const QByteArray &output)
 {
-#ifdef Q_OS_DESKTOP
     QList<UpdateInfo *> updates;
     const QString outString = QString::fromUtf8(output);
     const int xmlBegin = outString.indexOf(QStringLiteral("<updates>"));
@@ -210,9 +214,9 @@ QList<zmc::UpdateInfo *> UpdateChecker::parseOutPut(const QByteArray &output)
     if (reader.hasError()) {
         LOG_ERROR("XML-reader-error: " << reader.errorString());
     }
-#endif // Q_OS_DESKTOP
 
     return updates;
 }
+#endif // Q_OS_DESKTOP
 
 }
