@@ -10,6 +10,7 @@ namespace zmc
 
 #ifdef Q_OS_ANDROID
 class AndroidUtils;
+class AndroidButtonEvent;
 #endif // Q_OS_ANDRID
 #ifdef Q_OS_IOS
 class iOSUtils;
