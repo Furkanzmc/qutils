@@ -4,8 +4,6 @@
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QDir>
-// Local
-#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -150,17 +148,20 @@ void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitSta
     if (exitStatus == QProcess::NormalExit) {
         const QByteArray output = m_Process.readAll();
         const QList<zmc::UpdateInfo *> updates = parseOutPut(output);
-        QList<QObject *> ubjectList;
+        QList<QObject *> objectList;
         for (UpdateInfo *i : updates) {
-            ubjectList.append(static_cast<QObject *>(i));
+            objectList.append(static_cast<QObject *>(i));
         }
 
         if (updates.size() > 0) {
-            updateAvailable(ubjectList);
+            emit updateAvailable(objectList);
 
             for (UpdateInfo *info : updates) {
                 info->deleteLater();
             }
+        }
+        else {
+            emit noUpdateAvailable();
         }
     }
 }

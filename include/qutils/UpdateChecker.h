@@ -2,6 +2,8 @@
 // Qt
 #include <QObject>
 #include <QProcess>
+// Local
+#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -119,9 +121,14 @@ public:
 
 signals:
     /**
-     * @brief Emittedn when there's a new update available.
+     * @brief Emitted when there's a new update available.
      */
     void updateAvailable(QList<QObject *> updates);
+
+    /**
+     * @brief Emitted when there's no new update available.
+     */
+    void noUpdateAvailable();
 
     /**
      * @brief Emitted when there's an error checking for update.
