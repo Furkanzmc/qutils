@@ -610,22 +610,23 @@ bool AndroidUtils::isMainController() const
     return m_IsMainController;
 }
 
-void AndroidUtils::setMainController(bool IsMainController)
+void AndroidUtils::setMainController(bool IsMainController, bool disableOthers)
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        AndroidUtils *utils = m_Instances.at(index);
-        if (utils && utils->isMainController()) {
-            utils->setMainController(false);
-            break;
+    if (disableOthers) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            AndroidUtils *utils = m_Instances.at(index);
+            if (utils && utils->isMainController()) {
+                utils->setMainController(false);
+                break;
+            }
         }
     }
 
     if (m_IsMainController != IsMainController) {
         emit mainControllerChanged();
+        m_IsMainController = IsMainController;
     }
-
-    m_IsMainController = IsMainController;
 }
 
 bool AndroidUtils::isButtonEventsEnabled() const

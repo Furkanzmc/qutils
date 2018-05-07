@@ -195,22 +195,23 @@ bool iOSUtils::isMainController() const
     return m_IsMainController;
 }
 
-void iOSUtils::setMainController(bool isMain)
+void iOSUtils::setMainController(bool isMain, bool disableOthers)
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        iOSUtils *utils = m_Instances.at(index);
-        if (utils && utils->isMainController()) {
-            utils->setMainController(false);
-            break;
+    if (disableOthers) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            iOSUtils *utils = m_Instances.at(index);
+            if (utils && utils->isMainController()) {
+                utils->setMainController(false, false);
+                break;
+            }
         }
     }
 
     if (m_IsMainController != isMain) {
         emit mainControllerChanged();
+        m_IsMainController = isMain;
     }
-
-    m_IsMainController = isMain;
 }
 
 bool iOSUtils::isEnabled() const

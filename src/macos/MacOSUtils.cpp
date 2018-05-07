@@ -45,14 +45,16 @@ bool MacOSUtils::isMainController() const
     return m_IsMainController;
 }
 
-void MacOSUtils::setMainController(bool isMain)
+void MacOSUtils::setMainController(bool isMain, bool disableOthers)
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        MacOSUtils *utils = m_Instances.at(index);
-        if (utils && utils->isMainController()) {
-            utils->setMainController(false);
-            break;
+    if (disableOthers) {
+        const int currentCount = m_Instances.count();
+        for (int index = 0; index < currentCount; index++) {
+            MacOSUtils *utils = m_Instances.at(index);
+            if (utils && utils->isMainController()) {
+                utils->setMainController(false, false);
+                break;
+            }
         }
     }
 
@@ -65,9 +67,8 @@ void MacOSUtils::setMainController(bool isMain)
         }
 
         emit mainControllerChanged();
+        m_IsMainController = isMain;
     }
-
-    m_IsMainController = isMain;
 }
 
 void MacOSUtils::emitOpenedWithURLSignal(QString url)

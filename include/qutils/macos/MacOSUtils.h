@@ -31,7 +31,7 @@ public:
      * @param isMain
      * @return void
      */
-    Q_INVOKABLE void setMainController(bool isMain);
+    Q_INVOKABLE void setMainController(bool isMain, bool disableOthers = true);
 
     /**
      * @brief Only the first instance will be notified of this.
