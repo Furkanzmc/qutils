@@ -1,11 +1,11 @@
 #pragma once
+// This needs to be at the top for the platform check.
+#include "qutils/Macros.h"
 // Qt
 #include <QObject>
 #if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
 #include <QProcess>
 #endif // Q_OS_DESKTOP
-// Local
-#include "qutils/Macros.h"
 
 namespace zmc
 {
