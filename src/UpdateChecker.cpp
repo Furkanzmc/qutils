@@ -62,11 +62,11 @@ bool UpdateInfo::valid() const
 UpdateChecker::UpdateChecker(QObject *parent)
     : QObject(parent)
     , m_MaintenanceToolName("maintenancetool")
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     , m_Process(this)
 #endif // Q_OS_DESKTOP
 {
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     connect(&m_Process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &UpdateChecker::onProcessFinished);
     connect(&m_Process, &QProcess::errorOccurred, this, &UpdateChecker::onProcessErrorOcurred);
 #endif // Q_OS_DESKTOP
@@ -74,7 +74,7 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 void UpdateChecker::checkForUpdates()
 {
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     const QString toolPath = getMaintenanceToolPath();
     m_Process.setArguments(QStringList {"--checkupdates"});
     m_Process.setProgram(toolPath);
@@ -89,7 +89,7 @@ QString UpdateChecker::maintenanceToolName() const
 
 void UpdateChecker::setMaintenanceToolName(const QString &name)
 {
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     const bool isChanged = name != m_MaintenanceToolName;
     if (isChanged) {
         m_MaintenanceToolName = name;
@@ -102,7 +102,7 @@ void UpdateChecker::setMaintenanceToolName(const QString &name)
 
 bool UpdateChecker::startUpdater(bool silentUpdate)
 {
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     QStringList arguments;
     if (silentUpdate) {
         arguments.append("--silentUpdate");
@@ -122,7 +122,7 @@ bool UpdateChecker::startUpdater(bool silentUpdate)
 QString UpdateChecker::getMaintenanceToolPath() const
 {
     QString absolutePath = "";
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     QString relativePath = "";
 #  if defined(Q_OS_MACOS)
     relativePath = "../../../" + m_MaintenanceToolName + ".app/Contents/MacOS/" + m_MaintenanceToolName;
@@ -141,7 +141,7 @@ QString UpdateChecker::getMaintenanceToolPath() const
     return absolutePath;
 }
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
 void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     Q_UNUSED(exitCode);
@@ -167,14 +167,14 @@ void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitSta
 }
 #endif // Q_OS_DESKTOP
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
 void UpdateChecker::onProcessErrorOcurred(QProcess::ProcessError error)
 {
     emit errorOcurred(error);
 }
 #endif // Q_OS_DESKTOP
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
 QList<zmc::UpdateInfo *> UpdateChecker::parseOutPut(const QByteArray &output)
 {
     QList<UpdateInfo *> updates;

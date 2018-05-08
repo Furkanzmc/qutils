@@ -1,7 +1,9 @@
 #pragma once
 // Qt
 #include <QObject>
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
 #include <QProcess>
+#endif // Q_OS_DESKTOP
 // Local
 #include "qutils/Macros.h"
 
@@ -86,7 +88,7 @@ class UpdateChecker : public QObject
     Q_OBJECT
     Q_PROPERTY(QString maintenanceToolName READ maintenanceToolName WRITE setMaintenanceToolName NOTIFY maintenanceToolNameChanged)
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     Q_ENUM(QProcess::ProcessError)
 #endif // Q_OS_DESKTOP
 
@@ -143,7 +145,7 @@ signals:
 
 private:
     QString m_MaintenanceToolName;
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     QProcess m_Process;
 #endif // Q_OS_DESKTOP
 
@@ -153,7 +155,7 @@ private:
      */
     QString getMaintenanceToolPath() const;
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     /**
      * @brief Handles the case where the process finishes succesfuly.
      * @param exitCode
@@ -163,7 +165,7 @@ private:
     void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 #endif // Q_OS_DESKTOP
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     /**
      * @brief Handles the QProcess errors.
      * @param error
@@ -171,7 +173,7 @@ private:
     void onProcessErrorOcurred(QProcess::ProcessError error);
 #endif // Q_OS_DESKTOP
 
-#ifdef Q_OS_DESKTOP
+#if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
     /**
      * @brief Parses the update output and returns a list of update information.
      * @param output

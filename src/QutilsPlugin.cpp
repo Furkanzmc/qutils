@@ -72,7 +72,7 @@ void QutilsPlugin::setPlatformContextProperties(QQmlContext *context)
     context->setContextProperty("Q_OS_WIN", QVariant(false));
 #endif // Q_OS_WIN
 
-#if !defined(Q_OS_WIN) && defined(Q_OS_WINRT)
+#if defined(Q_OS_WINRT)
     context->setContextProperty("Q_OS_WINRT", QVariant(true));
 #else
     context->setContextProperty("Q_OS_WINRT", QVariant(false));
