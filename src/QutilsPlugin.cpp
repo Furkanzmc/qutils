@@ -17,7 +17,7 @@
 #include "qutils/CppTypes.h"
 #include "qutils/Macros.h"
 #if QUTILS_MULTIMEDIA_ENABLED
-#  include "qutils/AudioRecorder.h"
+    #include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
 
 QutilsPlugin::QutilsPlugin(QObject *parent)

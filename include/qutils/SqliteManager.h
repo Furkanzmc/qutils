@@ -201,8 +201,13 @@ public:
      * @param selectOrder If it is empty, it is ignored.
      * @return QList<QMap<QString, QVariant>>
      */
-    QList<QMap<QString, QVariant>> getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit = -1,
-                                const QList<Constraint> *constraints = nullptr, const SelectOrder *selectOrder = nullptr);
+    QList<QMap<QString, QVariant>> getFromTable(
+            QSqlDatabase &database,
+            const QString &tableName,
+            const int &limit = -1,
+            const QList<Constraint> *constraints = nullptr,
+            const SelectOrder *selectOrder = nullptr
+        );
 
     /**
      * @brief Insert row(s) into the given table.
@@ -242,7 +247,12 @@ public:
      * @paragraph constraints This is required.
      * @return bool
      */
-    bool updateInTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row, const QList<Constraint> &constraints);
+    bool updateInTable(
+        QSqlDatabase &database,
+        const QString &tableName,
+        const QMap<QString, QVariant> &row,
+        const QList<Constraint> &constraints
+    );
 
     /**
      * @brief Deletes the records in the table acording to the given constraints. If constraints have a size of 0, then everythin is deleted.
@@ -262,7 +272,6 @@ public:
     bool exists(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints);
 
     const SqliteError &getLastError() const;
-
     QString getColumnTypeName(const ColumnTypes &type) const;
     ColumnTypes getColumnType(const QString &typeName) const;
 

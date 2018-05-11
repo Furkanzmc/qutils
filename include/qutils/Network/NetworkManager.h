@@ -86,12 +86,28 @@ public:
      * @param textParams QMap<UPLOAD_KEY, UPLOAD_VALUE>
      * @param callback
      */
-    void sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                              UploadProgressCallback uploadProgressCallback = nullptr, bool usePutRequest = false);
-    void sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                           UploadProgressCallback uploadProgressCallback = nullptr);
-    void sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                          UploadProgressCallback uploadProgressCallback = nullptr);
+    void sendMultipartRequest(
+        const QString &url,
+        const QMap<QString, QString> &files,
+        const QMap<QString, QString> &textParams,
+        RequestCallback callback,
+        UploadProgressCallback uploadProgressCallback = nullptr,
+        bool usePutRequest = false
+    );
+    void sendMultipartPost(
+        const QString &url,
+        const QMap<QString, QString> &files,
+        const QMap<QString, QString> &textParams,
+        RequestCallback callback,
+        UploadProgressCallback uploadProgressCallback = nullptr
+    );
+    void sendMultipartPut(
+        const QString &url,
+        const QMap<QString, QString> &files,
+        const QMap<QString, QString> &textParams,
+        RequestCallback callback,
+        UploadProgressCallback uploadProgressCallback = nullptr
+    );
 
     /**
      * @brief Uses the sendMultipartRequest to upload the given files.
@@ -100,8 +116,13 @@ public:
      * @param textParams
      * @param callback
      */
-    void uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                     UploadProgressCallback uploadProgressCallback = nullptr);
+    void uploadFiles(
+        const QString &url,
+        const QMap<QString, QString> &files,
+        const QMap<QString, QString> &textParams,
+        RequestCallback callback,
+        UploadProgressCallback uploadProgressCallback = nullptr
+    );
 
     /**
      * @brief Returns true if connected to internet.

@@ -46,6 +46,7 @@ namespace zmc
 class TranslationHelper : public QObject
 {
     Q_OBJECT
+
     Q_PROPERTY(QString LCS READ getLanguageChangedSignal NOTIFY languageChanged)
 
 public:

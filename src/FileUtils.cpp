@@ -11,10 +11,10 @@
 #include <QUrl>
 // Local
 #if defined(Q_OS_IOS)
-#  include "qutils/ios/FileUtils_Private.h"
-#  include "qutils/ios/iOSUtils.h"
+    #include "qutils/ios/FileUtils_Private.h"
+    #include "qutils/ios/iOSUtils.h"
 #elif defined(Q_OS_ANDROID)
-#  include "qutils/android/AndroidUtils.h"
+    #include "qutils/android/AndroidUtils.h"
 #endif // Q_OS_ANDRID
 #include "qutils/Macros.h"
 

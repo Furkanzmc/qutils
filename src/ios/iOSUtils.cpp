@@ -135,7 +135,7 @@ int iOSUtils::getPhotosAuthorizationStatus()
 bool iOSUtils::isLocationAuthorizationGranted() const
 {
     return m_iOSNative->getLocationAuthorizationStatus() == iOSNativeUtils::LAAuthorizedAlways
-           || m_iOSNative->getLocationAuthorizationStatus() == iOSNativeUtils::LAAuthorizedWhenInUse;
+        || m_iOSNative->getLocationAuthorizationStatus() == iOSNativeUtils::LAAuthorizedWhenInUse;
 }
 
 bool iOSUtils::isPhotosPermissionGranted() const

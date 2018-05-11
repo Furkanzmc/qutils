@@ -106,7 +106,13 @@ JNICallbacks::JNICallbacks()
 
 }
 
-void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload)
+void JNICallbacks::notificationReceivedCallback(
+    JNIEnv */*env*/,
+    jobject /*obj*/,
+    jstring jtag,
+    jint id,
+    jstring jnotificationManagerName,
+    jstring notificationPayload)
 {
     const QString tag = QAndroidJniObject(jtag).toString();
     const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
@@ -120,7 +126,13 @@ void JNICallbacks::notificationReceivedCallback(JNIEnv */*env*/, jobject /*obj*/
     }
 }
 
-void JNICallbacks::notificationTappedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring jtag, jint id, jstring jnotificationManagerName, jstring notificationPayload)
+void JNICallbacks::notificationTappedCallback(
+    JNIEnv */*env*/,
+    jobject /*obj*/,
+    jstring jtag,
+    jint id,
+    jstring jnotificationManagerName,
+    jstring notificationPayload)
 {
     const QString tag = QAndroidJniObject(jtag).toString();
     const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();

@@ -54,11 +54,9 @@ private:
 
 private slots:
     void processFinishedDownload(QNetworkReply *reply);
-    #ifndef QT_NO_SSL
-
+#ifndef QT_NO_SSL
     void sslErrors(const QList<QSslError> &errors);
-
-    #endif // QT_NO_SSL
+#endif // QT_NO_SSL
 
 signals:
     void allDownloadsFinished();

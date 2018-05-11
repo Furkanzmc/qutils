@@ -119,8 +119,13 @@ void NetworkManager::sendPut(const QString &url, const QString &data, RequestCal
     insertCallback(threadIndex, std::move(callback));
 }
 
-void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
-        RequestCallback callback, UploadProgressCallback uploadProgressCallback, bool usePutRequest)
+void NetworkManager::sendMultipartRequest(
+    const QString &url,
+    const QMap<QString, QString> &files,
+    const QMap<QString, QString> &textParams,
+    RequestCallback callback,
+    UploadProgressCallback uploadProgressCallback,
+    bool usePutRequest)
 {
     QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
     QMimeDatabase db;
@@ -194,20 +199,32 @@ void NetworkManager::sendMultipartRequest(const QString &url, const QMap<QString
     }
 }
 
-void NetworkManager::sendMultipartPost(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
-                                       RequestCallback callback, UploadProgressCallback uploadProgressCallback)
+void NetworkManager::sendMultipartPost(
+    const QString &url,
+    const QMap<QString, QString> &files,
+    const QMap<QString, QString> &textParams,
+    RequestCallback callback,
+    UploadProgressCallback uploadProgressCallback)
 {
     sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, false);
 }
 
-void NetworkManager::sendMultipartPut(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams,
-                                      RequestCallback callback, UploadProgressCallback uploadProgressCallback)
+void NetworkManager::sendMultipartPut(
+    const QString &url,
+    const QMap<QString, QString> &files,
+    const QMap<QString, QString> &textParams,
+    RequestCallback callback,
+    UploadProgressCallback uploadProgressCallback)
 {
     sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, true);
 }
 
-void NetworkManager::uploadFiles(const QString &url, const QMap<QString, QString> &files, const QMap<QString, QString> &textParams, RequestCallback callback,
-                                 UploadProgressCallback uploadProgressCallback)
+void NetworkManager::uploadFiles(
+    const QString &url,
+    const QMap<QString, QString> &files,
+    const QMap<QString, QString> &textParams,
+    RequestCallback callback,
+    UploadProgressCallback uploadProgressCallback)
 {
     sendMultipartRequest(url, files, textParams, callback, uploadProgressCallback, false);
 }
@@ -297,9 +314,9 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NetworkError::NoError) {
         LOG_ERROR("Network error occured for URL (" << reply->request().url().toString() << ")."
-                  "\nError string: " << reply->errorString() <<
-                  "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() <<
-                  "\nNetwork Error code: " << reply->error());
+            "\nError string: " << reply->errorString() <<
+            "\nError code: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() <<
+            "\nNetwork Error code: " << reply->error());
     }
 
     const Response response(

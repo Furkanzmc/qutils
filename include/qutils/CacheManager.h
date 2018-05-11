@@ -6,9 +6,9 @@
 #include "qutils/Macros.h"
 
 #ifdef QUTILS_APP_NAME
-#define CACHE_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_cache.sqlite"
+    #define CACHE_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_cache.sqlite"
 #else
-#define CACHE_DB_FILE_NAME "qutils_cache.sqlite"
+    #define CACHE_DB_FILE_NAME "qutils_cache.sqlite"
 #endif // QUTILS_APP_NAME
 
 namespace zmc

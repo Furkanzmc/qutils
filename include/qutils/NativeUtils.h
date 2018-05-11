@@ -9,14 +9,14 @@ namespace zmc
 {
 
 #ifdef Q_OS_ANDROID
-class AndroidUtils;
-class AndroidButtonEvent;
+    class AndroidUtils;
+    class AndroidButtonEvent;
 #endif // Q_OS_ANDRID
 #ifdef Q_OS_IOS
-class iOSUtils;
+    class iOSUtils;
 #endif // Q_OS_IOS
 #if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
-class MacOSUtils;
+    class MacOSUtils;
 #endif // Q_OS_MACOS
 
 /**
@@ -30,7 +30,6 @@ class NativeUtils : public QObject
     Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool ipad READ isiPad CONSTANT)
-
     Q_PROPERTY(bool mainController READ isMainController WRITE setMainController NOTIFY mainControllerChanged)
 
 public:
@@ -103,15 +102,13 @@ signals:
     void photosAccessDenied();
 
 private:
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     AndroidUtils *m_AndroidUtils;
-#endif // Q_OS_ANDROID
-#ifdef Q_OS_IOS
+#elif defined(Q_OS_IOS)
     iOSUtils *m_iOSUtils;
-#endif // Q_OS_IOS
-#if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
+#elif defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     MacOSUtils *m_MacOSUtils;
-#endif // Q_OS_MACOS
+#endif // Platform Check
 };
 
 }

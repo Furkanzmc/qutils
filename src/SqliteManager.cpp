@@ -189,7 +189,7 @@ QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint
     return query;
 }
 
-QList<QMap<QString, QVariant> > SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
+QList<QMap<QString, QVariant>> SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
 {
     QList<QMap<QString, QVariant>> resultList;
     if (database.isOpen() == false) {
@@ -218,7 +218,7 @@ QList<QMap<QString, QVariant> > SqliteManager::executeSelectQuery(QSqlDatabase &
     return resultList;
 }
 
-QList<QMap<QString, QVariant> > SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit,
+QList<QMap<QString, QVariant>> SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit,
         const QList<Constraint> *constraints, const SelectOrder *selectOrder)
 {
     if (database.isOpen() == false) {

@@ -290,9 +290,9 @@ void AndroidUtils::dismissKeyboard()
 QString AndroidUtils::getDeviceModel()
 {
     QAndroidJniObject jniStr = QAndroidJniObject::callStaticObjectMethod(
-                                   ANDROID_UTILS_CLASS,
-                                   "getDeviceModel",
-                                   "()Ljava/lang/String;");
+            ANDROID_UTILS_CLASS,
+            "getDeviceModel",
+            "()Ljava/lang/String;");
     return jniStr.toString();
 }
 

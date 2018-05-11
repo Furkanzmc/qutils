@@ -4,7 +4,7 @@
 // Qt
 #include <QObject>
 #if defined(Q_OS_DESKTOP) && !defined(Q_OS_WINRT)
-#include <QProcess>
+    #include <QProcess>
 #endif // Q_OS_DESKTOP
 
 namespace zmc

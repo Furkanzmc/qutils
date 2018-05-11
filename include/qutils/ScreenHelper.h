@@ -52,8 +52,13 @@ public:
     Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
 
 public:
-    ScreenHelper(const float &refDpi = 386.f, const float &refWidth = 1080.f, const float &refHeight = 1920.f, const float &refSizeInInches = 5.f,
-                 QObject *parent = nullptr);
+    ScreenHelper(
+        const float &refDpi = 386.f,
+        const float &refWidth = 1080.f,
+        const float &refHeight = 1920.f,
+        const float &refSizeInInches = 5.f,
+        QObject *parent = nullptr
+    );
 
     /**
      * @brief Use it for item sizes.

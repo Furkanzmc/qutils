@@ -6,9 +6,9 @@
 #include "qutils/Macros.h"
 
 #ifdef QUTILS_APP_NAME
-#define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"
+    #define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"
 #else
-#define SETTINGS_DB_FILE_NAME "qutils_settings.sqlite"
+    #define SETTINGS_DB_FILE_NAME "qutils_settings.sqlite"
 #endif // QUTILS_APP_NAME
 
 namespace zmc

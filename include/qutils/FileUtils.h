@@ -8,10 +8,10 @@ namespace zmc
 {
 
 #if defined(Q_OS_IOS)
-class FileUtilsPrivate;
-class iOSUtils;
+    class FileUtilsPrivate;
+    class iOSUtils;
 #elif defined(Q_OS_ANDROID)
-class AndroidUtils;
+    class AndroidUtils;
 #endif // Q_OS_ANDRID
 
 class ImageQualityWorkerThread : public QThread

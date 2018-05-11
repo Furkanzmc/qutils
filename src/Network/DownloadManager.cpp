@@ -5,7 +5,7 @@
 #include <QNetworkReply>
 #include <QFileInfo>
 #ifndef QT_NO_SSL
-#include <QSslError>
+    #include <QSslError>
 #endif // QT_NO_SSL
 #include <QFile>
 #include <QList>

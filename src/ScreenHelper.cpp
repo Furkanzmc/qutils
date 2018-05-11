@@ -5,9 +5,6 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QFile>
-#ifdef QT_DEBUG
-#include <QDebug>
-#endif // QT_DEBUG
 // Local
 #include "qutils/Macros.h"
 

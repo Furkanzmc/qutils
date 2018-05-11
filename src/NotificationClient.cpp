@@ -3,7 +3,7 @@
 #include <functional>
 // Qt
 #ifdef Q_OS_ANDROID
-#  include <QtAndroidExtras/QAndroidJniObject>
+    #include <QtAndroidExtras/QAndroidJniObject>
 #endif // Q_OS_ANDROID
 #include <QGuiApplication>
 #include <QMetaMethod>
@@ -12,10 +12,10 @@
 #include <QTimer>
 // Local
 #ifdef Q_OS_ANDROID
-#  include "qutils/android/JNICallbacks.h"
+    #include "qutils/android/JNICallbacks.h"
 #endif // Q_OS_ANDROID
 #ifdef Q_OS_IOS
-#  include "qutils/ios/iOSNativeUtils.h"
+    #include "qutils/ios/iOSNativeUtils.h"
 #endif // Q_OS_IOS
 #include "qutils/Notification.h"
 #include "qutils/Macros.h"
@@ -24,8 +24,8 @@ using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>
 using ClientsList = std::vector<ClientPair>;
 
 #ifdef Q_OS_ANDROID
-#  define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
-#  define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
+    #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
+    #define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
 #endif // Q_OS_ANDROID
 
 namespace zmc
@@ -37,7 +37,7 @@ NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 
 QList<NotificationClient *> NotificationClient::m_Instances = QList<NotificationClient *>();
 #if FCM_ENABLED == 1
-QString NotificationClient::m_FCMToken = "";
+    QString NotificationClient::m_FCMToken = "";
 #endif // FCM_ENABLED == 1
 
 NotificationClient::NotificationClient(QObject *parent)
@@ -159,7 +159,7 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 #ifdef Q_OS_MOBILE
     auto foundIt = std::find_if(m_NotificationQueue.begin(), m_NotificationQueue.end(), [&tup](const NotificationQueueMember & inTuple) {
         return std::get<0>(tup) == std::get<0>(inTuple) && std::get<1>(tup) == std::get<1>(inTuple)
-               && std::get<2>(tup) == std::get<2>(inTuple) && std::get<4>(tup) == std::get<4>(inTuple);
+            && std::get<2>(tup) == std::get<2>(inTuple) && std::get<4>(tup) == std::get<4>(inTuple);
     });
 
     // Do not add the same notification twice.
@@ -190,11 +190,11 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
             }
         }
     }
-#  if FCM_ENABLED == 1
+#if FCM_ENABLED == 1
     else {
         m_FCMToken = token;
     }
-#  endif // FCM_ENABLED == 1
+#endif // FCM_ENABLED == 1
 #else
     Q_UNUSED(token);
 #endif // Q_OS_MOBILE
@@ -203,13 +203,13 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 void NotificationClient::setNotificationProperties(const Notification *notification)
 {
 #ifdef Q_OS_MOBILE
-#  ifdef Q_OS_ANDROID
+#ifdef Q_OS_ANDROID
     setNotificationPropertiesAndroid(notification);
-#  endif // Q_OS_ANDROID
+#endif // Q_OS_ANDROID
 
-#  ifdef Q_OS_IOS
+#ifdef Q_OS_IOS
     setNotificationPropertiesIOS(notification);
-#  endif // Q_OS_IOS
+#endif // Q_OS_IOS
 #else
     Q_UNUSED(notification);
 #endif // Q_OS_MOBILE
@@ -343,9 +343,9 @@ void NotificationClient::scheduleNotificationAndroid(Notification *notification)
     }
 
     int notificationID = QAndroidJniObject::callStaticMethod<jint>(
-                             NOTIFICATION_CLIENT_CLASS,
-                             "getLastNotificationID",
-                             "()I");
+            NOTIFICATION_CLIENT_CLASS,
+            "getLastNotificationID",
+            "()I");
 
     m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notificationID), this));
 
@@ -377,9 +377,7 @@ void NotificationClient::scheduleNotificationIOS(zmc::Notification *notification
     setNotificationProperties(notification);
 
     qint64 delay = notification->getDelay();
-
     m_iOSNative->schedulePushNotification(notification->getTitle(), notification->getText(), static_cast<int>(delay));
-
     m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), -1), this));
 }
 

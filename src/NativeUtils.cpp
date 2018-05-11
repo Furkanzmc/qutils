@@ -3,13 +3,13 @@
 #include <QStandardPaths>
 // Local
 #ifdef Q_OS_ANDROID
-#  include "qutils/android/AndroidUtils.h"
+    #include "qutils/android/AndroidUtils.h"
 #endif // Q_OS_ANDRID
 #ifdef Q_OS_IOS
-#  include "qutils/ios/iOSUtils.h"
+    #include "qutils/ios/iOSUtils.h"
 #endif // Q_OS_IOS
 #if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
-#  include "qutils/macos/MacOSUtils.h"
+    #include "qutils/macos/MacOSUtils.h"
 #endif // Q_OS_MACOS
 
 namespace zmc

@@ -8,7 +8,7 @@ namespace zmc
 
 // Forward Declerations
 #ifdef Q_OS_IOS
-class iOSNativeUtils;
+    class iOSNativeUtils;
 #endif // Q_OS_IOS
 class Notification;
 
