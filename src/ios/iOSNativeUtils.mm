@@ -247,7 +247,7 @@ namespace zmc
     iOSNativeUtils::PhotosAuthorizationStatus iOSNativeUtils::getPhotosAuthorizationStatus()
     {
         PhotosAuthorizationStatus authStatus = PhotosAuthorizationStatus::PANone;
-#if QUTILS_LOCATION_ENABLED == 1
+#if QUTILS_PHOTOS_ENABLED == 1
         PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         if (status == PHAuthorizationStatusDenied) {
             authStatus = PhotosAuthorizationStatus::PADenied;
@@ -261,7 +261,7 @@ namespace zmc
         else if (status == PHAuthorizationStatusAuthorized) {
             authStatus = PhotosAuthorizationStatus::PAAuthorized;
         }
-#endif // QUTILS_LOCATION_ENABLED
+#endif // QUTILS_PHOTOS_ENABLED
 
         return authStatus;
     }
