@@ -229,20 +229,33 @@ void FileUtils::openGallery()
 #endif // Q_OS_ANDROID
 }
 
-QString FileUtils::getTemporaryFile(const QString &fileTemplate)
+QString FileUtils::getTemporaryFile(const QString &fileTemplate, const QString &directory)
 {
-    QTemporaryFile tmpFile;
-    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
-    QString tmpPath = paths.at(0);
+    QString tmpPath;
+    if (directory.length() > 0 && QDir(directory).exists()) {
+        tmpPath = directory;
+    }
+    else {
+        const QStringList paths = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
+        tmpPath = paths.at(0);
+    }
 
+    QTemporaryFile tmpFile;
     tmpFile.setFileTemplate(tmpPath + "/" + fileTemplate);
-    tmpFile.setAutoRemove(false);
 
     tmpFile.open();
-    const QString fileName = tmpFile.fileName();
-    tmpFile.close();
+    QString filePath = tmpFile.fileName();
 
-    return fileName;
+    if (filePath.contains(fileTemplate)) {
+        filePath = tmpPath + "/" + fileTemplate;
+        tmpFile.setAutoRemove(true);
+    }
+    else {
+        tmpFile.setAutoRemove(false);
+    }
+
+    tmpFile.close();
+    return filePath;
 }
 
 QString FileUtils::readFile(QString filePath)

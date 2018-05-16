@@ -142,10 +142,11 @@ public:
     /**
      * @brief Uses QTemporaryFile to generate a temporary file in the Temporary files directory of the current platform. The file template is used to generate
      * a unique name. The file is not automatically removed from the temp directory.
-     * @param directory
+     * @param fileTemplate If the file template contains the same name as the resulting name, the fileTemplate is used as the finl name.
+     * @param directory If a directory is given, the temporary file is created in that directory. Otherwise the platform specific temporary directory is used.
      * @return QString
      */
-    Q_INVOKABLE static QString getTemporaryFile(const QString &fileTemplate);
+    Q_INVOKABLE static QString getTemporaryFile(const QString &fileTemplate, const QString &directory = "");
 
     /**
      * @brief Reads the file at the given path. If the file does not exist or cannot be reached it returns an empty string. Otherwise the contents of the file
