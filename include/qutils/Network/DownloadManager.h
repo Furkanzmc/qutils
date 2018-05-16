@@ -1,10 +1,10 @@
 #pragma once
 // Qt
 #include <QObject>
+#include <QNetworkReply>
 
 // Forward declerations
 class QNetworkAccessManager;
-class QNetworkReply;
 class QSslError;
 class QIODevice;
 
@@ -17,9 +17,6 @@ namespace Network
 /**
  * @brief The DownloadManager class
  * This is the class to to download any content from a URL. Right now, it is very primitive. It only downloads files to a directory.
- *
- * TODO:
- * [ ] Add error checking
  */
 class DownloadManager: public QObject
 {
@@ -93,6 +90,13 @@ signals:
      * @param bytesTotal
      */
     void progressChanged(const QString &downloadName, float progress, qint64 bytesReceived, qint64 bytesTotal);
+
+    /**
+     * @brief Emitted when an error occurrs while downlading.
+     * @param downloadName
+     * @param code
+     */
+    void errorOccurred(const QString &downloadName, QNetworkReply::NetworkError code);
 };
 
 }

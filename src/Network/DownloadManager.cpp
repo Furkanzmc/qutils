@@ -1,18 +1,18 @@
 #include "qutils/Network/DownloadManager.h"
 // Qt
-#include <QRegularExpressionMatch>
-#include <QNetworkAccessManager>
-#include <QRegularExpression>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QFileInfo>
+#include <QUrl>
+#include <QFile>
+#include <QList>
 #include <QSaveFile>
+#include <QFileInfo>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QRegularExpression>
+#include <QNetworkAccessManager>
+#include <QRegularExpressionMatch>
 #ifndef QT_NO_SSL
     #include <QSslError>
 #endif // QT_NO_SSL
-#include <QFile>
-#include <QList>
-#include <QUrl>
 // Local
 #include "qutils/Macros.h"
 #include "qutils/FileUtils.h"
@@ -58,6 +58,12 @@ void DownloadManager::downloadFile(const QUrl &url, const QString &filePath, con
         reply,
         &QNetworkReply::downloadProgress,
         std::bind(&DownloadManager::onProgressChanged, this, downloadID, std::placeholders::_1, std::placeholders::_2)
+    );
+
+    connect(
+        reply,
+        QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
+        std::bind(&DownloadManager::errorOccurred, this, downloadID, std::placeholders::_1)
     );
 
     m_CurrentDownloads.append(reply);
