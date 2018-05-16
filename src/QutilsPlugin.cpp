@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QtQml/qqml.h>
 // Local
+#include "qutils/Network/DownloadManager.h"
 #include "qutils/NotificationClient.h"
 #include "qutils/TranslationHelper.h"
 #include "qutils/SettingsManager.h"
@@ -49,6 +50,8 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::SignalManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
     qmlRegisterType<zmc::TranslationHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
     qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
+
+    qmlRegisterType<zmc::Network::DownloadManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
 }
 
 void QutilsPlugin::registerTypes(const char *uri)
