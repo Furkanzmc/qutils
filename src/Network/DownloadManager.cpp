@@ -1,9 +1,12 @@
 #include "qutils/Network/DownloadManager.h"
 // Qt
+#include <QRegularExpressionMatch>
 #include <QNetworkAccessManager>
+#include <QRegularExpression>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QFileInfo>
+#include <QSaveFile>
 #ifndef QT_NO_SSL
     #include <QSslError>
 #endif // QT_NO_SSL
@@ -12,6 +15,7 @@
 #include <QUrl>
 // Local
 #include "qutils/Macros.h"
+#include "qutils/FileUtils.h"
 
 namespace zmc
 {
@@ -23,7 +27,7 @@ DownloadManager::DownloadManager(QObject *parent)
     : QObject(parent)
     , m_NetworkManager(new QNetworkAccessManager(this))
 {
-    connect(m_NetworkManager, &QNetworkAccessManager::finished, this, &DownloadManager::processFinishedDownload);
+    connect(m_NetworkManager, &QNetworkAccessManager::finished, this, &DownloadManager::onProcessFinishedDownload);
 }
 
 DownloadManager::~DownloadManager()
@@ -31,7 +35,7 @@ DownloadManager::~DownloadManager()
     m_NetworkManager->deleteLater();
 }
 
-void DownloadManager::downloadFile(const QUrl &url, const QString &filePath)
+void DownloadManager::downloadFile(const QUrl &url, const QString &filePath, const QString &downloadName)
 {
     if (url.isValid() == false) {
         LOG_ERROR("Given URL (" << url.toEncoded() << ") is not valid. Aborting download.");
@@ -39,50 +43,68 @@ void DownloadManager::downloadFile(const QUrl &url, const QString &filePath)
     }
 
     QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, QVariant(true));
     QNetworkReply *reply = m_NetworkManager->get(request);
 
 #ifndef QT_NO_SSL
-    connect(reply, SIGNAL(sslErrors(QList<QSslError>)), SLOT(sslErrors(QList<QSslError>)));
+    connect(reply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
 #endif // QT_NO_SSL
 
-    reply->setProperty("file_name", filePath);
+    reply->setProperty("file_path", filePath);
+    reply->setProperty("download_name", downloadName);
+
+    const QString downloadID = downloadName.length() > 0 ? downloadName : url.toEncoded();
+    connect(
+        reply,
+        &QNetworkReply::downloadProgress,
+        std::bind(&DownloadManager::onProgressChanged, this, downloadID, std::placeholders::_1, std::placeholders::_2)
+    );
+
     m_CurrentDownloads.append(reply);
 }
 
-QString DownloadManager::getSaveFileName(const QUrl &url) const
+QString DownloadManager::getSaveFileName(const QNetworkReply *reply) const
 {
-    QString path = url.path();
-    QString basename = QFileInfo(path).fileName();
+    QString filePath = reply->property("file_path").toString();
+    const QFileInfo fileInfo(filePath);
 
-    if (basename.isEmpty()) {
-        basename = "download";
-    }
-
-    if (QFile::exists(basename)) {
-        // Already exists, don't overwrite
-        unsigned int i = 0;
-        basename += '.';
-        while (QFile::exists(basename + QString::number(i))) {
-            ++i;
+    const QString contentDisposition = reply->rawHeader("Content-Disposition");
+    QRegularExpression re("filename[^;=\n]*=(UTF-8(['\"]*))?(.*)");
+    QRegularExpressionMatch match = re.match(contentDisposition);
+    if (match.hasMatch()) {
+        QString matched = match.captured(0);
+        if (matched.contains("filename*=UTF-8''")) {
+            matched.remove("UTF-8''");
+            matched.remove("filename*");
         }
 
-        basename += QString::number(i);
+        if (matched.contains("filename=")) {
+            matched.remove("filename=");
+            matched.remove("\"");
+        }
+
+        const QStringList split = matched.split("=");
+        const QString fileName = split.size() == 2 ? split.at(1) : split.at(0);
+        filePath = FileUtils::getTemporaryFile(fileName, fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
+    }
+    else {
+        const QUrl url = reply->url();
+        filePath = FileUtils::getTemporaryFile(url.fileName(), fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
     }
 
-    return basename;
+    return filePath;
 }
 
 bool DownloadManager::saveToDisk(const QString &filePath, QIODevice *data) const
 {
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly)) {
-        LOG_ERROR("Could not open" << filePath << " for writing: " << file.errorString());
+    QSaveFile saveFile(filePath);
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        LOG_ERROR("Could not open" << filePath << " for writing: " << saveFile.errorString());
         return false;
     }
 
-    file.write(data->readAll());
-    file.close();
-
+    saveFile.write(data->readAll());
+    saveFile.commit();
     return true;
 }
 
@@ -97,38 +119,38 @@ void DownloadManager::sslErrors(const QList<QSslError> &sslErrors)
 
 #endif // QT_NO_SSL
 
-void DownloadManager::processFinishedDownload(QNetworkReply *reply)
+void DownloadManager::onProcessFinishedDownload(QNetworkReply *reply)
 {
     const QUrl url = reply->url();
     if (reply->error()) {
         LOG("Download of " << url.toEncoded() << " failed: " << reply->errorString());
     }
     else {
-        QString filePath = reply->property("file_name").toString();
-        if (filePath.length() == 0) {
-            filePath = getSaveFileName(url);
-        }
-        else {
-            // If the suffix was omitteed in the custom file name, get the suffix from the URL and append to the file name
-            QFileInfo fileInfo(filePath);
-            if (fileInfo.suffix().length() == 0) {
-                fileInfo.setFile(getSaveFileName(url));
-                filePath += "." + fileInfo.suffix();
-            }
-        }
+        const QString filePath = getSaveFileName(reply);
 
         if (saveToDisk(filePath, reply)) {
             LOG("Download of " << url.toEncoded() << " succeeded. Saved to " << filePath);
-            emit downloadFinished(url.toEncoded(), filePath);
+            const QString downloadName = reply->property("download_name").toString();
+            emit downloadFinished(url.toEncoded(), filePath, downloadName);
         }
     }
 
     m_CurrentDownloads.removeAll(reply);
     reply->deleteLater();
-
     if (m_CurrentDownloads.size() == 0) {
         emit allDownloadsFinished();
     }
+}
+
+void DownloadManager::onProgressChanged(const QString &downloadName, qint64 bytesReceived, qint64 bytesTotal)
+{
+    // If the bytesTotal is -1, then the total size of the download cannot be determined.
+    float progress = static_cast<float>(bytesReceived) / static_cast<float>(bytesTotal);
+    if (progress < 0) {
+        progress = -1;
+    }
+
+    emit progressChanged(downloadName, progress, bytesReceived, bytesTotal);
 }
 
 }
