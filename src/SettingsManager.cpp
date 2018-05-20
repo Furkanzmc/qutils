@@ -41,7 +41,7 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
 SettingsManager::~SettingsManager()
 {
     m_Instances[m_InstanceIndex] = nullptr;
-    const int count = std::count_if(m_Instances.begin(), m_Instances.end(), [](SettingsManager * instance) {
+    const auto count = std::count_if(m_Instances.begin(), m_Instances.end(), [](SettingsManager * instance) {
         return instance != nullptr;
     });
 

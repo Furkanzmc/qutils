@@ -251,9 +251,9 @@ bool ScreenHelper::isXLargeSize() const
 
 void ScreenHelper::calculateRatio()
 {
+#if defined(Q_OS_DESKTOP)
     // The code here is based on the code provided by Qt here: http://doc.qt.io/qt-5/scalability.html
     const QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
-#if defined(Q_OS_DESKTOP)
     m_DesiredHeight = qMin(static_cast<float>(m_RefSize.height()), static_cast<float>(screenGeometry.height()) * 0.8f);
     m_DesiredWidth = getAspectRatioWidth(m_RefSize, m_DesiredHeight);
 #else
