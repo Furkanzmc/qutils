@@ -226,6 +226,10 @@ QString NativeUtils::getDeviceModel()
     model = m_AndroidUtils->getDeviceModel();
 #endif // Q_OS_ANDROID
 
+#ifdef Q_OS_IOS
+    model = m_iOSUtils->getDeviceName();
+#endif // Q_OS_ANDROID
+
 #ifdef Q_OS_WINDOWS
     model = "windows";
 #endif // Q_OS_WINDOWS

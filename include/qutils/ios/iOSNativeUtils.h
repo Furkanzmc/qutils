@@ -204,6 +204,12 @@ public:
     bool isStatusBarVisible() const;
 
     /**
+     * @brief Returns the device name.
+     * @return QString
+     */
+    QString getDeviceName() const;
+
+    /**
      * @brief Calls onKeyboardHeightChanged function on every valid instance.
      * @param height
      * @return void

@@ -125,6 +125,12 @@ public:
     Q_INVOKABLE void openGallery();
 
     /**
+     * @brief See iOSNativeUtils::getDeviceName().
+     * @return QString
+     */
+    Q_INVOKABLE QString getDeviceName() const;
+
+    /**
      * @brief Opens the camera.
      * @return void
      */

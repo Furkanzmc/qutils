@@ -152,6 +152,11 @@ void iOSUtils::openGallery()
     m_iOSNative->openGallery();
 }
 
+QString iOSUtils::getDeviceName() const
+{
+    return m_iOSNative->getDeviceName();
+}
+
 void iOSUtils::showCamera()
 {
     if (this->signalsBlocked()) {

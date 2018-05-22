@@ -1,11 +1,12 @@
 #import "qutils/ios/iOSNativeUtils.h"
 // iOS
 #ifdef SAFARI_SERVICES_ENABLED
-#import <SafariServices/SafariServices.h>
+    #import <SafariServices/SafariServices.h>
 #endif // SAFARI_SERVICES_ENABLED
 #if QUTILS_LOCATION_ENABLED == 1
-#import <CoreLocation/CoreLocation.h>
+    #import <CoreLocation/CoreLocation.h>
 #endif // QUTILS_LOCATION_ENABLED
+#import <sys/utsname.h>
 #import <Photos/PHPhotoLibrary.h>
 #import <UIKit/UIKit.h>
 // Firebase
@@ -332,6 +333,13 @@ namespace zmc
     {
         UIApplication *app = [UIApplication sharedApplication];
         return [app isStatusBarHidden] == YES;
+    }
+
+    QString iOSNativeUtils::getDeviceName() const
+    {
+        struct utsname systemInfo;
+        uname(&systemInfo);
+        return QString::fromNSString([NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
     }
 
     void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
