@@ -28,10 +28,10 @@
 #if defined(Q_OS_MOBILE)
     #if defined(__clang__)
         #define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
-        #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << ":" << __LINE__ << "):" << msg
+        #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
         #define LOG_ERROR(msg) qDebug() << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
         #define LOG_STD(msg) std::cout << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
-        #define LOG_WARNING_STD(msg) std::cout << "[WARNING]" << __FUNCTION__ << ":" << msg << std::endl
+        #define LOG_WARNING_STD(msg) std::cout << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
         #define LOG_ERROR_STD(msg) std::cerr << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
     #else // __clang__
         #define LOG(msg) qDebug() << "[INFO] " << msg
@@ -43,7 +43,7 @@
     #endif // __clang__
 #else
     #define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
-    #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << ":" << __LINE__ << "):" << msg
+    #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
     #define LOG_ERROR(msg) qDebug() << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
     #define LOG_STD(msg) std::cout << "[INFO] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
     #define LOG_WARNING_STD(msg) std::cout << "[WARNING] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl

@@ -1,7 +1,9 @@
 #include "qutils/TranslationHelper.h"
 // Qt
-#include <QGuiApplication>
 #include <QTranslator>
+#include <QGuiApplication>
+// Local
+#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -46,6 +48,9 @@ void TranslationHelper::selectLanguage(const QString &language)
         m_CurrentLang = language;
         qApp->installTranslator(m_Translator);
         emit languageChanged();
+    }
+    else {
+        LOG_ERROR("Cannot load translation for language '" << language << "' in directory '" << m_TranslationsDir << "'.");
     }
 }
 
