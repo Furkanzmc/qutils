@@ -4,14 +4,13 @@
 #include <QColor>
 // Local
 #include "qutils/Macros.h"
+#ifdef Q_OS_ANDROID
+    #include "qutils/android/AndroidUtils.h"
+#endif // Q_OS_ANDRID
 
 namespace zmc
 {
 
-#ifdef Q_OS_ANDROID
-    class AndroidUtils;
-    class AndroidButtonEvent;
-#endif // Q_OS_ANDRID
 #ifdef Q_OS_IOS
     class iOSUtils;
 #endif // Q_OS_IOS
@@ -30,6 +29,7 @@ class NativeUtils : public QObject
     Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool ipad READ isiPad CONSTANT)
+
     Q_PROPERTY(bool mainController READ isMainController WRITE setMainController NOTIFY mainControllerChanged)
 
 public:
