@@ -72,7 +72,7 @@ bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefini
     bool isExecSuccessful = query.exec(sqlQueryStr);
     if (isExecSuccessful == false) {
         updateError(database, sqlQueryStr);
-        LOG_ERROR("Error occurred. Message: " << database.lastError().text());
+        LOG_ERROR("Error occurred creating table. Message: " << database.lastError().text());
         successful = false;
     }
     else {
@@ -227,7 +227,7 @@ QList<QMap<QString, QVariant>> SqliteManager::getFromTable(QSqlDatabase &databas
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return QList<QMap<QString, QVariant>>();
     }
 
@@ -257,7 +257,7 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
 
@@ -310,7 +310,7 @@ bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableNa
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
 
@@ -362,7 +362,7 @@ bool SqliteManager::deleteInTable(QSqlDatabase &database, const QString &tableNa
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
 
@@ -390,7 +390,7 @@ bool SqliteManager::exists(QSqlDatabase &database, const QString &tableName, con
     }
 
     if (isTableExist(database, tableName) == false) {
-        LOG_ERROR("Given table, " << tableName << ", is does not exist!");
+        LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return exists;
     }
 
