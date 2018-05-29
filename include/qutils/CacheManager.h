@@ -78,12 +78,12 @@ public:
 
 private:
     static QList<CacheManager *> m_Instances;
-    static bool m_IsTableCreated;
 
     const int m_InstanceIndex;
     QString m_DatabaseName, m_CacheTableName;
 
     zmc::SqliteManager m_SqlManager;
+    bool m_IsTableCreated;
 
 private:
     /**

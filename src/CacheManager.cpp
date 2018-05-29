@@ -17,7 +17,6 @@ namespace zmc
 {
 
 QList<CacheManager *> CacheManager::m_Instances = QList<CacheManager *>();
-bool CacheManager::m_IsTableCreated = false;
 
 CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -25,6 +24,7 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_CacheTableName(tableName)
     , m_SqlManager()
+    , m_IsTableCreated(false)
 {
     m_Instances.append(this);
     // Create the app data location folder if it doesn't exist.
@@ -209,6 +209,9 @@ bool CacheManager::createTable()
         };
 
         m_IsTableCreated = m_SqlManager.createTable(database, columns, m_CacheTableName);
+    }
+    else {
+        LOG("Table, " << m_CacheTableName << ", was already created.");
     }
 
     return m_IsTableCreated;
