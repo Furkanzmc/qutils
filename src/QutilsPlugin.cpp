@@ -3,20 +3,21 @@
 #include <QCoreApplication>
 #include <QtQml/qqml.h>
 // Local
-#include "qutils/Network/DownloadManager.h"
-#include "qutils/NotificationClient.h"
-#include "qutils/TranslationHelper.h"
-#include "qutils/SettingsManager.h"
-#include "qutils/UpdateChecker.h"
-#include "qutils/SignalManager.h"
-#include "qutils/CacheManager.h"
-#include "qutils/ScreenHelper.h"
+#include "qutils/Macros.h"
+#include "qutils/CppTypes.h"
+#include "qutils/QutilsLog.h"
+#include "qutils/FileUtils.h"
+#include "qutils/SystemInfo.h"
 #include "qutils/NativeUtils.h"
 #include "qutils/DateManager.h"
-#include "qutils/FileUtils.h"
-#include "qutils/QutilsLog.h"
-#include "qutils/CppTypes.h"
-#include "qutils/Macros.h"
+#include "qutils/CacheManager.h"
+#include "qutils/ScreenHelper.h"
+#include "qutils/SignalManager.h"
+#include "qutils/UpdateChecker.h"
+#include "qutils/SettingsManager.h"
+#include "qutils/TranslationHelper.h"
+#include "qutils/NotificationClient.h"
+#include "qutils/Network/DownloadManager.h"
 #if QUTILS_MULTIMEDIA_ENABLED
     #include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
@@ -52,6 +53,7 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
 
     qmlRegisterType<zmc::Network::DownloadManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
+    qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
 }
 
 void QutilsPlugin::registerTypes(const char *uri)
