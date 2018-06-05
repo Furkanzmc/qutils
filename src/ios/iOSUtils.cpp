@@ -8,7 +8,7 @@
 namespace zmc
 {
 
-QList<iOSUtils *> iOSUtils::m_Instances = QList<iOSUtils *>();
+QMap<int, iOSUtils *> iOSUtils::m_Instances = QMap<int, iOSUtils *>();
 QString iOSUtils::m_URLOpenedWith = "";
 
 iOSUtils::iOSUtils(QObject *parent)
@@ -46,12 +46,12 @@ iOSUtils::iOSUtils(QObject *parent)
         }
     }
 
-    m_Instances.push_back(this);
+    m_Instances.insert(m_InstanceID, this);
 }
 
 iOSUtils::~iOSUtils()
 {
-    m_Instances[m_InstanceID] = nullptr;
+    m_Instances.remove(m_InstanceID);
     delete m_iOSNative;
 }
 
@@ -172,9 +172,10 @@ void iOSUtils::emitOpenedWithURLSignal(QString url)
         m_URLOpenedWith = url;
     }
     else {
-        const int currentCount = m_Instances.count();
-        for (int index = 0; index < currentCount; index++) {
-            iOSUtils *utils = m_Instances.at(index);
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            iOSUtils *utils = it.value();
             if (utils && utils->isMainController()) {
                 emit utils->openedWithURL(url);
                 break;
@@ -185,9 +186,10 @@ void iOSUtils::emitOpenedWithURLSignal(QString url)
 
 void iOSUtils::emitOpenedWithoutURLSignal()
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        iOSUtils *utils = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        iOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
             break;
@@ -203,9 +205,10 @@ bool iOSUtils::isMainController() const
 void iOSUtils::setMainController(bool isMain, bool disableOthers)
 {
     if (disableOthers) {
-        const int currentCount = m_Instances.count();
-        for (int index = 0; index < currentCount; index++) {
-            iOSUtils *utils = m_Instances.at(index);
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            iOSUtils *utils = it.value();
             if (utils && utils->isMainController()) {
                 utils->setMainController(false, false);
                 break;

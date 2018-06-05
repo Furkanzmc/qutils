@@ -16,8 +16,7 @@
 namespace zmc
 {
 
-QList<SettingsManager *> SettingsManager::m_Instances = QList<SettingsManager *>();
-bool SettingsManager::m_IsTableCreated = false;
+QMap<int, SettingsManager *> SettingsManager::m_Instances = QMap<int, SettingsManager *>();
 
 SettingsManager::SettingsManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -25,8 +24,9 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_SettingsTableName(tableName)
     , m_SqlManager()
+    , m_IsTableCreated(false)
 {
-    m_Instances.append(this);
+    m_Instances.insert(m_InstanceIndex, this);
 
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
@@ -40,12 +40,8 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
 
 SettingsManager::~SettingsManager()
 {
-    m_Instances[m_InstanceIndex] = nullptr;
-    const auto count = std::count_if(m_Instances.begin(), m_Instances.end(), [](SettingsManager * instance) {
-        return instance != nullptr;
-    });
-
-    if (count == 0) {
+    m_Instances.remove(m_InstanceIndex);
+    if (m_Instances.size() == 0) {
         LOG("Removing database.");
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
@@ -265,9 +261,10 @@ void SettingsManager::restartDatabase()
 void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
 {
     if (oldSettingValue != newSettingValue) {
-        const int currentCount = m_Instances.count();
-        for (int index = 0; index < currentCount; index++) {
-            SettingsManager *instance = m_Instances.at(index);
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            SettingsManager *instance = it.value();
             if (instance) {
                 emit instance->settingChanged(settingName, oldSettingValue, newSettingValue);
             }
@@ -277,9 +274,10 @@ void SettingsManager::emitSettingChangedInAllInstances(const QString &settingNam
 
 void SettingsManager::emitClearedSignals()
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        SettingsManager *instance = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        SettingsManager *instance = it.value();
         if (instance) {
             emit instance->cleared();
         }

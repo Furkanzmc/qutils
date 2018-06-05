@@ -16,7 +16,7 @@
 namespace zmc
 {
 
-QList<CacheManager *> CacheManager::m_Instances = QList<CacheManager *>();
+QMap<int, CacheManager *> CacheManager::m_Instances = QMap<int, CacheManager *>();
 
 CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
     : QObject(parent)
@@ -26,7 +26,7 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
     , m_SqlManager()
     , m_IsTableCreated(false)
 {
-    m_Instances.append(this);
+    m_Instances.insert(m_InstanceIndex, this);
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
     if (dir.exists() == false) {
@@ -39,12 +39,9 @@ CacheManager::CacheManager(QString databaseName, QString tableName, QObject *par
 
 CacheManager::~CacheManager()
 {
-    m_Instances[m_InstanceIndex] = nullptr;
-    const long long count = std::count_if(m_Instances.begin(), m_Instances.end(), [](CacheManager * instance) {
-        return instance != nullptr;
-    });
+    m_Instances.remove(m_InstanceIndex);
 
-    if (count == 0) {
+    if (m_Instances.size() == 0) {
         LOG("Removing database.");
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
@@ -245,9 +242,10 @@ void CacheManager::restartDatabase()
 void CacheManager::emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue)
 {
     if (oldCachedValue != newCachedValue) {
-        const int currentCount = m_Instances.count();
-        for (int index = 0; index < currentCount; index++) {
-            CacheManager *instance = m_Instances.at(index);
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            CacheManager *instance = it.value();
             if (instance) {
                 emit instance->cacheChanged(cacheName, oldCachedValue, newCachedValue);
             }

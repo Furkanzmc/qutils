@@ -1,5 +1,6 @@
 #pragma once
 // Qt
+#include <QMap>
 #include <QObject>
 
 namespace zmc
@@ -65,8 +66,19 @@ signals:
     void mainControllerChanged();
 
 private:
-    static QList<MacOSUtils *> m_Instances;
 
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, MacOSUtils *> m_Instances;
+
+    /*!
+     * \variable const int m_InstanceID
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const int m_InstanceID;
     bool m_IsMainController;
 };

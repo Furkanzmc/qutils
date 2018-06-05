@@ -35,7 +35,7 @@ int NotificationClient::m_NotificationID = -1;
 ClientsList NotificationClient::m_Clients = ClientsList();
 NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 
-QList<NotificationClient *> NotificationClient::m_Instances = QList<NotificationClient *>();
+QMap<int, NotificationClient *> NotificationClient::m_Instances = QMap<int, NotificationClient *>();
 #if FCM_ENABLED == 1
     QString NotificationClient::m_FCMToken = "";
 #endif // FCM_ENABLED == 1
@@ -48,7 +48,7 @@ NotificationClient::NotificationClient(QObject *parent)
 #endif // Q_OS_IOS
 {
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
-    m_Instances.push_back(this);
+    m_Instances.insert(m_InstanceIndex, this);
 
 #if FCM_ENABLED == 1
     if (m_FCMToken.length() > 0) {
@@ -60,7 +60,7 @@ NotificationClient::NotificationClient(QObject *parent)
 
 NotificationClient::~NotificationClient()
 {
-    m_Instances[m_InstanceIndex] = nullptr;
+    m_Instances.remove(m_InstanceIndex);
 #ifdef Q_OS_IOS
     delete m_iOSNative;
     m_iOSNative = nullptr;
@@ -169,7 +169,10 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 
     // Let every instance process and then remove the tuple from the queue.
     if (m_Instances.size() > 0) {
-        for (NotificationClient *client : m_Instances) {
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            NotificationClient *client = it.value();
             client->processQueue();
         }
 
@@ -184,7 +187,10 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 {
 #ifdef Q_OS_MOBILE
     if (m_Instances.size() > 0) {
-        for (NotificationClient *client : m_Instances) {
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            NotificationClient *client = it.value();
             if (client) {
                 client->fcmTokenReceived(token);
             }

@@ -79,11 +79,21 @@ private:
     static std::vector<std::pair<std::pair<QString, int>, NotificationClient *>> m_Clients;
     static NotificationQueue m_NotificationQueue;
 
-    static QList<NotificationClient *> m_Instances;
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, NotificationClient *> m_Instances;
 #if FCM_ENABLED == 1
     static QString m_FCMToken;
 #endif // FCM_ENABLED == 1
 
+    /*!
+     * \variable const int m_InstanceIndex
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const unsigned int m_InstanceIndex;
 #ifdef Q_OS_IOS
     iOSNativeUtils *m_iOSNative;

@@ -7,19 +7,20 @@ namespace zmc
 {
 
 bool FileUtilsPrivate::m_IsDocumentPickerOpen = false;
+QMap<int, FileUtilsPrivate *> FileUtilsPrivate::m_Instances = QMap<int, FileUtilsPrivate *>();
+
 static DocumentPicker *m_DocumentPicker = [[DocumentPicker alloc] init];
-QList<FileUtilsPrivate *> FileUtilsPrivate::m_Instances = QList<FileUtilsPrivate *>();
 
 FileUtilsPrivate::FileUtilsPrivate()
     : m_InstanceIndex(m_Instances.size())
     , m_IsInvokerInstance(false)
 {
-    m_Instances.append(this);
+    m_Instances.insert(m_InstanceIndex, this);
 }
 
 FileUtilsPrivate::~FileUtilsPrivate()
 {
-    m_Instances[m_InstanceIndex] = nullptr;
+    m_Instances.remove(m_InstanceIndex);
 }
 
 bool FileUtilsPrivate::openDocumentPicker(const QStringList &documentTypes, bool selectMultiple)
@@ -29,7 +30,7 @@ bool FileUtilsPrivate::openDocumentPicker(const QStringList &documentTypes, bool
         opened = true;
         m_IsDocumentPickerOpen = true;
         m_IsInvokerInstance = true;
-        [m_DocumentPicker showDocumentPicker:documentTypes allowMultiple:selectMultiple];
+        [m_DocumentPicker showDocumentPicker: documentTypes allowMultiple: selectMultiple];
     }
 
     return opened;
@@ -58,9 +59,10 @@ void FileUtilsPrivate::invokeDocumentPicked(QStringList paths)
 FileUtilsPrivate *FileUtilsPrivate::getInvokerInstance()
 {
     FileUtilsPrivate *instance = nullptr;
-    const int count = m_Instances.size();
-    for (int index = 0; index < count; index++) {
-        FileUtilsPrivate *tmpInstance = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        FileUtilsPrivate *tmpInstance = it.value();
         if (tmpInstance && tmpInstance->m_IsInvokerInstance) {
             instance = tmpInstance;
             break;

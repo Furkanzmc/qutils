@@ -9,19 +9,19 @@
 namespace zmc
 {
 
-QList<MacOSUtils *> MacOSUtils::m_Instances = QList<MacOSUtils *>();
+QMap<int, MacOSUtils *> MacOSUtils::m_Instances = QMap<int, MacOSUtils *>();
 
 MacOSUtils::MacOSUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_Instances.size())
     , m_IsMainController(false)
 {
-    m_Instances.push_back(this);
+    m_Instances.insert(m_InstanceID, this);
 }
 
 MacOSUtils::~MacOSUtils()
 {
-    m_Instances[m_InstanceID] = nullptr;
+    m_Instances.remove(m_InstanceID);
 }
 
 bool MacOSUtils::eventFilter(QObject *obj, QEvent *event)
@@ -48,9 +48,10 @@ bool MacOSUtils::isMainController() const
 void MacOSUtils::setMainController(bool isMain, bool disableOthers)
 {
     if (disableOthers) {
-        const int currentCount = m_Instances.count();
-        for (int index = 0; index < currentCount; index++) {
-            MacOSUtils *utils = m_Instances.at(index);
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            MacOSUtils *utils = it.value();
             if (utils && utils->isMainController()) {
                 utils->setMainController(false, false);
                 break;
@@ -73,9 +74,10 @@ void MacOSUtils::setMainController(bool isMain, bool disableOthers)
 
 void MacOSUtils::emitOpenedWithURLSignal(QString url)
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        MacOSUtils *utils = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        MacOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
             emit utils->openedWithURL(url);
             break;
@@ -85,9 +87,10 @@ void MacOSUtils::emitOpenedWithURLSignal(QString url)
 
 void MacOSUtils::emitOpenedWithoutURLSignal()
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        MacOSUtils *utils = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        MacOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
             break;

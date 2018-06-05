@@ -237,8 +237,21 @@ public:
     static void emitPhotoAccessPermissionSignals(bool isAccessGranted);
 
 private:
-    static QList<iOSNativeUtils *> m_Instances;
+
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, iOSNativeUtils *> m_Instances;
+
+    /*!
+     * \variable const int m_InstanceIndex
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const unsigned int m_InstanceIndex;
+
     bool m_IsImagePickerOpen,
          m_IsAlertDialogVisible,
          m_IsActionSheetDialogVisible,

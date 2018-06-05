@@ -3,25 +3,26 @@
 namespace zmc
 {
 
-QVector<SignalManager *> SignalManager::m_Instances = QVector<SignalManager *>();
+QMap<int, SignalManager *> SignalManager::m_Instances = QMap<int, SignalManager *>();
 
 SignalManager::SignalManager(QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
 {
-    m_Instances.push_back(this);
+    m_Instances.insert(m_InstanceIndex, this);
 }
 
 SignalManager::~SignalManager()
 {
-    m_Instances[m_InstanceIndex] = nullptr;
+    m_Instances.remove(m_InstanceIndex);
 }
 
 void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariantMap data)
 {
-    const int currentCount = m_Instances.count();
-    for (int index = 0; index < currentCount; index++) {
-        SignalManager *instance = m_Instances.at(index);
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        SignalManager *instance = it.value();
         if (instance) {
             if (targetObjectName.length() > 0) {
                 if (targetObjectName == instance->objectName()) {

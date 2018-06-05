@@ -88,12 +88,24 @@ public:
     void setSettingsTableName(const QString &tableName);
 
 private:
-    static QList<SettingsManager *> m_Instances;
-    static bool m_IsTableCreated;
 
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, SettingsManager *> m_Instances;
+
+    /*!
+     * \variable const int m_InstanceIndex
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const int m_InstanceIndex;
+
     QString m_DatabaseName, m_SettingsTableName;
     zmc::SqliteManager m_SqlManager;
+    bool m_IsTableCreated;
 
 private:
     /**

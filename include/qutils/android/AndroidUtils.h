@@ -261,9 +261,19 @@ signals:
     void mainControllerChanged();
 
 private:
-    static QList<AndroidUtils *> m_Instances;
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, AndroidUtils *> m_Instances;
     static QString m_URLOpenedWith;
 
+    /*!
+     * \variable const int m_InstanceID
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const int m_InstanceID;
     bool m_IsAlertShown,
          m_IsDatePickerShown,

@@ -45,8 +45,19 @@ public:
     static void invokeDocumentPicked(QStringList paths);
 
 private:
-    static QList<FileUtilsPrivate *> m_Instances;
+    /*!
+     * \variable static QMap<int, CacheManager *> m_Instances
+     * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
+     */
+    static QMap<int, FileUtilsPrivate *> m_Instances;
     static bool m_IsDocumentPickerOpen;
+
+    /*!
+     * \variable const int m_InstanceIndex
+     * \brief This variable is initilized in the constructor to the size value of m_Instances.
+     *
+     * This is used to identify the current instance in m_Instances.
+     */
     const int m_InstanceIndex;
 
     bool m_IsInvokerInstance;
