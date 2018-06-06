@@ -21,12 +21,21 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
 #else
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
 #endif // defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
+#if defined(Q_OS_DESKTOP)
+    , m_LowDPIValue(96)
+    , m_MediumDPIValue(113)
+    , m_HighDPIValue(197)
+    , m_XHighDPIValue(227)
+    , m_XXHighDPIValue(267)
+    , m_XXXHighDPIValue(267)
+#else
     , m_LowDPIValue(120)
     , m_MediumDPIValue(160)
     , m_HighDPIValue(240)
     , m_XHighDPIValue(320)
     , m_XXHighDPIValue(480)
     , m_XXXHighDPIValue(640)
+#endif // Q_OS_DESKTOP
     , m_DPIVariation(20)
     , m_Ratio(1.f)
     , m_DesiredWidth(0.f)
