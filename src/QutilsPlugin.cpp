@@ -11,7 +11,6 @@
 #include "qutils/NativeUtils.h"
 #include "qutils/DateManager.h"
 #include "qutils/CacheManager.h"
-#include "qutils/ScreenHelper.h"
 #include "qutils/SignalManager.h"
 #include "qutils/UpdateChecker.h"
 #include "qutils/SettingsManager.h"
@@ -45,14 +44,13 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::NotificationClient>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NotificationClient");
 
     qmlRegisterType<zmc::QutilsLog>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QutilsLog");
-    qmlRegisterType<zmc::ScreenHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "ScreenHelper");
     qmlRegisterType<zmc::SettingsManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SettingsManager");
-
     qmlRegisterType<zmc::SignalManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
+
     qmlRegisterType<zmc::TranslationHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
     qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
-
     qmlRegisterType<zmc::Network::DownloadManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
+
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
 }
 
