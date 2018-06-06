@@ -6,18 +6,27 @@
 namespace zmc
 {
 
-/**
- * @brief ScreenHelper is a utility class to help create resolution indepentant UI in QML.
+/*!
+ * \class ScreenHelper
+ * \brief ScreenHelper is a utility class to help create resolution indepentant UI in QML.
+ *
  * When using different icons for different screen densities. If `QUTILS_FOR_MOBILE` macro defined, the ratio is calculated for the values that were given
  * int the constructor. This way, you can simulate different screen sizes on your desktop compiled app.
- * @code
+ *
+ * When calculating the ratio, the following base DPIs are used:
+ *     - 160 for Android
+ *     - 163 for iOS
+ *     - 113.5 for macOS
+ *     - 96 for Windows
+ *
+ * \code
  *     // in main.cpp
  *     ScreenHelper manager;
  *     engine.rootContext()->setContextProperty("SH", &manager);
- * @endcode
+ * \endcode
  *
  * Then use like so:
- * @code
+ * \code
  *     Window {
  *         id: mainWindow
  *
@@ -25,22 +34,21 @@ namespace zmc
  *             width: SH.dp(50)
  *         }
  *     }
- * @endcode
+ * \endcode
  */
 class ScreenHelper : public QObject
 {
     Q_OBJECT
 
-public:
     Q_PROPERTY(float dpi READ dpi CONSTANT)
-    Q_PROPERTY(bool ldpi READ isLDPI CONSTANT)
-    Q_PROPERTY(bool mdpi READ isMDPI CONSTANT)
+    Q_PROPERTY(float ldpi READ ldpi CONSTANT)
+    Q_PROPERTY(float mdpi READ mdpi CONSTANT)
 
-    Q_PROPERTY(bool hdpi READ isHDPI CONSTANT)
-    Q_PROPERTY(bool xhdpi READ isXHDPI CONSTANT)
-    Q_PROPERTY(bool xxhdpi READ isXXHDPI CONSTANT)
+    Q_PROPERTY(float hdpi READ hdpi CONSTANT)
+    Q_PROPERTY(float xhdpi READ xhdpi CONSTANT)
+    Q_PROPERTY(float xxhdpi READ xxhdpi CONSTANT)
 
-    Q_PROPERTY(bool xxxhdpi READ isXXXHDPI CONSTANT)
+    Q_PROPERTY(float xxxhdpi READ xxxhdpi CONSTANT)
     Q_PROPERTY(float desiredWidth READ getDesiredWidth CONSTANT)
     Q_PROPERTY(float desiredHeight READ getDesiredHeight CONSTANT)
 
@@ -50,70 +58,334 @@ public:
 
     Q_PROPERTY(bool large READ isLargeSize CONSTANT)
     Q_PROPERTY(bool xlarge READ isXLargeSize CONSTANT)
+    Q_PROPERTY(float ratio READ ratio CONSTANT)
 
 public:
-    ScreenHelper(
-        const float &refDpi = 386.f,
-        const float &refWidth = 1080.f,
-        const float &refHeight = 1920.f,
-        const float &refSizeInInches = 5.f,
-        QObject *parent = nullptr
-    );
 
-    /**
-     * @brief Use it for item sizes.
-     * @param size
-     * @return
+    /*!
+     * \brief The default constructor for ScreenHelper.
+     * \param refDpi
+     * \param refWidth
+     * \param refHeight
+     * \param refSizeInInches
+     * \param parent
+     *
+     * Ideally, you should provide different reference sizes for each platform.
+     *
+     * \code
+     *     #if defined(Q_OS_WIN) || defined(Q_OS_WINRT)
+     *          zmc::ScreenHelper screenHelper(96.f, 1368.f, 768.f);
+     *     #elif defined(Q_OS_MACOS)
+     *          zmc::ScreenHelper screenHelper(113.f, 1280.f, 800.f);
+     *     #elif defined(Q_OS_ANDROID)
+     *          zmc::ScreenHelper screenHelper(445.f, 1080.f, 1920.f);
+     *     #elif defined(Q_OS_IOS)
+     *          zmc::ScreenHelper screenHelper(326.f, 750.f, 1334.f);
+     *     #endif // defined(Q_OS_WIN) || defined(Q_OS_WINRT)
+     * \endcode
+     */
+    ScreenHelper(const float &refDpi, const float &refWidth, const float &refHeight, const float &refSizeInInches, QObject *parent = nullptr);
+
+    /*!
+     * \brief This method takes the \a size and returns a DPI version.
+     * \param size
+     * \return qreal
      */
     Q_INVOKABLE qreal dp(const qreal &size);
 
-    /**
-     * @brief Use it for font sizes. As of now, it is the same as @ref dp() but it will change in the future.
-     * @param size
-     * @return
+    /*!
+     * \brief Returns the assets folder name for a low DPI screen.
+     * \return QString
      */
-    Q_INVOKABLE qreal sp(const qreal &size);
-
     QString getLowResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the low DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setLowResourceFolderName("qrc:/assets/low");
+     * \endcode
+     */
     void setLowResourceFolderName(const QString &resourceName);
 
+    /*!
+     * \brief Returns the assets folder name for a medium DPI screen.
+     * \return QString
+     */
     QString getMediumResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the medium DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setMediumResourceFolderName("qrc:/assets/medium");
+     * \endcode
+     */
     void setMediumResourceFolderName(const QString &resourceName);
 
+    /*!
+     * \brief Returns the assets folder name for a high DPI screen.
+     * \return QString
+     */
     QString getHighResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the high DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setHighResourceFolderName("qrc:/assets/high");
+     * \endcode
+     */
     void setHighResourceFolderName(const QString &resourceName);
 
+    /*!
+     * \brief Returns the assets folder name for a extra high DPI screen.
+     * \return QString
+     */
     QString getXHighResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the xhigh DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setXHighResourceFolderName("qrc:/assets/xhigh");
+     * \endcode
+     */
     void setXHighResourceFolderName(const QString &resourceName);
 
+    /*!
+     * \brief Returns the assets folder name for a xx-high DPI screen.
+     * \return QString
+     */
     QString getXXHighResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the xxhigh DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setXXHighResourceFolderName("qrc:/assets/xxhigh");
+     * \endcode
+     */
     void setXXHighResourceFolderName(const QString &resourceName);
 
+    /*!
+     * \brief Returns the assets folder name for a xxx-high DPI screen.
+     * \return QString
+     */
     QString getXXXHighResourceFolderName() const;
+
+    /*!
+     * \brief Set the folder name for the xxxhigh DPI screens.
+     * \param resourceName
+     *
+     * This should be an absolute path to the folder.
+     *
+     * \code
+     *     ScreenHelper sh;
+     *     sh.setXXXHighResourceFolderName("qrc:/assets/xxxhigh");
+     * \endcode
+     */
     void setXXXHighResourceFolderName(const QString &resourceName);
 
-    /**
-     * @brief This folder is used when the asset cannot be found from the other folders.
-     * @param path
-     * @return void
+    /*!
+     * \brief This folder is used when the asset cannot be found in the folder assigned to the current DPI.
+     * \param path
+     * \return void
      */
     void setCommonAssetFolder(const QString &path);
+
+    /*!
+     * \brief Returns the path to the common assets folder.
+     * \return
+     */
     QString getCommonAssetFolder() const;
 
-    Q_INVOKABLE QString getResourceFolderName() const;
+    /*!
+     * \brief Returns the assets folder name for used for the current screen configuration.
+     * \return QString
+     */
+    QString getResourceFolderName() const;
 
-    /**
-     * @brief Returns the resource in the current DPI path.
-     * @param fileName
-     * @return Resrouce path
+    /*!
+     * \brief Returns the resource in the current DPI path.
+     * \param fileName
+     * \return Resrouce path
      */
     Q_INVOKABLE QString getResource(const QString &fileName) const;
 
+    /*!
+     * \brief Returns the scaled down height from the reference height.
+     * \return float
+     */
     float getDesiredHeight() const;
+
+    /*!
+     * \brief Returns the scaled down width from the reference width.
+     * \return float
+     */
     float getDesiredWidth() const;
 
+    /*!
+     * \brief Returns the size of the primary screen in inches.
+     * \return float
+     */
     float getSizeInInches() const;
+
+    /*!
+     * \property ScreenHelper::dpi
+     * \brief Returns the DPI of the current screen.
+     * \return float
+     */
     float dpi() const;
+
+    /*!
+     * \property ScreenHelper::ldpi
+     * \brief Returns the DPI value for a low DPI screen.
+     * \return float
+     */
+    float ldpi() const;
+
+    /*!
+     * \property ScreenHelper::mdpi
+     * \brief Returns the DPI value for a medium DPI screen.
+     * \return float
+     */
+    float mdpi() const;
+
+    /*!
+     * \property ScreenHelper::hdpi
+     * \brief Returns the DPI value for a high DPI screen.
+     * \return float
+     */
+    float hdpi() const;
+
+    /*!
+     * \property ScreenHelper::xhdpi
+     * \brief Returns the DPI value for a xhigh DPI screen.
+     * \return float
+     */
+    float xhdpi() const;
+
+    /*!
+     * \property ScreenHelper::xxhdpi
+     * \brief Returns the DPI value for a xxhigh DPI screen.
+     * \return float
+     */
+    float xxhdpi() const;
+
+    /*!
+     * \property ScreenHelper::xxxhdpi
+     * \brief Returns the DPI value for a xxxhigh DPI screen.
+     * \return float
+     */
+    float xxxhdpi() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a low DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isLDPI() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a medium DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isMDPI() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a high DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isHDPI() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a xhigh DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isXHDPI() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a xxhigh DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isXXHDPI() const;
+
+    /*!
+     * \brief Returns true If the current DPI is within the limits of being a xxxhigh DPI screen.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isXXXHDPI() const;
+
+    /*!
+     * \brief Returns true If the current screen size is small.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isSmallSize() const;
+
+    /*!
+     * \brief Returns true If the current screen size is normal size.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isNormalSize() const;
+
+    /*!
+     * \brief Returns true If the current screen size is large.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isLargeSize() const;
+
+    /*!
+     * \brief Returns true If the current screen size is extra large.
+     * \return bool
+     *
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE bool isXLargeSize() const;
+
+    /*!
+     * \property ScreenHelper::ratio
+     * \brief Returns the ratio used to calculate dp values.
+     * \return float
+     */
+    float ratio() const;
 
 private:
     const QRect m_ScreenRect;
@@ -138,39 +410,31 @@ private:
             m_CommonAssetFolder;
 
     float m_Ratio,
-          m_RatioFont,
           m_DesiredWidth,
           m_DesiredHeight,
           m_SizeInInches,
           m_Scale;
 
 private:
-    bool isLDPI() const;
-    bool isMDPI() const;
-    bool isHDPI() const;
 
-    bool isXHDPI() const;
-    bool isXXHDPI() const;
-    bool isXXXHDPI() const;
-
-    bool isSmallSize() const;
-    bool isNormalSize() const;
-    bool isLargeSize() const;
-
-    bool isXLargeSize() const;
+    /*!
+     * \brief This should only be called once since the screen configuration is unlikely to change.
+     */
     void calculateRatio();
 
-    /**
-     * @brief Get the scale that gives a size with preserved aspect ratio.
-     * @param origSize The original size of the image
-     * @param newSize This is the size you want it to be. Only one property used according to the useHeight parameter.
-     * @param useHeight If you want to scale the image according to its height, set to true. Set to false otherwise.
-     * @return
+    /*!
+     * \brief Get the scale that gives a size with preserved aspect ratio.
+     * \param origSize The original size of the image
+     * \param newSize This is the size you want it to be. Only one property used according to the useHeight parameter.
+     * \param useHeight If you want to scale the image according to its height, set to true. Set to false otherwise.
+     * \return float
      */
     float getAspectRatioWidth(const QSize &origSize, const float &newHeight) const;
 
+    /*!
+     * \brief Prints information about the current screen configuration.
+     */
     void printScreenInfo() const;
-
 };
 
 }

@@ -29,7 +29,6 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
     , m_XXXHighDPIValue(640)
     , m_DPIVariation(20)
     , m_Ratio(1.f)
-    , m_RatioFont(1.f)
     , m_DesiredWidth(0.f)
     , m_DesiredHeight(0.f)
     , m_SizeInInches(refSizeInInches)
@@ -44,11 +43,6 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
 qreal ScreenHelper::dp(const qreal &size)
 {
     return qMax(1, static_cast<int>(size * m_Ratio));
-}
-
-qreal ScreenHelper::sp(const qreal &size)
-{
-    return qMax(1, static_cast<int>(size * m_RatioFont));
 }
 
 QString ScreenHelper::getLowResourceFolderName() const
@@ -199,6 +193,36 @@ float ScreenHelper::dpi() const
     return  m_DPI;
 }
 
+float ScreenHelper::ldpi() const
+{
+    return m_LowDPIValue;
+}
+
+float ScreenHelper::mdpi() const
+{
+    return m_MediumDPIValue;
+}
+
+float ScreenHelper::hdpi() const
+{
+    return m_HighDPIValue;
+}
+
+float ScreenHelper::xhdpi() const
+{
+    return m_XHighDPIValue;
+}
+
+float ScreenHelper::xxhdpi() const
+{
+    return m_XXHighDPIValue;
+}
+
+float ScreenHelper::xxxhdpi() const
+{
+    return m_XXXHighDPIValue;
+}
+
 bool ScreenHelper::isLDPI() const
 {
     return (m_DPI / m_MediumDPIValue) <= (m_LowDPIValue / m_MediumDPIValue);
@@ -231,22 +255,43 @@ bool ScreenHelper::isXXXHDPI() const
 
 bool ScreenHelper::isSmallSize() const
 {
+#if defined(Q_OS_MOBILE)
     return m_SizeInInches <= 4.6f;
+#elif defined(Q_OS_DESKTOP)
+    return m_SizeInInches <= 13.f;
+#endif // Q_OS_MOBILE
 }
 
 bool ScreenHelper::isNormalSize() const
 {
+#if defined(Q_OS_MOBILE)
     return m_SizeInInches > 4.6f && m_SizeInInches <= 5.3f;
+#elif defined(Q_OS_DESKTOP)
+    return m_SizeInInches > 13.f && m_SizeInInches <= 15.f;
+#endif // Q_OS_MOBILE
 }
 
 bool ScreenHelper::isLargeSize() const
 {
+#if defined(Q_OS_MOBILE)
     return m_SizeInInches > 5.3f && m_SizeInInches < 6.0f;
+#elif defined(Q_OS_DESKTOP)
+    return m_SizeInInches > 15.f && m_SizeInInches < 18.0f;
+#endif // Q_OS_MOBILE
 }
 
 bool ScreenHelper::isXLargeSize() const
 {
+#if defined(Q_OS_MOBILE)
     return m_SizeInInches >= 6.0f;
+#elif defined(Q_OS_DESKTOP)
+    return m_SizeInInches >= 18.0f;
+#endif // Q_OS_MOBILE
+}
+
+float ScreenHelper::ratio() const
+{
+    return m_Ratio;
 }
 
 void ScreenHelper::calculateRatio()
@@ -256,10 +301,10 @@ void ScreenHelper::calculateRatio()
     const QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
     m_DesiredHeight = qMin(static_cast<float>(m_RefSize.height()), static_cast<float>(screenGeometry.height()) * 0.8f);
     m_DesiredWidth = getAspectRatioWidth(m_RefSize, m_DesiredHeight);
-#else
+#endif // Q_OS_DESKTOP
+
     const QSizeF physicalSize = QGuiApplication::primaryScreen()->physicalSize();
     m_SizeInInches = std::sqrt(std::pow(physicalSize.width(), 2) + std::pow(physicalSize.height(), 2)) * 0.0393701f;
-#endif // Q_OS_DESKTOP
 
 #if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
     m_Scale = qMax(m_DesiredWidth / float(m_RefSize.width()), m_DesiredHeight / float(m_RefSize.height()));
@@ -277,7 +322,6 @@ void ScreenHelper::calculateRatio()
     const float baseDPI = 113.5f;
 #endif // Q_OS_ANDROID
     m_Ratio = (m_DPI / baseDPI) * m_Scale;
-    m_RatioFont = (m_DPI / baseDPI) * m_Scale;
 }
 
 float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const
@@ -304,7 +348,6 @@ void ScreenHelper::printScreenInfo() const
         << "isXXHDPI: " << isXXHDPI() << "\n"
         << "isXXXHDPI: " << isXXXHDPI() << "\n"
         << "Ratio: " << m_Ratio << "\n"
-        << "RatioFont: " << m_RatioFont << "\n"
         << "Actual DPI: " << QGuiApplication::primaryScreen()->physicalDotsPerInch() << "\n"
         << "----- Screen Info End -----");
 }
