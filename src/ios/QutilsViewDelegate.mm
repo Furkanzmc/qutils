@@ -83,6 +83,7 @@
     }
 #else
     Q_UNUSED(fileURL);
+    Q_UNUSED(asset);
 #endif // QUTILS_PHOTOS_ENABLED == 1
     return fileURL;
 }
