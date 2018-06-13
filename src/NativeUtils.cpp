@@ -167,14 +167,15 @@ void NativeUtils::showToast(const QString &text, bool isLongDuration)
 #endif // Q_OS_ANDROID
 }
 
-void NativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
+void NativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect)
 {
 #ifdef Q_OS_IOS
-    m_iOSUtils->showActionSheet(title, message, buttons);
+    m_iOSUtils->showActionSheet(title, message, buttons, rect);
 #else
     Q_UNUSED(title);
     Q_UNUSED(message);
     Q_UNUSED(buttons);
+    Q_UNUSED(rect);
 #endif // Q_OS_IOS
 }
 

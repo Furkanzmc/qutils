@@ -1,7 +1,8 @@
 #pragma once
 // Qt
-#include <QObject>
+#include <QRect>
 #include <QColor>
+#include <QObject>
 // Local
 #include "qutils/Macros.h"
 #ifdef Q_OS_ANDROID
@@ -48,7 +49,7 @@ public:
     Q_INVOKABLE void showCamera(const QString &photoName);
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
-    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
     Q_INVOKABLE void dismissKeyboard();
 
     Q_INVOKABLE void setApplicationIconBadgeNumber(const unsigned int &number);

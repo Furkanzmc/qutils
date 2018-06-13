@@ -103,18 +103,32 @@ void iOSNativeUtils::shareText(const QString &text)
     [[[app keyWindow] rootViewController] presentViewController: activityVC animated: YES completion: nil];
 }
 
-void iOSNativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
+void iOSNativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect)
 {
-    if (m_IsActionSheetDialogVisible) {
-        LOG("Only one action sheet can be called.");
+    UIApplication *app = [UIApplication sharedApplication];
+    UIViewController *viewController = [[app keyWindow] rootViewController];
+    UIViewController *presentedView = [viewController presentedViewController];
+
+    /*
+     * Alert sheet can be dismissed by clicking outside of the view on iPads. We are checking to see If there's a
+     * presented view because If there isn't and m_IsActionSheetDialogVisible is set to true, we can omit that check.
+     */
+    if (m_IsActionSheetDialogVisible && presentedView != nil) {
+        LOG_ERROR("Only one action sheet can be called.");
+        return;
+    }
+
+    if (isiPad() && rect.isEmpty()) {
+        LOG_ERROR("rect parameter is required on iOS devices.");
         return;
     }
 
     m_IsActionSheetDialogVisible = true;
     UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
-            message: [NSString stringWithUTF8String: message.toStdString().c_str()]
-            preferredStyle: UIAlertControllerStyleActionSheet];
+        alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
+        message: [NSString stringWithUTF8String: message.toStdString().c_str()]
+        preferredStyle: UIAlertControllerStyleActionSheet
+    ];
 
     for (const QVariant &button : buttons) {
         UIAlertActionStyle alertActionStyle = UIAlertActionStyleDefault;
@@ -129,20 +143,22 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
             alertActionStyle = UIAlertActionStyleCancel;
         }
 
-        UIAlertAction *actionButton = [UIAlertAction
-                actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()]
-                style: alertActionStyle
-        handler: ^ (UIAlertAction * action) {
-            NSUInteger index = [[alert actions] indexOfObject: action];
-            iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
-        }
-            ];
+        UIAlertAction *actionButton = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()] style: alertActionStyle
+            handler:^(UIAlertAction * action) {
+                NSUInteger index = [[alert actions] indexOfObject: action];
+                iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
+            }
+        ];
 
         [alert addAction: actionButton];
     }
 
-    UIApplication *app = [UIApplication sharedApplication];
-    [[[app keyWindow] rootViewController] presentViewController: alert animated: YES completion: nil];
+    if (isiPad()) {
+        alert.popoverPresentationController.sourceView = viewController.view;
+        alert.popoverPresentationController.sourceRect = CGRectMake(rect.x(), rect.y(), rect.width(), rect.height());
+    }
+
+    [viewController presentViewController: alert animated: YES completion: nil];
 }
 
 void iOSNativeUtils::schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds)

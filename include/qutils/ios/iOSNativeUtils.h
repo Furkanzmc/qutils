@@ -1,5 +1,6 @@
 #pragma once
 // Qt
+#include <QRect>
 #include <QStringList>
 #include <QVariantList>
 // std
@@ -84,12 +85,15 @@ public:
      *         "type": "cancel"
      *     }
      * ]
+     *
      * Button type options are: "cancel", "destructive" and "default". If anything other than these are given, "default" is used.
+     * \a rect paremeter is required on iPads.
      * @param title
      * @param message
      * @param buttons
+     * @param rect
      */
-    void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+    void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
     void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
 

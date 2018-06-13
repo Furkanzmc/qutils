@@ -75,13 +75,13 @@ void iOSUtils::shareText(const QString &text)
     m_iOSNative->shareText(text);
 }
 
-void iOSUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons)
+void iOSUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect)
 {
     if (this->signalsBlocked()) {
         return;
     }
 
-    m_iOSNative->showActionSheet(title, message, buttons);
+    m_iOSNative->showActionSheet(title, message, buttons, rect);
 }
 
 void iOSUtils::dismissKeyboard()

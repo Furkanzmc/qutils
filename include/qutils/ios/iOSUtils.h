@@ -1,5 +1,6 @@
 #pragma once
 // Qt
+#include <QRect>
 #include <QObject>
 #include <QVariantMap>
 
@@ -54,7 +55,7 @@ public:
      */
     Q_INVOKABLE void shareText(const QString &text);
 
-    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons);
+    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
     /**
      * @brief Dismisses the keyboard.
