@@ -12,7 +12,7 @@
 namespace zmc
 {
 
-QMap<int, AndroidUtils *> AndroidUtils::m_Instances = QMap<int, AndroidUtils *>();
+std::map<int, AndroidUtils *> AndroidUtils::m_Instances = std::map<int, AndroidUtils *>();
 QString AndroidUtils::m_URLOpenedWith = "";
 
 AndroidButtonEvent::AndroidButtonEvent(QObject *parent)
@@ -48,7 +48,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
     , m_IsMainController(false)
     , m_IsButtonEventsEnabled(false)
 {
-    m_Instances.insert(m_InstanceID, this);
+    m_Instances[m_InstanceID] = this;
     if (isMainController()) {
         if (m_URLOpenedWith.length() > 0) {
             /*
@@ -70,7 +70,7 @@ AndroidUtils::AndroidUtils(QObject *parent)
 
 AndroidUtils::~AndroidUtils()
 {
-    m_Instances.remove(m_InstanceID);
+    m_Instances.erase(m_InstanceID);
 }
 
 void AndroidUtils::setStatusBarColor(QColor color)
@@ -467,10 +467,13 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     AndroidButtonEvent *event = new AndroidButtonEvent();
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = end; it != begin; it--) {
-        AndroidUtils *utils = it.value();
+    auto begin = m_Instances.rbegin();
+    auto end = m_Instances.rend();
+    int index = 0;
+    for (auto it = begin; it != end; it++) {
+        AndroidUtils *utils = (*it).second;
+        LOG(index << ": " << utils);
+        index++;
         if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
                 utils->emitBackButtonPressed(event);
@@ -493,7 +496,7 @@ void AndroidUtils::emitAlertDialogClickedSignals(int buttonIndex)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitAlertDialogClicked(buttonIndex);
         }
@@ -505,7 +508,7 @@ void AndroidUtils::emitDatePickedSignals(int year, int month, int day)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitDatePicked(year, month, day);
         }
@@ -517,7 +520,7 @@ void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitTimePicked(hourOfDay, minute);
         }
@@ -529,7 +532,7 @@ void AndroidUtils::emitCameraCapturedSignals(const QString &capturePath)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitCameraCaptured(capturePath);
         }
@@ -541,7 +544,7 @@ void AndroidUtils::emitFileSelectedSignals(const QString &filePath)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitFileSelected(filePath);
         }
@@ -553,7 +556,7 @@ void AndroidUtils::emitKeyboardHeightChangedSignals(const int &keyboardHeight)
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitKeyboardHeightChanged(keyboardHeight);
         }
@@ -566,7 +569,7 @@ void AndroidUtils::emitCameraCaptureCancelledSignals()
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitCameraCaptureCancelled();
         }
@@ -578,7 +581,7 @@ void AndroidUtils::emitFileSelectionCancelledSignals()
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils) {
             utils->emitFileSelectionCancelled();
         }
@@ -594,7 +597,7 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
         auto begin = m_Instances.begin();
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
-            AndroidUtils *utils = it.value();
+            AndroidUtils *utils = (*it).second;
             if (utils && utils->isMainController()) {
                 emit utils->openedWithURL(url);
                 break;
@@ -608,7 +611,7 @@ void AndroidUtils::emitOpenedWithoutURLSignal()
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = it.value();
+        AndroidUtils *utils = (*it).second;
         if (utils && utils->isMainController()) {
             emit utils->openedWithoutURL();
             break;
@@ -627,7 +630,7 @@ void AndroidUtils::setMainController(bool IsMainController, bool disableOthers)
         auto begin = m_Instances.begin();
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
-            AndroidUtils *utils = it.value();
+            AndroidUtils *utils = (*it).second;
             if (utils && utils->isMainController()) {
                 utils->setMainController(false);
                 break;

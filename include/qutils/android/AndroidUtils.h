@@ -1,7 +1,7 @@
 #pragma once
 // Qt
-#include <QObject>
 #include <QColor>
+#include <QObject>
 #include <QtAndroidExtras/QAndroidJniObject>
 // Local
 #include "qutils/NotificationClient.h"
@@ -265,7 +265,7 @@ private:
      * \variable static QMap<int, CacheManager *> m_Instances
      * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
      */
-    static QMap<int, AndroidUtils *> m_Instances;
+    static std::map<int, AndroidUtils *> m_Instances;
     static QString m_URLOpenedWith;
 
     /*!
