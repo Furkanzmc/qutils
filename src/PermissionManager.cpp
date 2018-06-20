@@ -282,13 +282,13 @@ QString PermissionManager::permissionString(Permissions permission) const
     else if (permission == Permissions::ProcessOutgoingCalls) {
         typeStr = PROCESS_OUTGOING_CALLS;
     }
-    else if (permission == Permissions::ReadCalendar) {
+    else if (permission == Permissions::Calendar) {
         typeStr = READ_CALENDAR;
     }
     else if (permission == Permissions::ReadCallLog) {
         typeStr = READ_CALL_LOG;
     }
-    else if (permission == Permissions::ReadContacts) {
+    else if (permission == Permissions::Contacts) {
         typeStr = READ_CONTACTS;
     }
     else if (permission == Permissions::ReadExternalStorage) {
@@ -333,7 +333,7 @@ QString PermissionManager::permissionString(Permissions permission) const
     else if (permission == Permissions::ReceiveWAPPush) {
         typeStr = RECEIVE_WAP_PUSH;
     }
-    else if (permission == Permissions::RecordAudio) {
+    else if (permission == Permissions::Microphone) {
         typeStr = RECORD_AUDIO;
     }
     else if (permission == Permissions::ReorderTasks) {
@@ -728,13 +728,13 @@ PermissionManager::Permissions PermissionManager::permissionType(const QString &
         type = Permissions::ProcessOutgoingCalls;
     }
     else if (permissionStr == READ_CALENDAR) {
-        type = Permissions::ReadCalendar;
+        type = Permissions::Calendar;
     }
     else if (permissionStr == READ_CALL_LOG) {
         type = Permissions::ReadCallLog;
     }
     else if (permissionStr == READ_CONTACTS) {
-        type = Permissions::ReadContacts;
+        type = Permissions::Contacts;
     }
     else if (permissionStr == READ_EXTERNAL_STORAGE) {
         type = Permissions::ReadExternalStorage;
@@ -779,7 +779,7 @@ PermissionManager::Permissions PermissionManager::permissionType(const QString &
         type = Permissions::ReceiveWAPPush;
     }
     else if (permissionStr == RECORD_AUDIO) {
-        type = Permissions::RecordAudio;
+        type = Permissions::Microphone;
     }
     else if (permissionStr == REORDER_TASKS) {
         type = Permissions::ReorderTasks;

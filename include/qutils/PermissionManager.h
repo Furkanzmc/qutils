@@ -295,7 +295,7 @@ public:
      *        Allows an application to call any phone number, including emergency numbers, without going through the
      *        Dialer user interface for the user to confirm the call being placed. \b {Android only.}
      * \value Camera
-     *        Required to be able to access the camera device. \b {Android only.}
+     *        Required to be able to access the camera device. \b {Android and iOS.}
      * \value CaptureAudioOutput
      *        Allows an application to capture audio output. \b {Android only.}
      * \value CaptureSecureVideoOutput
@@ -381,12 +381,12 @@ public:
      * \value ProcessOutgoingCalls
      *        Allows an application to see the number being dialed during an outgoing call with the option to redirect
      *        the call to a different number or abort the call altogether. \b {Android only.}
-     * \value ReadCalendar
-     *        Allows an application to read the user's calendar data. \b {Android only.}
+     * \value Calendar
+     *        Allows an application to read the user's calendar data. \b {Android and iOS.}
      * \value ReadCallLog
      *        Allows an application to read the user's call log. \b {Android only.}
-     * \value ReadContacts
-     *        Allows an application to read the user's contacts data. \b {Android only.}
+     * \value Contacts
+     *        Allows an application to read the user's contacts data. \b {Android and iOS.}
      * \value ReadExternalStorage
      *        Allows an application to read from external storage. \b {Android only.}
      * \value ReadFrameBuffer
@@ -417,8 +417,8 @@ public:
      *        Allows an application to receive SMS messages. \b {Android only.}
      * \value ReceiveWAPPush
      *        Allows an application to receive WAP push messages. \b {Android only.}
-     * \value RecordAudio
-     *        Allows an application to record audio. \b {Android only.}
+     * \value Microphone
+     *        Allows an application to record audio. \b {Android and iOS.}
      * \value ReorderTasks
      *        Allows an application to change the Z-order of tasks. \b {Android only.}
      * \value RequestCompanionRunInBackground
@@ -497,6 +497,33 @@ public:
      *        Allows applications to write the sync settings. \b {Android only.}
      * \value WriteVoiceMail
      *        Allows an application to modify and remove existing voicemails in the system. \b {Android only.}
+     * \value Reminders
+     *        Allows access to reminders. \b {iOS only.}
+     * \value Photos
+     *        Allows access to photo gallery. \b {iOS only.}
+     * \value MotionActivityAndFitness
+     *        Allows access to user's motion activity and fitness data. \b {iOS only.}
+     * \value LocationServices
+     *        Allows access to user's location. User can choose to allow location only when the app is open or also when
+     *        in background. \b {iOS only.}
+     * \value AppleMusic
+     *        Allows you to add an Apple Music track to the music library and play it. \b {iOS only.}
+     * \value MusicVideoActivity
+     *        Allows you to access music and video activity of the user. \b {iOS only.}
+     * \value Twitter
+     *        Allows access to user's Twitter account on the device. \b {iOS only.}
+     * \value Facebook
+     *        Allows access to user's Facebook account on the device. \b {iOS only.}
+     * \value HomeKit
+     *        Allows access to HomeKit. \b {iOS only.}
+     * \value Health
+     *        Allows access to health data. \b {iOS only.}
+     * \value SpeechRecognition
+     *        Allows access to speech recognition. \b {iOS only.}
+     * \value BluetoothSharing
+     *        Allows access to bluetooth sharing. \b {iOS only.}
+     * \value MediaLibrary
+     *        Allows access to media library. \b {iOS only.}
      */
     enum Permissions {
         None = -1,
@@ -590,9 +617,9 @@ public:
         NFCTransactionEvent = 87,
         PackageUsageStats = 88,
         ProcessOutgoingCalls = 89,
-        ReadCalendar = 90,
+        Calendar = 90,
         ReadCallLog = 91,
-        ReadContacts = 92,
+        Contacts = 92,
         ReadExternalStorage = 93,
         ReadFrameBuffer = 94,
         ReadLogs = 95,
@@ -607,7 +634,7 @@ public:
         ReceiveMMS = 104,
         ReceiveSMS = 105,
         ReceiveWAPPush = 106,
-        RecordAudio = 107,
+        Microphone = 107,
         ReorderTasks = 108,
         RequestCompanionRunInBackground = 109,
         RequestCompanionUseDataInBackground = 110,
@@ -645,7 +672,20 @@ public:
         WriteSecureSettings = 142,
         WriteSettings = 143,
         WriteSyncSettings = 144,
-        WriteVoiceMail = 145
+        WriteVoiceMail = 145,
+        Reminders = 146,
+        Photos = 147,
+        MotionActivityAndFitness = 148,
+        LocationServices = 149,
+        AppleMusic = 150,
+        MusicVideoActivity = 151,
+        Twitter = 152,
+        Facebook = 153,
+        HomeKit = 154,
+        Health = 155,
+        SpeechRecognition = 156,
+        BluetoothSharing = 157,
+        MediaLibrary = 158
     };
     Q_ENUM(Permissions);
 
