@@ -179,7 +179,8 @@ HEADERS += \
     $$PWD/include/qutils/CppTypes.h \
     $$PWD/include/qutils/QutilsPlugin.h \
     $$PWD/include/qutils/UpdateChecker.h \
-    $$PWD/include/qutils/SystemInfo.h
+    $$PWD/include/qutils/SystemInfo.h \
+    $$PWD/include/qutils/PermissionManager.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -200,7 +201,8 @@ SOURCES += \
     $$PWD/src/FileUtils.cpp \
     $$PWD/src/QutilsPlugin.cpp \
     $$PWD/src/UpdateChecker.cpp \
-    $$PWD/src/SystemInfo.cpp
+    $$PWD/src/SystemInfo.cpp \
+    $$PWD/src/PermissionManager.cpp
 
 equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \
