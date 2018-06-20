@@ -695,9 +695,11 @@ public:
     /*!
      * \brief Returns the string represnetation for the given permission.
      * \param permission
-     * \return QString
      *
      * If a string version cannot be found, returns an empty string.
+     *
+     * \note This method is only for Android permissions.
+     * \return QString
      */
     QString permissionString(Permissions permission) const;
 
@@ -705,6 +707,8 @@ public:
      * \brief Returns a Permissions enum for the given type.
      * \param typeStr
      * \return Permissions
+     *
+     * \note This method is only for Android permissions.
      */
     Permissions permissionType(const QString &permissionStr) const;
 
