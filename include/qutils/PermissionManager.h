@@ -51,7 +51,7 @@ public:
      * \value AccessCheckInProperties
      *        Allows read/write access to the "properties" table in the checkin database, to change values that get
      *        uploaded.
-     * \value AccessCoarseocation
+     * \value AccessCoarseLocation
      *        Allows an app to access approximate location.
      * \value AccessFineLocation
      *        Allows an app to access precise location.
@@ -352,7 +352,7 @@ public:
     enum Permissions {
         AcceptHandover = 0,
         AccessCheckInProperties = 1,
-        AccessCoarseocation = 2,
+        AccessCoarseLocation = 2,
         AccessFineLocation = 3,
         AccessLocationExtraCommands = 4,
         AccessNetworkState = 5,
