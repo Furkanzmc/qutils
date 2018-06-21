@@ -59,6 +59,10 @@ void PermissionManager::requestPermission(int permission)
         m_Private.requestPhotosPermisson();
     }
     else if (permission == Permissions::LocationServices) {
+        if (!m_Private.onLocationServicesResult) {
+            m_Private.onLocationServicesResult = std::bind(&PermissionManager::permissionResultCallback, this, Permissions::LocationServices, std::placeholders::_1);
+        }
+
         m_Private.requestLocationPermission();
     }
     else {

@@ -9,22 +9,55 @@
 // qutils
 #include "qutils/Macros.h"
 
+@interface LocationDelegate : NSObject<CLLocationManagerDelegate> {}
+- (void)locationManager: (CLLocationManager *)manager didChangeAuthorizationStatus: (CLAuthorizationStatus)status;
+@end
+
+@interface LocationDelegate()
+@end
+
+@implementation LocationDelegate
+
+- (void)locationManager: (CLLocationManager *)manager didChangeAuthorizationStatus: (CLAuthorizationStatus)status
+{
+    Q_UNUSED(manager);
+    zmc::PermissionManagerPrivate::locationServicesCallback(status);
+}
+
+- (void)requestPermission {
+    CLLocationManager *locationManager = [[CLLocationManager alloc] init];
+    locationManager.delegate = self;
+    [locationManager requestWhenInUseAuthorization];
+}
+@end
+
+static LocationDelegate *m_LocationDelegate = [[LocationDelegate alloc] init];
+
 namespace zmc
 {
 
-PermissionManagerPrivate::PermissionManagerPrivate()
-{
+std::map<int, PermissionManagerPrivate *> PermissionManagerPrivate::m_Instances = std::map<int, PermissionManagerPrivate *>();
 
+PermissionManagerPrivate::PermissionManagerPrivate()
+    : m_InstanceIndex(static_cast<int>(m_Instances.size()))
+    , m_IsRequestedLocationPermission(false)
+{
+    m_Instances[m_InstanceIndex] = this;
+}
+
+PermissionManagerPrivate::~PermissionManagerPrivate()
+{
+    m_Instances.erase(m_InstanceIndex);
 }
 
 void PermissionManagerPrivate::requestPhotosPermisson()
 {
 #if QUTILS_PHOTOS_ENABLED
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined) {
-        [PHPhotoLibrary requestAuthorization: ^(PHAuthorizationStatus status) {
-            if (onPhotosAccessResult) {
-                AuthorizationStatus pstatus = AuthorizationStatus::Denied;
-                if (status == PHAuthorizationStatusAuthorized) {
+        [PHPhotoLibrary requestAuthorization: ^ (PHAuthorizationStatus status) {
+                           if (onPhotosAccessResult) {
+                               AuthorizationStatus pstatus = AuthorizationStatus::Denied;
+                               if (status == PHAuthorizationStatusAuthorized) {
                     pstatus = AuthorizationStatus::Authorized;
                 }
                 else if (status == PHAuthorizationStatusNotDetermined) {
@@ -69,8 +102,8 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getPhoto
 void PermissionManagerPrivate::requestLocationPermission()
 {
 #if QUTILS_LOCATION_ENABLED
-    CLLocationManager *locationManager = [[CLLocationManager alloc] init];
-    [locationManager requestWhenInUseAuthorization];
+    m_IsRequestedLocationPermission = true;
+    [m_LocationDelegate requestPermission];
 #endif // QUTILS_LOCATION_ENABLED
 }
 
@@ -97,6 +130,35 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getLocat
 #endif // QUTILS_LOCATION_ENABLED
 
     return authStatus;
+}
+
+void PermissionManagerPrivate::locationServicesCallback(int authStatus)
+{
+    AuthorizationStatus status = AuthorizationStatus::None;
+    if (authStatus == kCLAuthorizationStatusDenied) {
+        status = AuthorizationStatus::Denied;
+    }
+    else if (authStatus == kCLAuthorizationStatusRestricted) {
+        status = AuthorizationStatus::Restricted;
+    }
+    else if (authStatus == kCLAuthorizationStatusNotDetermined) {
+        status = AuthorizationStatus::NotDetermined;
+    }
+    else if (authStatus == kCLAuthorizationStatusAuthorizedAlways) {
+        status = AuthorizationStatus::Authorized;
+    }
+    else if (authStatus == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        status = AuthorizationStatus::AuthorizedWhenInUse;
+    }
+
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        PermissionManagerPrivate *instance = (*it).second;
+        if (instance->m_IsRequestedLocationPermission && instance->onLocationServicesResult) {
+            instance->onLocationServicesResult(status);
+        }
+    }
 }
 
 }

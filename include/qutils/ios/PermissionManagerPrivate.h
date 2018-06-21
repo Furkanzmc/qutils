@@ -1,5 +1,6 @@
 #pragma once
 // std
+#include <map>
 #include <functional>
 
 namespace zmc
@@ -46,8 +47,14 @@ public:
      */
     std::function<void(AuthorizationStatus /*status*/)> onPhotosAccessResult;
 
+    /*!
+     * \brief This is called when the user responds to the location services access permission request.
+     */
+    std::function<void(AuthorizationStatus /*status*/)> onLocationServicesResult;
+
 public:
     PermissionManagerPrivate();
+    ~PermissionManagerPrivate();
 
     /*!
      * \brief Requests access to photos on iOS.
@@ -75,6 +82,20 @@ public:
      * \return AuthorizationStatus
      */
     AuthorizationStatus getLocationAuthorizationStatus() const;
+
+    /*!
+     * \brief Invokes onLocationServicesResult on the instance that requested the location services request.
+     */
+    static void locationServicesCallback(int authStatus);
+
+private:
+    static std::map<int, PermissionManagerPrivate *> m_Instances;
+    const int m_InstanceIndex;
+
+    /*!
+     * \brief This is used to determine which instance requested the location permission.
+     */
+    bool m_IsRequestedLocationPermission;
 };
 
 }

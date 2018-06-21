@@ -805,6 +805,8 @@ signals:
      * \a results is a QList<PermissionRequestResult *>
      *
      * After the signal is emitted, all of the result objects will be destroyed.
+     *
+     * \note This signal is not emitted o iOS.
      */
     void permissionResultsReceived(QList<QObject *> results);
 
