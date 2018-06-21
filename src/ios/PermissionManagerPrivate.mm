@@ -31,7 +31,7 @@
 }
 @end
 
-static LocationDelegate *m_LocationDelegate = [[LocationDelegate alloc] init];
+static LocationDelegate *m_LocationDelegate = nullptr;
 
 namespace zmc
 {
@@ -103,6 +103,10 @@ void PermissionManagerPrivate::requestLocationPermission()
 {
 #if QUTILS_LOCATION_ENABLED
     m_IsRequestedLocationPermission = true;
+    if (m_LocationDelegate == nullptr) {
+        m_LocationDelegate = [[LocationDelegate alloc] init];
+    }
+    
     [m_LocationDelegate requestPermission];
 #endif // QUTILS_LOCATION_ENABLED
 }
