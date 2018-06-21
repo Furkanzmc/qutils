@@ -28,15 +28,23 @@ iOSNativeUtils::iOSNativeUtils()
     , m_IsCameraOpen(false)
 {
     if (m_Instances.size() == 0) {
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
-            Q_UNUSED(note);
-            iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
-        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification
+                                                          object: nil
+                                                           queue: nil
+                                                      usingBlock: ^(NSNotification * _Nonnull note) {
+                                                          Q_UNUSED(note);
+                                                          iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
+                                                      }
+         ];
 
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification object: nil queue: nil usingBlock: ^(NSNotification * _Nonnull note) {
-            const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
-            iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
-        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification
+                                                          object: nil
+                                                           queue: nil
+                                                      usingBlock: ^(NSNotification * _Nonnull note) {
+                                                          const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+                                                          iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
+                                                      }
+         ];
     }
 
     m_Instances.insert(m_InstanceIndex, this);
@@ -63,21 +71,20 @@ void iOSNativeUtils::showAlertView(const QString &title, const QString &message,
     }
 
     m_IsAlertDialogVisible = true;
-    UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
-            message: [NSString stringWithUTF8String: message.toStdString().c_str()]
-            preferredStyle: UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
+                                                                   message: [NSString stringWithUTF8String: message.toStdString().c_str()]
+                                                            preferredStyle: UIAlertControllerStyleAlert
+                                ];
 
     for (auto it = buttons.constBegin(); it != buttons.constEnd(); it++) {
         const QString buttonText = (*it);
-        UIAlertAction *button = [UIAlertAction
-                actionWithTitle: [NSString stringWithUTF8String: buttonText.toStdString().c_str()]
-                style: UIAlertActionStyleDefault
-                handler: ^(UIAlertAction * action) {
-                    NSUInteger index = [[alert actions] indexOfObject: action];
-                    iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
-                }];
-
+        UIAlertAction *button = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonText.toStdString().c_str()]
+                                                         style: UIAlertActionStyleDefault
+                                                       handler: ^ (UIAlertAction * action) {
+                                                           NSUInteger index = [[alert actions] indexOfObject: action];
+                                                           iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
+                                                       }
+                                 ];
         [alert addAction: button];
     }
 
@@ -116,11 +123,10 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
     }
 
     m_IsActionSheetDialogVisible = true;
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
-        message: [NSString stringWithUTF8String: message.toStdString().c_str()]
-        preferredStyle: UIAlertControllerStyleActionSheet
-    ];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
+                                                                   message: [NSString stringWithUTF8String: message.toStdString().c_str()]
+                                                            preferredStyle: UIAlertControllerStyleActionSheet
+                                ];
 
     for (const QVariant &button : buttons) {
         UIAlertActionStyle alertActionStyle = UIAlertActionStyleDefault;
@@ -135,13 +141,13 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
             alertActionStyle = UIAlertActionStyleCancel;
         }
 
-        UIAlertAction *actionButton = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()] style: alertActionStyle
-            handler:^(UIAlertAction * action) {
-                NSUInteger index = [[alert actions] indexOfObject: action];
-                iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
-            }
-        ];
-
+        UIAlertAction *actionButton = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()]
+                                                               style: alertActionStyle
+                                                             handler: ^(UIAlertAction * action) {
+                                                                 NSUInteger index = [[alert actions] indexOfObject: action];
+                                                                 iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
+                                                             }
+                                       ];
         [alert addAction: actionButton];
     }
 

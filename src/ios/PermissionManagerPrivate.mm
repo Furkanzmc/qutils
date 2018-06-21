@@ -54,10 +54,10 @@ void PermissionManagerPrivate::requestPhotosPermisson()
 {
 #if QUTILS_PHOTOS_ENABLED
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined) {
-        [PHPhotoLibrary requestAuthorization: ^ (PHAuthorizationStatus status) {
-                           if (onPhotosAccessResult) {
-                               AuthorizationStatus pstatus = AuthorizationStatus::Denied;
-                               if (status == PHAuthorizationStatusAuthorized) {
+        [PHPhotoLibrary requestAuthorization: ^(PHAuthorizationStatus status) {
+            if (onPhotosAccessResult) {
+                AuthorizationStatus pstatus = AuthorizationStatus::Denied;
+                if (status == PHAuthorizationStatusAuthorized) {
                     pstatus = AuthorizationStatus::Authorized;
                 }
                 else if (status == PHAuthorizationStatusNotDetermined) {
