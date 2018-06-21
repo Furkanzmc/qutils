@@ -1,6 +1,7 @@
 #pragma once
 // Qt
 #include <QRect>
+#include <QColor>
 #include <QStringList>
 #include <QVariantList>
 // std
@@ -116,12 +117,54 @@ public:
     void showCamera();
 
     /**
+     * @brief This will be set to true when the image picker is open and only this instance will be notified of the events from the image picker.
+     * @return bool
+     */
+    bool isImagePickerOpen() const;
+
+    /**
+     * @brief This will be true when this instance calls the camera.
+     * @return bool
+     */
+    bool isCameraOpen() const;
+
+    /**
      * @brief Hide or show the status bar.
      * In order for this to take effect you need to have `UIViewControllerBasedStatusBarAppearance` set to false in your Info.plist file.
      * @param visible
      * @return void
      */
     void setStatusBarVisible(bool visible);
+
+    /**
+     * @brief Returns true If the status bar is hidden.
+     * @return bool
+     */
+    bool isStatusBarVisible() const;
+
+    /**
+     * @brief Returns the device name.
+     * @return QString
+     */
+    QString getDeviceName() const;
+
+    /*!
+     * \brief Returns the size of the status bar.
+     * \return QSize
+     */
+    QSize getStatusBarSize() const;
+
+    /*!
+     * \brief Sets the status bar color.
+     * \param color
+     */
+    void setStatusBarColor(const QColor &color);
+
+    /*!
+     * \brief Returns current status bar color.
+     * \return QColor
+     */
+    QColor getStatusBarColor() const;
 
     /**
      * @brief Calls the callback for image picker finished for the instance that opened it.
@@ -135,30 +178,6 @@ public:
      * @return void
      */
     static void emitImagePickerCancelled();
-
-    /**
-     * @brief This will be set to true when the image picker is open and only this instance will be notified of the events from the image picker.
-     * @return bool
-     */
-    bool isImagePickerOpen() const;
-
-    /**
-     * @brief This will be true when this instance calls the camera.
-     * @return bool
-     */
-    bool isCameraOpen() const;
-
-    /**
-     * @brief Returns true If the status bar is hidden.
-     * @return bool
-     */
-    bool isStatusBarVisible() const;
-
-    /**
-     * @brief Returns the device name.
-     * @return QString
-     */
-    QString getDeviceName() const;
 
     /**
      * @brief Calls onKeyboardHeightChanged function on every valid instance.

@@ -67,18 +67,20 @@ NativeUtils::NativeUtils(QObject *parent)
 
 void NativeUtils::setStatusBarColor(QColor color)
 {
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     m_AndroidUtils->setStatusBarColor(color);
-#else
-    Q_UNUSED(color);
+#elif defined(Q_OS_IOS)
+    m_iOSUtils->setStatusBarColor(color);
 #endif // Q_OS_ANDROID
 }
 
 QString NativeUtils::getStatusBarColor()
 {
     QString color = "black";
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID)
     color = m_AndroidUtils->getStatusBarColor();
+#elif defined(Q_OS_IOS)
+    color = m_iOSUtils->getStatusBarColor().name(QColor::NameFormat::HexRgb);
 #endif // Q_OS_ANDROID
 
     return color;
@@ -248,6 +250,19 @@ bool NativeUtils::isStatusBarVisible() const
 #endif // Q_OS_ANDROID
 
     return visible;
+}
+
+QSize NativeUtils::getStatusBarSize() const
+{
+    QSize size;
+#ifdef Q_OS_IOS
+    size = m_iOSUtils->getStatusBarSize();
+#endif // Q_OS_IOS
+
+#ifdef Q_OS_ANDROID
+#endif // Q_OS_ANDROID
+
+    return size;
 }
 
 bool NativeUtils::isButtonEventsEnabled() const

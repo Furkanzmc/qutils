@@ -115,6 +115,21 @@ QString iOSUtils::getDeviceName() const
     return m_iOSNative->getDeviceName();
 }
 
+QSize iOSUtils::getStatusBarSize() const
+{
+    return m_iOSNative->getStatusBarSize();
+}
+
+QColor iOSUtils::getStatusBarColor() const
+{
+    return m_iOSNative->getStatusBarColor();
+}
+
+void iOSUtils::setStatusBarColor(const QColor &color)
+{
+    m_iOSNative->setStatusBarColor(color);
+}
+
 void iOSUtils::showCamera()
 {
     if (this->signalsBlocked()) {

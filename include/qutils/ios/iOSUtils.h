@@ -1,6 +1,7 @@
 #pragma once
 // Qt
 #include <QRect>
+#include <QColor>
 #include <QObject>
 #include <QVariantMap>
 
@@ -94,6 +95,23 @@ public:
      * @return QString
      */
     Q_INVOKABLE QString getDeviceName() const;
+
+    /**
+     * @brief See iOSNativeUtils::getStatusBarSize().
+     * @return QString
+     */
+    Q_INVOKABLE QSize getStatusBarSize() const;
+
+    /**
+     * @brief See iOSNativeUtils::getStatusBarColor().
+     * @return QString
+     */
+    Q_INVOKABLE QColor getStatusBarColor() const;
+
+    /**
+     * @brief See iOSNativeUtils::setStatusBarColor().
+     */
+    Q_INVOKABLE void setStatusBarColor(const QColor &color);
 
     /**
      * @brief Opens the camera.

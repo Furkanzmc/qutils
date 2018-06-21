@@ -236,11 +236,58 @@ void iOSNativeUtils::showCamera()
     [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
 }
 
+bool iOSNativeUtils::isImagePickerOpen() const
+{
+    return m_IsImagePickerOpen;
+}
+
+bool iOSNativeUtils::isCameraOpen() const
+{
+    return m_IsCameraOpen;
+}
+
 void iOSNativeUtils::setStatusBarVisible(bool visible)
 {
     UIApplication *app = [UIApplication sharedApplication];
-    UIView *statusBar = (UIView *)[app valueForKey:@"statusBar"];
-    [statusBar setHidden:!visible];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    [statusBar setHidden: !visible];
+}
+
+bool iOSNativeUtils::isStatusBarVisible() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    return statusBar.isHidden == NO;
+}
+
+void iOSNativeUtils::setStatusBarColor(const QColor &color)
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    [statusBar setBackgroundColor: [UIColor colorWithRed: color.red() / 255.f green: color.green() / 255.f blue: color.blue() / 255.f alpha: color.alpha() / 255.f]];
+}
+
+QColor iOSNativeUtils::getStatusBarColor() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    const CGFloat *colors = CGColorGetComponents(statusBar.backgroundColor.CGColor);
+    return QColor(colors[0] * 255, colors[1] * 255, colors[2] * 255);
+}
+
+QSize iOSNativeUtils::getStatusBarSize() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    const CGSize size = statusBar.bounds.size;
+    return QSize(size.width, size.height);
+}
+
+QString iOSNativeUtils::getDeviceName() const
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    return QString::fromNSString([NSString stringWithCString: systemInfo.machine encoding: NSUTF8StringEncoding]);
 }
 
 void iOSNativeUtils::emitImagePickerFinished(QVariantMap data)
@@ -267,29 +314,6 @@ void iOSNativeUtils::emitImagePickerCancelled()
             break;
         }
     }
-}
-
-bool iOSNativeUtils::isImagePickerOpen() const
-{
-    return m_IsImagePickerOpen;
-}
-
-bool iOSNativeUtils::isCameraOpen() const
-{
-    return m_IsCameraOpen;
-}
-
-bool iOSNativeUtils::isStatusBarVisible() const
-{
-    UIApplication *app = [UIApplication sharedApplication];
-    return [app isStatusBarHidden] == YES;
-}
-
-QString iOSNativeUtils::getDeviceName() const
-{
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    return QString::fromNSString([NSString stringWithCString: systemInfo.machine encoding: NSUTF8StringEncoding]);
 }
 
 void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
