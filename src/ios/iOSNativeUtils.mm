@@ -271,6 +271,12 @@ QColor iOSNativeUtils::getStatusBarColor() const
     return QColor(colors[0] * 255, colors[1] * 255, colors[2] * 255);
 }
 
+void iOSNativeUtils::openAppSettings() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    [app openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+}
+
 QSize iOSNativeUtils::getStatusBarSize() const
 {
     UIApplication *app = [UIApplication sharedApplication];

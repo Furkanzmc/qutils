@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE QString getDeviceModel();
     Q_INVOKABLE bool isStatusBarVisible() const;
     Q_INVOKABLE QSize getStatusBarSize() const;
+    Q_INVOKABLE void openAppSettings() const;
 
     bool isButtonEventsEnabled() const;
     void setButtonEventsEnabled(bool enabled);

@@ -265,6 +265,13 @@ QSize NativeUtils::getStatusBarSize() const
     return size;
 }
 
+void NativeUtils::openAppSettings() const
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->openAppSettings();
+#endif // Q_OS_IOS
+}
+
 bool NativeUtils::isButtonEventsEnabled() const
 {
 #ifdef Q_OS_ANDROID

@@ -125,6 +125,11 @@ QColor iOSUtils::getStatusBarColor() const
     return m_iOSNative->getStatusBarColor();
 }
 
+void iOSUtils::openAppSettings() const
+{
+    m_iOSNative->openAppSettings();;
+}
+
 void iOSUtils::setStatusBarColor(const QColor &color)
 {
     m_iOSNative->setStatusBarColor(color);

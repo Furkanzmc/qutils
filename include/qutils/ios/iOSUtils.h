@@ -109,6 +109,12 @@ public:
     Q_INVOKABLE QColor getStatusBarColor() const;
 
     /**
+     * @brief See iOSNativeUtils::openAppSettings().
+     * @return void
+     */
+    Q_INVOKABLE void openAppSettings() const;
+
+    /**
      * @brief See iOSNativeUtils::setStatusBarColor().
      */
     Q_INVOKABLE void setStatusBarColor(const QColor &color);

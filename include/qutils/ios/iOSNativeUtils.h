@@ -172,6 +172,11 @@ public:
      */
     QColor getStatusBarColor() const;
 
+    /*!
+     * \brief Opens the app's settings page.
+     */
+    void openAppSettings() const;
+
     /**
      * @brief Calls the callback for image picker finished for the instance that opened it.
      * @param data
