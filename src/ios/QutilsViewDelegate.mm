@@ -70,16 +70,17 @@
         // get photo info from this asset
         PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
         imageRequestOptions.synchronous = YES;
-        [[PHImageManager defaultManager]
-         requestImageDataForAsset:asset options:imageRequestOptions
-         resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-             (void)imageData;
-             (void)dataUTI;
-             (void)orientation;
-             if ([info objectForKey:@"PHImageFileURLKey"]) {
-                 fileURL = [info objectForKey:@"PHImageFileURLKey"];
-             }
-         }];
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                          options:imageRequestOptions
+                                                    resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                                                        (void)imageData;
+                                                        (void)dataUTI;
+                                                        (void)orientation;
+                                                        if ([info objectForKey:@"PHImageFileURLKey"]) {
+                                                            fileURL = [info objectForKey:@"PHImageFileURLKey"];
+                                                        }
+                                                    }
+         ];
     }
 #else
     Q_UNUSED(fileURL);

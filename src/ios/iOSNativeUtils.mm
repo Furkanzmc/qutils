@@ -3,19 +3,15 @@
 #ifdef SAFARI_SERVICES_ENABLED
     #import <SafariServices/SafariServices.h>
 #endif // SAFARI_SERVICES_ENABLED
-#if QUTILS_LOCATION_ENABLED == 1
-    #import <CoreLocation/CoreLocation.h>
-#endif // QUTILS_LOCATION_ENABLED
 #import <sys/utsname.h>
-#import <Photos/PHPhotoLibrary.h>
 #import <UIKit/UIKit.h>
 // Firebase
 #if FCM_ENABLED == 1
     #import <FirebaseMessaging/FirebaseMessaging.h>
 #endif // FCM_ENABLED
 // Local
-#import "qutils/ios/QutilsViewDelegate.h"
 #include "qutils/Macros.h"
+#import "qutils/ios/QutilsViewDelegate.h"
 
 namespace zmc
 {
@@ -29,19 +25,26 @@ iOSNativeUtils::iOSNativeUtils()
     , m_IsImagePickerOpen(false)
     , m_IsAlertDialogVisible(false)
     , m_IsActionSheetDialogVisible(false)
-    , m_IsPhotoAccessPermissionRequested(false)
     , m_IsCameraOpen(false)
 {
     if (m_Instances.size() == 0) {
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
-                                                 Q_UNUSED(note);
-                                                 iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
-        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification
+                                                          object: nil
+                                                           queue: nil
+                                                      usingBlock: ^(NSNotification * _Nonnull note) {
+                                                          Q_UNUSED(note);
+                                                          iOSNativeUtils::emitKeyboardHeightChangedSignals(0);
+                                                      }
+         ];
 
-        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification object: nil queue: nil usingBlock: ^ (NSNotification * _Nonnull note) {
-                                                 const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
-                                                 iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
-        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillShowNotification
+                                                          object: nil
+                                                           queue: nil
+                                                      usingBlock: ^(NSNotification * _Nonnull note) {
+                                                          const float height = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+                                                          iOSNativeUtils::emitKeyboardHeightChangedSignals(static_cast<int>(height));
+                                                      }
+         ];
     }
 
     m_Instances.insert(m_InstanceIndex, this);
@@ -57,8 +60,6 @@ iOSNativeUtils::~iOSNativeUtils()
     onImagePickerControllerFinishedPicking = nullptr;
     onKeyboardHeightChanged = nullptr;
 
-    onPhotosAccessGranted = nullptr;
-    onPhotosAccessDenied = nullptr;
     onCameraCancelled = nullptr;
 }
 
@@ -70,22 +71,20 @@ void iOSNativeUtils::showAlertView(const QString &title, const QString &message,
     }
 
     m_IsAlertDialogVisible = true;
-    UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
-            message: [NSString stringWithUTF8String: message.toStdString().c_str()]
-            preferredStyle: UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
+                                                                   message: [NSString stringWithUTF8String: message.toStdString().c_str()]
+                                                            preferredStyle: UIAlertControllerStyleAlert
+                                ];
 
     for (auto it = buttons.constBegin(); it != buttons.constEnd(); it++) {
         const QString buttonText = (*it);
-        UIAlertAction *button = [UIAlertAction
-                actionWithTitle: [NSString stringWithUTF8String: buttonText.toStdString().c_str()]
-                style: UIAlertActionStyleDefault
-        handler: ^ (UIAlertAction * action) {
-            NSUInteger index = [[alert actions] indexOfObject: action];
-            iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
-        }
-            ];
-
+        UIAlertAction *button = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonText.toStdString().c_str()]
+                                                         style: UIAlertActionStyleDefault
+                                                       handler: ^ (UIAlertAction * action) {
+                                                           NSUInteger index = [[alert actions] indexOfObject: action];
+                                                           iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
+                                                       }
+                                 ];
         [alert addAction: button];
     }
 
@@ -124,11 +123,10 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
     }
 
     m_IsActionSheetDialogVisible = true;
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
-        message: [NSString stringWithUTF8String: message.toStdString().c_str()]
-        preferredStyle: UIAlertControllerStyleActionSheet
-    ];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
+                                                                   message: [NSString stringWithUTF8String: message.toStdString().c_str()]
+                                                            preferredStyle: UIAlertControllerStyleActionSheet
+                                ];
 
     for (const QVariant &button : buttons) {
         UIAlertActionStyle alertActionStyle = UIAlertActionStyleDefault;
@@ -143,13 +141,13 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
             alertActionStyle = UIAlertActionStyleCancel;
         }
 
-        UIAlertAction *actionButton = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()] style: alertActionStyle
-            handler:^(UIAlertAction * action) {
-                NSUInteger index = [[alert actions] indexOfObject: action];
-                iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
-            }
-        ];
-
+        UIAlertAction *actionButton = [UIAlertAction actionWithTitle: [NSString stringWithUTF8String: buttonTitle.toStdString().c_str()]
+                                                               style: alertActionStyle
+                                                             handler: ^(UIAlertAction * action) {
+                                                                 NSUInteger index = [[alert actions] indexOfObject: action];
+                                                                 iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
+                                                             }
+                                       ];
         [alert addAction: actionButton];
     }
 
@@ -163,13 +161,9 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
 
 void iOSNativeUtils::schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds)
 {
-    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow: delayInSeconds];
-    localNotification.alertTitle = title.toNSString();
-    localNotification.alertBody = body.toNSString();
-    localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    UIApplication *app = [UIApplication sharedApplication];
-    [app scheduleLocalNotification: localNotification];
+    Q_UNUSED(title);
+    Q_UNUSED(body);
+    Q_UNUSED(delayInSeconds);
 }
 
 void iOSNativeUtils::dismissKeyboard()
@@ -212,78 +206,6 @@ void iOSNativeUtils::openSafari(const QString &url)
 #endif // SAFARI_SERVICES_ENABLED
 }
 
-void iOSNativeUtils::requestLocationPermission()
-{
-#if QUTILS_LOCATION_ENABLED == 1
-    CLLocationManager *locationManager = [[CLLocationManager alloc] init];
-    [locationManager requestWhenInUseAuthorization];
-#endif // QUTILS_LOCATION_ENABLED
-}
-
-iOSNativeUtils::LocationAuthorizationStatus iOSNativeUtils::getLocationAuthorizationStatus()
-{
-    LocationAuthorizationStatus authStatus = LocationAuthorizationStatus::LANone;
-#if QUTILS_LOCATION_ENABLED == 1
-    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-    if (status == kCLAuthorizationStatusDenied) {
-        authStatus = LocationAuthorizationStatus::LADenied;
-    }
-    else if (status == kCLAuthorizationStatusRestricted) {
-        authStatus = LocationAuthorizationStatus::LARestricted;
-    }
-    else if (status == kCLAuthorizationStatusNotDetermined) {
-        authStatus = LocationAuthorizationStatus::LANotDetermined;
-    }
-    else if (status == kCLAuthorizationStatusAuthorizedAlways) {
-        authStatus = LocationAuthorizationStatus::LAAuthorizedAlways;
-    }
-    else if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
-        authStatus = LocationAuthorizationStatus::LAAuthorizedWhenInUse;
-    }
-#endif // QUTILS_LOCATION_ENABLED
-
-    return authStatus;
-}
-
-void iOSNativeUtils::requestPhotosPermisson()
-{
-#if QUTILS_PHOTOS_ENABLED == 1
-    if (m_IsPhotoAccessPermissionRequested) {
-        LOG("Permission is already requested.");
-        return;
-    }
-
-    m_IsPhotoAccessPermissionRequested = true;
-    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined) {
-        [PHPhotoLibrary requestAuthorization: ^ (PHAuthorizationStatus status) {
-                           iOSNativeUtils::emitPhotoAccessPermissionSignals(status == PHAuthorizationStatusAuthorized);
-                       }];
-    }
-#endif // QUTILS_PHOTOS_ENABLED
-}
-
-iOSNativeUtils::PhotosAuthorizationStatus iOSNativeUtils::getPhotosAuthorizationStatus()
-{
-    PhotosAuthorizationStatus authStatus = PhotosAuthorizationStatus::PANone;
-#if QUTILS_PHOTOS_ENABLED == 1
-    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-    if (status == PHAuthorizationStatusDenied) {
-        authStatus = PhotosAuthorizationStatus::PADenied;
-    }
-    else if (status == PHAuthorizationStatusRestricted) {
-        authStatus = PhotosAuthorizationStatus::PARestricted;
-    }
-    else if (status == PHAuthorizationStatusNotDetermined) {
-        authStatus = PhotosAuthorizationStatus::PANotDetermined;
-    }
-    else if (status == PHAuthorizationStatusAuthorized) {
-        authStatus = PhotosAuthorizationStatus::PAAuthorized;
-    }
-#endif // QUTILS_PHOTOS_ENABLED
-
-    return authStatus;
-}
-
 void iOSNativeUtils::openGallery()
 {
     m_IsImagePickerOpen = true;
@@ -310,10 +232,58 @@ void iOSNativeUtils::showCamera()
     [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
 }
 
+bool iOSNativeUtils::isImagePickerOpen() const
+{
+    return m_IsImagePickerOpen;
+}
+
+bool iOSNativeUtils::isCameraOpen() const
+{
+    return m_IsCameraOpen;
+}
+
 void iOSNativeUtils::setStatusBarVisible(bool visible)
 {
     UIApplication *app = [UIApplication sharedApplication];
-    [app setStatusBarHidden: !visible];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    [statusBar setHidden: !visible];
+}
+
+bool iOSNativeUtils::isStatusBarVisible() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    return statusBar.isHidden == NO;
+}
+
+void iOSNativeUtils::setStatusBarColor(const QColor &color)
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    [statusBar setBackgroundColor: [UIColor colorWithRed: color.red() / 255.f green: color.green() / 255.f blue: color.blue() / 255.f alpha: color.alpha() / 255.f]];
+}
+
+QColor iOSNativeUtils::getStatusBarColor() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    const CGFloat *colors = CGColorGetComponents(statusBar.backgroundColor.CGColor);
+    return QColor(colors[0] * 255, colors[1] * 255, colors[2] * 255);
+}
+
+QSize iOSNativeUtils::getStatusBarSize() const
+{
+    UIApplication *app = [UIApplication sharedApplication];
+    UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
+    const CGSize size = statusBar.bounds.size;
+    return QSize(size.width, size.height);
+}
+
+QString iOSNativeUtils::getDeviceName() const
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    return QString::fromNSString([NSString stringWithCString: systemInfo.machine encoding: NSUTF8StringEncoding]);
 }
 
 void iOSNativeUtils::emitImagePickerFinished(QVariantMap data)
@@ -340,29 +310,6 @@ void iOSNativeUtils::emitImagePickerCancelled()
             break;
         }
     }
-}
-
-bool iOSNativeUtils::isImagePickerOpen() const
-{
-    return m_IsImagePickerOpen;
-}
-
-bool iOSNativeUtils::isCameraOpen() const
-{
-    return m_IsCameraOpen;
-}
-
-bool iOSNativeUtils::isStatusBarVisible() const
-{
-    UIApplication *app = [UIApplication sharedApplication];
-    return [app isStatusBarHidden] == YES;
-}
-
-QString iOSNativeUtils::getDeviceName() const
-{
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    return QString::fromNSString([NSString stringWithCString: systemInfo.machine encoding: NSUTF8StringEncoding]);
 }
 
 void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
@@ -436,18 +383,6 @@ void iOSNativeUtils::emitActionSheetDialogClickedSignal(unsigned int index)
     }
 }
 
-void iOSNativeUtils::emitPhotoAccessPermissionSignals(bool isAccessGranted)
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        iOSNativeUtils *instance = it.value();
-        if (instance) {
-            instance->callPhotoAccessResultCallback(isAccessGranted);
-        }
-    }
-}
-
 void iOSNativeUtils::callAlertDialogClickedCallback(unsigned int index)
 {
     if (m_IsAlertDialogVisible) {
@@ -468,19 +403,5 @@ void iOSNativeUtils::callActionSheetDialogClickedCallback(unsigned int index)
 
         m_IsActionSheetDialogVisible = false;
     }
-}
-
-void iOSNativeUtils::callPhotoAccessResultCallback(bool isAccessGranted)
-{
-    if (isAccessGranted) {
-        if (onPhotosAccessGranted) {
-            onPhotosAccessGranted();
-        }
-    }
-    else if (onPhotosAccessDenied) {
-        onPhotosAccessDenied();
-    }
-
-    m_IsPhotoAccessPermissionRequested = false;
 }
 }

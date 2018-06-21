@@ -136,14 +136,16 @@ ios {
         $$PWD/include/qutils/ios/iOSNativeUtils.h \
         $$PWD/include/qutils/ios/QutilsViewDelegate.h \
         $$PWD/include/qutils/ios/DocumentPicker.h \
-        $$PWD/include/qutils/ios/FileUtils_Private.h
+        $$PWD/include/qutils/ios/FileUtils_Private.h \
+        $$PWD/include/qutils/ios/PermissionManagerPrivate.h
 
     OBJECTIVE_SOURCES += \
         $$PWD/src/ios/iOSNativeUtils.mm \
         $$PWD/src/ios/AppDelegate.mm \
         $$PWD/src/ios/QutilsViewDelegate.mm \
         $$PWD/src/ios/FileUtils_Private.mm \
-        $$PWD/src/ios/DocumentPicker.mm
+        $$PWD/src/ios/DocumentPicker.mm \
+        $$PWD/src/ios/PermissionManagerPrivate.mm
 
     HEADERS += \
         $$PWD/include/qutils/ios/iOSUtils.h
@@ -179,7 +181,8 @@ HEADERS += \
     $$PWD/include/qutils/CppTypes.h \
     $$PWD/include/qutils/QutilsPlugin.h \
     $$PWD/include/qutils/UpdateChecker.h \
-    $$PWD/include/qutils/SystemInfo.h
+    $$PWD/include/qutils/SystemInfo.h \
+    $$PWD/include/qutils/PermissionManager.h
 
 SOURCES += \
     $$PWD/src/ScreenHelper.cpp \
@@ -200,7 +203,8 @@ SOURCES += \
     $$PWD/src/FileUtils.cpp \
     $$PWD/src/QutilsPlugin.cpp \
     $$PWD/src/UpdateChecker.cpp \
-    $$PWD/src/SystemInfo.cpp
+    $$PWD/src/SystemInfo.cpp \
+    $$PWD/src/PermissionManager.cpp
 
 equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \

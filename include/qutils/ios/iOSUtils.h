@@ -1,6 +1,7 @@
 #pragma once
 // Qt
 #include <QRect>
+#include <QColor>
 #include <QObject>
 #include <QVariantMap>
 
@@ -84,42 +85,6 @@ public:
     Q_INVOKABLE void openSafari(const QString &url);
 
     /**
-     * @brief See iOSNativeUtils::requestLocationPermission.
-     * @return void
-     */
-    Q_INVOKABLE void requestLocationPermission();
-
-    /**
-     * @brief See iOSNativeUtils::requestPhotosPermisson.
-     * @return void
-     */
-    Q_INVOKABLE void requestPhotosPermisson();
-
-    /**
-     * @brief See iOSNativeUtils::getLocationAuthorizationStatus.
-     * @return LocationAuthorizationStatus
-     */
-    Q_INVOKABLE int getLocationAuthorizationStatus();
-
-    /**
-     * @brief See iOSNativeUtils::getPhotosAuthorizationStatus.
-     * @return PhotosAuthorizationStatus
-     */
-    Q_INVOKABLE int getPhotosAuthorizationStatus();
-
-    /**
-     * @brief Returns True If the LocationAuthorizationStatus is LAAuthorizedAlways or LAAuthorizedWhenInUse.
-     * @return bool
-     */
-    Q_INVOKABLE bool isLocationAuthorizationGranted() const;
-
-    /**
-     * @brief Returns True If the PhotosAuthorizationStatus is PAAuthorized.
-     * @return bool
-     */
-    Q_INVOKABLE bool isPhotosPermissionGranted() const;
-
-    /**
      * @brief See iOSNativeUtils::openGallery.
      * @return void
      */
@@ -130,6 +95,23 @@ public:
      * @return QString
      */
     Q_INVOKABLE QString getDeviceName() const;
+
+    /**
+     * @brief See iOSNativeUtils::getStatusBarSize().
+     * @return QString
+     */
+    Q_INVOKABLE QSize getStatusBarSize() const;
+
+    /**
+     * @brief See iOSNativeUtils::getStatusBarColor().
+     * @return QString
+     */
+    Q_INVOKABLE QColor getStatusBarColor() const;
+
+    /**
+     * @brief See iOSNativeUtils::setStatusBarColor().
+     */
+    Q_INVOKABLE void setStatusBarColor(const QColor &color);
 
     /**
      * @brief Opens the camera.
@@ -246,16 +228,6 @@ signals:
      * @brief Emitted when the enabled property changes.
      */
     void enabledChanged();
-
-    /**
-     * @brief Emitted when the photos access permission is granted.
-     */
-    void photosAccessGranted();
-
-    /**
-     * @brief Emitted when the photos access permission is denied.
-     */
-    void photosAccessDenied();
 
 private:
 

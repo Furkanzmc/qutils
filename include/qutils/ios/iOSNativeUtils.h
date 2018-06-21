@@ -1,6 +1,7 @@
 #pragma once
 // Qt
 #include <QRect>
+#include <QColor>
 #include <QStringList>
 #include <QVariantList>
 // std
@@ -31,33 +32,6 @@ public:
      * Keyboard's size will be reported as zero with UIKeyboardWillHideNotification. And the keyboard height will change with UIKeyboardWillShowNotification.
      */
     std::function<void(int /*height*/)> onKeyboardHeightChanged;
-
-    /**
-     * @brief This is called when the user authenticates the app to access to the photos.
-     */
-    std::function<void()> onPhotosAccessGranted;
-
-    /**
-     * @brief This is called when the user declines authentication to access to the photos.
-     */
-    std::function<void()> onPhotosAccessDenied;
-
-    enum LocationAuthorizationStatus {
-        LANone = 0, // The location services is not in use.
-        LANotDetermined = 1, // The user has not yet made a choice regarding whether this app can use location services.
-        LARestricted = 2, // This app is not authorized to use location services.
-        LADenied = 3, // The user explicitly denied the use of location services for this app or location services are currently disabled in Settings.
-        LAAuthorizedAlways = 4, // This app is authorized to start location services at any time.
-        LAAuthorizedWhenInUse = 5 // This app is authorized to start most location services while running in the foreground.
-    };
-
-    enum PhotosAuthorizationStatus {
-        PANone = 0, // Photos is not enabled for quitls.
-        PANotDetermined = 1, // Explicit user permission is required for photo library access, but the user has not yet granted or denied such permission.
-        PARestricted = 2, // Your app is not authorized to access the photo library, and the user cannot grant such permission.
-        PADenied = 3, // The user has explicitly denied your app access to the photo library.
-        PAAuthorized = 4 // The user has explicitly granted your app access to the photo library.
-    };
 
 public:
     iOSNativeUtils();
@@ -95,6 +69,12 @@ public:
      */
     void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
+    /*!
+     * \brief This method DOES NOT work yet.
+     * \param title
+     * \param body
+     * \param delayInSeconds
+     */
     void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
 
     /**
@@ -131,32 +111,6 @@ public:
     void openSafari(const QString &url);
 
     /**
-     * @brief Requests the location services permission.
-     * @return void
-     */
-    void requestLocationPermission();
-
-    /**
-     * @brief Returns the current location authorization status from the device. If location is not enabled for qutils, LocationAuthorizationStatus::None is
-     * returned.
-     * @return LocationAuthorizationStatus
-     */
-    LocationAuthorizationStatus getLocationAuthorizationStatus();
-
-    /**
-     * @brief Requests access to photos on iOS.
-     * @return void
-     */
-    void requestPhotosPermisson();
-
-    /**
-     * @brief Returns the current photos access authorization status from the device. If photos is not enabled for qutils, PhotosAuthorizationStatus::None is
-     * returned.
-     * @return LocationAuthorizationStatus
-     */
-    PhotosAuthorizationStatus getPhotosAuthorizationStatus();
-
-    /**
      * @brief Opens the gallery to pick an image.
      * @return void
      */
@@ -167,27 +121,6 @@ public:
      * @return void
      */
     void showCamera();
-
-    /**
-     * @brief Hide or show the status bar.
-     * In order for this to take effect you need to have `UIViewControllerBasedStatusBarAppearance` set to false in your Info.plist file.
-     * @param visible
-     * @return void
-     */
-    void setStatusBarVisible(bool visible);
-
-    /**
-     * @brief Calls the callback for image picker finished for the instance that opened it.
-     * @param data
-     * @return void
-     */
-    static void emitImagePickerFinished(QVariantMap data);
-
-    /**
-     * @brief Calls the callback for image picker cancelled for the instance that opened it.
-     * @return void
-     */
-    static void emitImagePickerCancelled();
 
     /**
      * @brief This will be set to true when the image picker is open and only this instance will be notified of the events from the image picker.
@@ -202,6 +135,14 @@ public:
     bool isCameraOpen() const;
 
     /**
+     * @brief Hide or show the status bar.
+     * In order for this to take effect you need to have `UIViewControllerBasedStatusBarAppearance` set to false in your Info.plist file.
+     * @param visible
+     * @return void
+     */
+    void setStatusBarVisible(bool visible);
+
+    /**
      * @brief Returns true If the status bar is hidden.
      * @return bool
      */
@@ -212,6 +153,37 @@ public:
      * @return QString
      */
     QString getDeviceName() const;
+
+    /*!
+     * \brief Returns the size of the status bar.
+     * \return QSize
+     */
+    QSize getStatusBarSize() const;
+
+    /*!
+     * \brief Sets the status bar color.
+     * \param color
+     */
+    void setStatusBarColor(const QColor &color);
+
+    /*!
+     * \brief Returns current status bar color.
+     * \return QColor
+     */
+    QColor getStatusBarColor() const;
+
+    /**
+     * @brief Calls the callback for image picker finished for the instance that opened it.
+     * @param data
+     * @return void
+     */
+    static void emitImagePickerFinished(QVariantMap data);
+
+    /**
+     * @brief Calls the callback for image picker cancelled for the instance that opened it.
+     * @return void
+     */
+    static void emitImagePickerCancelled();
 
     /**
      * @brief Calls onKeyboardHeightChanged function on every valid instance.
@@ -234,12 +206,6 @@ public:
      */
     static void emitActionSheetDialogClickedSignal(unsigned int index);
 
-    /**
-     * @brief Calls the appropriate permission callback for the caller instance.
-     * @param isAccessGranted
-     */
-    static void emitPhotoAccessPermissionSignals(bool isAccessGranted);
-
 private:
 
     /*!
@@ -259,7 +225,6 @@ private:
     bool m_IsImagePickerOpen,
          m_IsAlertDialogVisible,
          m_IsActionSheetDialogVisible,
-         m_IsPhotoAccessPermissionRequested,
          m_IsCameraOpen;
 
 private:
@@ -269,7 +234,6 @@ private:
 
     void callAlertDialogClickedCallback(unsigned int index);
     void callActionSheetDialogClickedCallback(unsigned int index);
-    void callPhotoAccessResultCallback(bool isAccessGranted);
 };
 
 }

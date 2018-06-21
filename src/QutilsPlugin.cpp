@@ -14,6 +14,7 @@
 #include "qutils/SignalManager.h"
 #include "qutils/UpdateChecker.h"
 #include "qutils/SettingsManager.h"
+#include "qutils/PermissionManager.h"
 #include "qutils/TranslationHelper.h"
 #include "qutils/NotificationClient.h"
 #include "qutils/Network/DownloadManager.h"
@@ -51,6 +52,7 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
     qmlRegisterType<zmc::Network::DownloadManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
 
+    qmlRegisterType<zmc::PermissionManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
 }
 

@@ -9,7 +9,7 @@ namespace zmc
 bool FileUtilsPrivate::m_IsDocumentPickerOpen = false;
 QMap<int, FileUtilsPrivate *> FileUtilsPrivate::m_Instances = QMap<int, FileUtilsPrivate *>();
 
-static DocumentPicker *m_DocumentPicker = [[DocumentPicker alloc] init];
+static DocumentPicker *m_DocumentPicker = nullptr;
 
 FileUtilsPrivate::FileUtilsPrivate()
     : m_InstanceIndex(m_Instances.size())
@@ -30,6 +30,10 @@ bool FileUtilsPrivate::openDocumentPicker(const QStringList &documentTypes, bool
         opened = true;
         m_IsDocumentPickerOpen = true;
         m_IsInvokerInstance = true;
+        if (m_DocumentPicker == nullptr) {
+            m_DocumentPicker = [[DocumentPicker alloc] init];
+        }
+
         [m_DocumentPicker showDocumentPicker: documentTypes allowMultiple: selectMultiple];
     }
 
