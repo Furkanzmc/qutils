@@ -9,6 +9,8 @@
 namespace zmc
 {
 
+namespace AndroidPermNames
+{
 static const char *ACCEPT_HANDOVER = "android.permission.ACCEPT_HANDOVER";
 static const char *ACCESS_CHECKIN_PROPERTIES = "android.permission.ACCESS_CHECKIN_PROPERTIES";
 static const char *ACCESS_COARSE_LOCATION = "android.permission.ACCESS_COARSE_LOCATION";
@@ -155,11 +157,11 @@ static const char *WRITE_SECURE_SETTINGS = "android.permission.WRITE_SECURE_SETT
 static const char *WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
 static const char *WRITE_SYNC_SETTINGS = "android.permission.WRITE_SYNC_SETTINGS";
 static const char *WRITE_VOICEMAIL = "android.permission.WRITE_VOICEMAIL";
+}
 
 class PermissionRequestResult : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(int permission READ permission CONSTANT)
     Q_PROPERTY(int result READ result CONSTANT)
 
