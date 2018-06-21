@@ -57,11 +57,6 @@ public:
     Q_INVOKABLE void openSafari(const QString &url);
 
     Q_INVOKABLE QString getDeviceModel();
-    Q_INVOKABLE void requestLocationPermission();
-    Q_INVOKABLE void requestPhotosPermisson();
-
-    Q_INVOKABLE bool isLocationAuthorizationGranted() const;
-    Q_INVOKABLE bool isPhotosPermissionGranted() const;
     Q_INVOKABLE bool isStatusBarVisible() const;
 
     bool isButtonEventsEnabled() const;

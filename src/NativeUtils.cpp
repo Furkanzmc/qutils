@@ -57,9 +57,6 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
     connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
-
-    connect(m_iOSUtils, &iOSUtils::photosAccessGranted, this, &NativeUtils::photosAccessGranted);
-    connect(m_iOSUtils, &iOSUtils::photosAccessDenied, this, &NativeUtils::photosAccessDenied);
 #endif // Q_OS_IOS
 
 #if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
@@ -237,40 +234,6 @@ QString NativeUtils::getDeviceModel()
 #endif // Q_OS_WINDOWS
 
     return model;
-}
-
-void NativeUtils::requestLocationPermission()
-{
-#ifdef Q_OS_IOS
-    m_iOSUtils->requestLocationPermission();
-#endif // Q_OS_IOS
-}
-
-void NativeUtils::requestPhotosPermisson()
-{
-#ifdef Q_OS_IOS
-    m_iOSUtils->requestPhotosPermisson();
-#endif // Q_OS_IOS
-}
-
-bool NativeUtils::isLocationAuthorizationGranted() const
-{
-    bool status = false;
-#ifdef Q_OS_IOS
-    status = m_iOSUtils->isLocationAuthorizationGranted();
-#endif // Q_OS_IOS
-
-    return status;
-}
-
-bool NativeUtils::isPhotosPermissionGranted() const
-{
-    bool status = false;
-#ifdef Q_OS_IOS
-    status = m_iOSUtils->isPhotosPermissionGranted();
-#endif // Q_OS_IOS
-
-    return status;
 }
 
 bool NativeUtils::isStatusBarVisible() const

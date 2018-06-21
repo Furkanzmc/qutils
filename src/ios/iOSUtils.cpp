@@ -25,9 +25,6 @@ iOSUtils::iOSUtils(QObject *parent)
     m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
     m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCancelledCallback, this);
 
-    m_iOSNative->onPhotosAccessGranted = std::bind(&iOSUtils::photosAccessGranted, this);
-    m_iOSNative->onPhotosAccessDenied = std::bind(&iOSUtils::photosAccessDenied, this);
-
     if (isMainController()) {
         if (m_URLOpenedWith.length() > 0) {
             /*
@@ -102,45 +99,6 @@ bool iOSUtils::isiPad() const
 void iOSUtils::openSafari(const QString &url)
 {
     m_iOSNative->openSafari(url);
-}
-
-void iOSUtils::requestLocationPermission()
-{
-    if (this->signalsBlocked()) {
-        return;
-    }
-
-    m_iOSNative->requestLocationPermission();
-}
-
-void iOSUtils::requestPhotosPermisson()
-{
-    if (this->signalsBlocked()) {
-        return;
-    }
-
-    m_iOSNative->requestPhotosPermisson();
-}
-
-int iOSUtils::getLocationAuthorizationStatus()
-{
-    return static_cast<int>(m_iOSNative->getLocationAuthorizationStatus());
-}
-
-int iOSUtils::getPhotosAuthorizationStatus()
-{
-    return static_cast<int>(m_iOSNative->getPhotosAuthorizationStatus());
-}
-
-bool iOSUtils::isLocationAuthorizationGranted() const
-{
-    return m_iOSNative->getLocationAuthorizationStatus() == iOSNativeUtils::LAAuthorizedAlways
-        || m_iOSNative->getLocationAuthorizationStatus() == iOSNativeUtils::LAAuthorizedWhenInUse;
-}
-
-bool iOSUtils::isPhotosPermissionGranted() const
-{
-    return m_iOSNative->getPhotosAuthorizationStatus() == iOSNativeUtils::PAAuthorized;
 }
 
 void iOSUtils::openGallery()
