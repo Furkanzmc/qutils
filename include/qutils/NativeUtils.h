@@ -96,8 +96,6 @@ signals:
     void openedWithoutURL();
 
     void mainControllerChanged();
-    void photosAccessGranted();
-    void photosAccessDenied();
 
 private:
 #if defined(Q_OS_ANDROID)

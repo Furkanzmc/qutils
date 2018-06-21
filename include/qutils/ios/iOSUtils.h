@@ -98,13 +98,13 @@ public:
 
     /**
      * @brief See iOSNativeUtils::getStatusBarSize().
-     * @return QString
+     * @return QSize
      */
     Q_INVOKABLE QSize getStatusBarSize() const;
 
     /**
      * @brief See iOSNativeUtils::getStatusBarColor().
-     * @return QString
+     * @return QColor
      */
     Q_INVOKABLE QColor getStatusBarColor() const;
 
