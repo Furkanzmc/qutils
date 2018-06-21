@@ -1,4 +1,6 @@
 #include "qutils/PermissionManager.h"
+// qutils
+#include "qutils/Macros.h"
 
 namespace zmc
 {
@@ -7,6 +9,53 @@ PermissionManager::PermissionManager(QObject *parent)
     : QObject(parent)
 {
 
+}
+
+PermissionManager::Result PermissionManager::checkPermission(Permissions permission) const
+{
+    Result result = Result::Denied;
+    // Permission checks on Android is done with strings.
+#if defined(Q_OS_ANDROID)
+    const QString permissionStr = permissionString(permission);
+    if (!permissionStr.isEmpty()) {
+        QtAndroid::PermissionResult qresult = QtAndroid::checkPermission(permissionStr);
+        if (qresult == QtAndroid::PermissionResult::Granted) {
+            result = Result::Granted;
+        }
+    }
+    else {
+        LOG_ERROR("Given permission is not an Android permission.");
+    }
+#endif // Q_OS_ANDROID
+
+    return result;
+}
+
+void PermissionManager::requestPermission(int permission)
+{
+#if defined(Q_OS_ANDROID)
+    requestPermissions(QList<int> {permission});
+#endif // Q_OS_ANDROID
+}
+
+void PermissionManager::requestPermissions(QList<int> permissions)
+{
+#if defined(Q_OS_ANDROID)
+    QStringList names;
+    for (int value : permissions) {
+        const QString str = permissionString(static_cast<Permissions>(value));
+        if (!str.isEmpty()) {
+            names.append(str);
+        }
+    }
+
+    if (names.isEmpty()) {
+        LOG_ERROR("Given permissions is not valid for Android. Given value: " << permissions);
+        return;
+    }
+
+    QtAndroid::requestPermissions(names, std::bind(&PermissionManager::permissionResultCallback, this, std::placeholders::_1));
+#endif // Q_OS_ANDROID
 }
 
 QString PermissionManager::permissionString(Permissions permission) const
@@ -271,7 +320,7 @@ QString PermissionManager::permissionString(Permissions permission) const
         typeStr = MOUNT_UNMOUNT_FILESYSTEMS;
     }
     else if (permission == Permissions::NFC) {
-        typeStr = NFC;
+        typeStr = NFC_PERM;
     }
     else if (permission == Permissions::NFCTransactionEvent) {
         typeStr = NFC_TRANSACTION_EVENT;
@@ -715,7 +764,7 @@ PermissionManager::Permissions PermissionManager::permissionType(const QString &
     else if (permissionStr == MOUNT_UNMOUNT_FILESYSTEMS) {
         type = Permissions::MountUnmountFileSystems;
     }
-    else if (permissionStr == NFC) {
+    else if (permissionStr == NFC_PERM) {
         type = Permissions::NFC;
     }
     else if (permissionStr == NFC_TRANSACTION_EVENT) {
@@ -898,5 +947,31 @@ PermissionManager::Permissions PermissionManager::permissionType(const QString &
 
     return type;
 }
+
+#if defined(Q_OS_ANDROID)
+void PermissionManager::permissionResultCallback(const QHash<QString, QtAndroid::PermissionResult> &results)
+{
+    if (results.size() > 1) {
+        QList<QObject *> data;
+        for (auto it = results.constBegin(); it != results.constEnd(); it++) {
+            PermissionRequestResult *reqResult = new PermissionRequestResult(this);
+            reqResult->setPermission(static_cast<int>(permissionType(it.key())));
+            Result result = it.value() == QtAndroid::PermissionResult::Granted ? Result::Granted : Result::Denied;
+            reqResult->setResult(static_cast<int>(result));
+            data.append(reqResult);
+        }
+
+        emit permissionResultsReceived(data);
+    }
+    else if (results.size() == 1) {
+        const QStringList keys = results.keys();
+        emit permissionResultReceived(static_cast<int>(permissionType(keys.at(0))),
+            results[keys.at(0)] == QtAndroid::PermissionResult::Granted ? Result::Granted : Result::Denied);
+    }
+    else {
+        LOG_ERROR("The request for permission resulted in 0 results.");
+    }
+}
+#endif // Q_OS_ANDROID
 
 }

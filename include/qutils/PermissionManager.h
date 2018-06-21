@@ -1,6 +1,10 @@
 #pragma once
 // Qt
+#include <QMap>
 #include <QObject>
+#if defined(Q_OS_ANDROID)
+    #include <QtAndroid>
+#endif // Q_OS_ANDROID
 
 namespace zmc
 {
@@ -152,6 +156,44 @@ static const char *WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
 static const char *WRITE_SYNC_SETTINGS = "android.permission.WRITE_SYNC_SETTINGS";
 static const char *WRITE_VOICEMAIL = "android.permission.WRITE_VOICEMAIL";
 
+class PermissionRequestResult : public QObject
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int permission READ permission CONSTANT)
+    Q_PROPERTY(int result READ result CONSTANT)
+
+public:
+    PermissionRequestResult(QObject *parent = nullptr)
+        : QObject(parent)
+    {}
+
+
+    int permission() const
+    {
+        return m_Permission;
+    }
+
+    void setPermission(const int &permission)
+    {
+        m_Permission = permission;
+    }
+
+    int result() const
+    {
+        return m_Result;
+    }
+
+    void setResult(const int &result)
+    {
+        m_Result = result;
+    }
+
+private:
+    int m_Permission;
+    int m_Result;
+};
+
 /*!
  * \class PermissionManager
  * \brief The PermissionManager class is a cross-platform implementation of checking for and requesting permissions.
@@ -161,9 +203,10 @@ class PermissionManager : public QObject
     Q_OBJECT
 
 public:
+
     /*!
-     * \enum PermissionResult
-     * \brief The PermissionResult enum provides information about the permission result check.
+     * \enum Result
+     * \brief The Result enum provides information about the permission result check.
      *
      * \value Denied
      *        The permission is denied. This value is common on all platforms.
@@ -176,13 +219,13 @@ public:
      *        This permission has not been asked to the user explicitly. This is only available on iOS. On Android, no
      *        such information is given.
      */
-    enum PermissionResult {
+    enum Result {
         Denied = 0,
         Granted = 1,
         Restricted = 2,
         NotDetermined = 3
     };
-    Q_ENUM(PermissionResult);
+    Q_ENUM(Result);
 
     /*!
      * \enum Permissions
@@ -693,6 +736,39 @@ public:
     explicit PermissionManager(QObject *parent = nullptr);
 
     /*!
+     * \brief Returns the permission result for the given permission.
+     * \param permission
+     *
+     * Note that If you try to check for a permission that the OS does not have, you'll always get
+     * Result::Denied.
+     *
+     * This method is invokable from QML.
+     *
+     * \return Result
+     */
+    Q_INVOKABLE Result checkPermission(Permissions permission) const;
+
+    /*!
+     * \brief Requests the given permission asynchronously.
+     * \param permission
+     *
+     * When the user responds to the reuest, permissionResultReceived() signal will be emitted
+     * .
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE void requestPermission(int permission);
+
+    /*!
+     * \brief Requests the given permissions asynchronously.
+     * \param permissions
+     *
+     * When the user responds to the reuest, permissionResultsReceived() signal will be emitted
+     * .
+     * This method is invokable from QML.
+     */
+    Q_INVOKABLE void requestPermissions(QList<int> permissions);
+
+    /*!
      * \brief Returns the string represnetation for the given permission.
      * \param permission
      *
@@ -714,7 +790,32 @@ public:
 
 signals:
 
-public slots:
+    /*!
+     * \brief Emitted when multiple permissions were requested.
+     * \param results
+     *
+     * The key of the map is the permission type and the value is the permission result.
+     * \a results is a QList<PermissionRequestResult *>
+     *
+     * After the signal is emitted, all of the result objects will be destroyed.
+     */
+    void permissionResultsReceived(QList<QObject *> results);
+
+    /*!
+     * \brief Emitted when a single permission was requested.
+     * \param result
+     * \param permission
+     */
+    void permissionResultReceived(int result, int permission);
+
+private:
+#if defined(Q_OS_ANDROID)
+    /*!
+     * \brief Callback for QtAndroid::requestPermissions().
+     * \param results
+     */
+    void permissionResultCallback(const QHash<QString, QtAndroid::PermissionResult> &results);
+#endif // Q_OS_ANDROID
 };
 
 }
