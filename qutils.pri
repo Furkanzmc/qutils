@@ -136,14 +136,16 @@ ios {
         $$PWD/include/qutils/ios/iOSNativeUtils.h \
         $$PWD/include/qutils/ios/QutilsViewDelegate.h \
         $$PWD/include/qutils/ios/DocumentPicker.h \
-        $$PWD/include/qutils/ios/FileUtils_Private.h
+        $$PWD/include/qutils/ios/FileUtils_Private.h \
+        $$PWD/include/qutils/ios/PermissionManagerPrivate.h
 
     OBJECTIVE_SOURCES += \
         $$PWD/src/ios/iOSNativeUtils.mm \
         $$PWD/src/ios/AppDelegate.mm \
         $$PWD/src/ios/QutilsViewDelegate.mm \
         $$PWD/src/ios/FileUtils_Private.mm \
-        $$PWD/src/ios/DocumentPicker.mm
+        $$PWD/src/ios/DocumentPicker.mm \
+        $$PWD/src/ios/PermissionManagerPrivate.mm
 
     HEADERS += \
         $$PWD/include/qutils/ios/iOSUtils.h

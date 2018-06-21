@@ -7,6 +7,9 @@ namespace zmc
 
 PermissionManager::PermissionManager(QObject *parent)
     : QObject(parent)
+#if defined(Q_OS_IOS)
+    , m_Private()
+#endif // Q_OS_IOS
 {
 
 }
@@ -26,7 +29,19 @@ PermissionManager::Result PermissionManager::checkPermission(Permissions permiss
     else {
         LOG_ERROR("Given permission is not an Android permission.");
     }
-#endif // Q_OS_ANDROID
+#elif defined(Q_OS_IOS)
+    if (permission == Permissions::Photos) {
+        PermissionManagerPrivate::AuthorizationStatus authStatus = m_Private.getPhotosAuthorizationStatus();
+        result = getResultFromAuthStatus(authStatus);
+    }
+    else if (permission == Permissions::LocationServices) {
+        PermissionManagerPrivate::AuthorizationStatus authStatus = m_Private.getLocationAuthorizationStatus();
+        result = getResultFromAuthStatus(authStatus);
+    }
+    else {
+        LOG_ERROR("This permission type is not yet supported on iOS.");
+    }
+#endif // Platform Check
 
     return result;
 }
@@ -35,7 +50,21 @@ void PermissionManager::requestPermission(int permission)
 {
 #if defined(Q_OS_ANDROID)
     requestPermissions(QList<int> {permission});
-#endif // Q_OS_ANDROID
+#elif defined(Q_OS_IOS)
+    if (permission == Permissions::Photos) {
+        if (!m_Private.onPhotosAccessResult) {
+            m_Private.onPhotosAccessResult = std::bind(&PermissionManager::permissionResultCallback, this, Permissions::Photos, std::placeholders::_1);
+        }
+
+        m_Private.requestPhotosPermisson();
+    }
+    else if (permission == Permissions::LocationServices) {
+        m_Private.requestLocationPermission();
+    }
+    else {
+        LOG_ERROR("This permission type is not yet supported on iOS.");
+    }
+#endif // Platform Check
 }
 
 void PermissionManager::requestPermissions(QList<int> permissions)
@@ -55,7 +84,10 @@ void PermissionManager::requestPermissions(QList<int> permissions)
     }
 
     QtAndroid::requestPermissions(names, std::bind(&PermissionManager::permissionResultCallback, this, std::placeholders::_1));
-#endif // Q_OS_ANDROID
+#elif defined(Q_OS_IOS)
+    Q_UNUSED(permissions);
+    LOG_ERROR("This method is not available on iOS.");
+#endif // Platform Check
 }
 
 QString PermissionManager::permissionString(Permissions permission) const
@@ -973,5 +1005,35 @@ void PermissionManager::permissionResultCallback(const QHash<QString, QtAndroid:
     }
 }
 #endif // Q_OS_ANDROID
+
+#if defined(Q_OS_IOS)
+void PermissionManager::permissionResultCallback(Permissions permission, PermissionManagerPrivate::AuthorizationStatus status)
+{
+    Result result = getResultFromAuthStatus(status);
+    emit permissionResultReceived(result, permission);
+}
+
+PermissionManager::Result PermissionManager::getResultFromAuthStatus(PermissionManagerPrivate::AuthorizationStatus status) const
+{
+    Result result = Result::Denied;
+    if (status == PermissionManagerPrivate::AuthorizationStatus::Authorized) {
+        result = Result::Granted;
+    }
+    else if (status == PermissionManagerPrivate::AuthorizationStatus::AuthorizedWhenInUse) {
+        result = Result::AuthorizedWhenInUse;
+    }
+    else if (status == PermissionManagerPrivate::AuthorizationStatus::Denied) {
+        result = Result::Denied;
+    }
+    else if (status == PermissionManagerPrivate::AuthorizationStatus::NotDetermined) {
+        result = Result::NotDetermined;
+    }
+    else if (status == PermissionManagerPrivate::AuthorizationStatus::Restricted) {
+        result = Result::Restricted;
+    }
+
+    return result;
+}
+#endif // Q_OS_IOS
 
 }

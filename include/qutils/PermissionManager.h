@@ -5,6 +5,9 @@
 #if defined(Q_OS_ANDROID)
     #include <QtAndroid>
 #endif // Q_OS_ANDROID
+#if defined(Q_OS_IOS)
+    #include "qutils/ios/PermissionManagerPrivate.h"
+#endif // Q_OS_IOS
 
 namespace zmc
 {
@@ -161,8 +164,7 @@ static const char *WRITE_VOICEMAIL = "android.permission.WRITE_VOICEMAIL";
 
 class PermissionRequestResult : public QObject
 {
-    Q_OBJECT
-    Q_PROPERTY(int permission READ permission CONSTANT)
+    Q_OBJECT Q_PROPERTY(int permission READ permission CONSTANT)
     Q_PROPERTY(int result READ result CONSTANT)
 
 public:
@@ -220,12 +222,15 @@ public:
      * \value NotDetermined
      *        This permission has not been asked to the user explicitly. This is only available on iOS. On Android, no
      *        such information is given.
+     * \value AuthorizedWhenInUse
+     *        This is used only on iOS for location access.
      */
     enum Result {
         Denied = 0,
         Granted = 1,
         Restricted = 2,
-        NotDetermined = 3
+        NotDetermined = 3,
+        AuthorizedWhenInUse = 4
     };
     Q_ENUM(Result);
 
@@ -811,6 +816,11 @@ signals:
     void permissionResultReceived(int result, int permission);
 
 private:
+#if defined(Q_OS_IOS)
+    PermissionManagerPrivate m_Private;
+#endif // Q_OS_IOS
+
+private:
 #if defined(Q_OS_ANDROID)
     /*!
      * \brief Callback for QtAndroid::requestPermissions().
@@ -818,6 +828,22 @@ private:
      */
     void permissionResultCallback(const QHash<QString, QtAndroid::PermissionResult> &results);
 #endif // Q_OS_ANDROID
+
+#if defined(Q_OS_IOS)
+    /*!
+     * \brief Converts PermissionManagerPrivate::AuthorizationStatus to PermissionManager::Result.
+     * \param status
+     * \return PermissionManager::Result
+     */
+    Result getResultFromAuthStatus(PermissionManagerPrivate::AuthorizationStatus status) const;
+
+    /*!
+     * \brief Callback for PermissionManagerPrivate.
+     * \param permission
+     * \param status
+     */
+    void permissionResultCallback(Permissions permission, PermissionManagerPrivate::AuthorizationStatus status);
+#endif // Q_OS_IOS
 };
 
 }
