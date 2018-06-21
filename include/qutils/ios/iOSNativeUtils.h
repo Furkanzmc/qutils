@@ -69,6 +69,12 @@ public:
      */
     void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
+    /*!
+     * \brief This method DOES NOT work yet.
+     * \param title
+     * \param body
+     * \param delayInSeconds
+     */
     void schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds);
 
     /**

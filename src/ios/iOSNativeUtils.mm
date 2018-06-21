@@ -161,13 +161,9 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
 
 void iOSNativeUtils::schedulePushNotification(const QString &title, const QString &body, const int &delayInSeconds)
 {
-    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow: delayInSeconds];
-    localNotification.alertTitle = title.toNSString();
-    localNotification.alertBody = body.toNSString();
-    localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    UIApplication *app = [UIApplication sharedApplication];
-    [app scheduleLocalNotification: localNotification];
+    Q_UNUSED(title);
+    Q_UNUSED(body);
+    Q_UNUSED(delayInSeconds);
 }
 
 void iOSNativeUtils::dismissKeyboard()
