@@ -268,7 +268,7 @@ public class AndroidUtils extends QtActivity {
 
     public static void openGallery(String fileType) {
         String action;
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             action = Intent.ACTION_OPEN_DOCUMENT;
         }
         else {
@@ -276,7 +276,7 @@ public class AndroidUtils extends QtActivity {
         }
 
         Intent intent = new Intent(action);
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             if (fileType.contains("|")) {
                 intent.setType("*/*");

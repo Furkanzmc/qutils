@@ -17,7 +17,6 @@ import java.io.IOException;
 public class Utils {
 
     public static Bitmap rotateImageIfRequired(Bitmap img, Context context, Uri selectedImage) throws IOException {
-
         if (selectedImage.getScheme().equals("content")) {
             String[] projection = { MediaStore.Images.ImageColumns.ORIENTATION };
             Cursor cursor = context.getContentResolver().query(selectedImage, projection, null, null, null);

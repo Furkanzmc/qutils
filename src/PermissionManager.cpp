@@ -41,6 +41,8 @@ PermissionManager::Result PermissionManager::checkPermission(Permissions permiss
     else {
         LOG_ERROR("This permission type is not yet supported on iOS.");
     }
+#else
+    Q_UNUSED(permission);
 #endif // Platform Check
 
     return result;
@@ -68,6 +70,8 @@ void PermissionManager::requestPermission(int permission)
     else {
         LOG_ERROR("This permission type is not yet supported on iOS.");
     }
+#else
+    Q_UNUSED(permission);
 #endif // Platform Check
 }
 
@@ -91,6 +95,8 @@ void PermissionManager::requestPermissions(QList<int> permissions)
 #elif defined(Q_OS_IOS)
     Q_UNUSED(permissions);
     LOG_ERROR("This method is not available on iOS.");
+#else
+    Q_UNUSED(permissions);
 #endif // Platform Check
 }
 

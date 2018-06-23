@@ -71,6 +71,8 @@ void NativeUtils::setStatusBarColor(QColor color)
     m_AndroidUtils->setStatusBarColor(color);
 #elif defined(Q_OS_IOS)
     m_iOSUtils->setStatusBarColor(color);
+#else
+    Q_UNUSED(color);
 #endif // Q_OS_ANDROID
 }
 
