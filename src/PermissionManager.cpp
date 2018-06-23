@@ -1001,8 +1001,8 @@ void PermissionManager::permissionResultCallback(const QHash<QString, QtAndroid:
     }
     else if (results.size() == 1) {
         const QStringList keys = results.keys();
-        emit permissionResultReceived(static_cast<int>(permissionType(keys.at(0))),
-            results[keys.at(0)] == QtAndroid::PermissionResult::Granted ? Result::Granted : Result::Denied);
+        const int result = static_cast<int>(results[keys.at(0)] == QtAndroid::PermissionResult::Granted ? Result::Granted : Result::Denied);
+        emit permissionResultReceived(result, static_cast<int>(permissionType(keys.at(0))));
     }
     else {
         LOG_ERROR("The request for permission resulted in 0 results.");
