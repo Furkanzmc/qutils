@@ -52,6 +52,11 @@ public:
      */
     std::function<void(AuthorizationStatus /*status*/)> onLocationServicesResult;
 
+    /*!
+     * \brief This is called when the user responds to the camera capture access permission request.
+     */
+    std::function<void(AuthorizationStatus /*status*/)> onCameraPermissionResult;
+
 public:
     PermissionManagerPrivate();
     ~PermissionManagerPrivate();
@@ -82,6 +87,17 @@ public:
      * \return AuthorizationStatus
      */
     AuthorizationStatus getLocationAuthorizationStatus() const;
+
+    /*!
+     * \brief Requests access to the camera. When the result has arrived, onCameraPermissionResult is called.
+     */
+    void requestCameraAccess();
+
+    /*!
+     * \brief Returns the status of the camera capture permission.
+     * \return AuthorizationStatus
+     */
+    AuthorizationStatus getCameraAccessAuthStatus() const;
 
     /*!
      * \brief Invokes onLocationServicesResult on the instance that requested the location services request.

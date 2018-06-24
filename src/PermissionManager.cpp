@@ -38,6 +38,10 @@ PermissionManager::Result PermissionManager::checkPermission(Permissions permiss
         PermissionManagerPrivate::AuthorizationStatus authStatus = m_Private.getLocationAuthorizationStatus();
         result = getResultFromAuthStatus(authStatus);
     }
+    else if (permission == Permissions::Camera) {
+        PermissionManagerPrivate::AuthorizationStatus authStatus = m_Private.getCameraAccessAuthStatus();
+        result = getResultFromAuthStatus(authStatus);
+    }
     else {
         LOG_ERROR("This permission type is not yet supported on iOS.");
     }
@@ -66,6 +70,13 @@ void PermissionManager::requestPermission(int permission)
         }
 
         m_Private.requestLocationPermission();
+    }
+    else if (permission == Permissions::Camera) {
+        if (!m_Private.onCameraPermissionResult) {
+            m_Private.onCameraPermissionResult = std::bind(&PermissionManager::permissionResultCallback, this, Permissions::Camera, std::placeholders::_1);
+        }
+
+        m_Private.requestCameraAccess();
     }
     else {
         LOG_ERROR("This permission type is not yet supported on iOS.");

@@ -1,5 +1,6 @@
 #include "qutils/ios/PermissionManagerPrivate.h"
 // iOS
+#import <AVFoundation/AVCaptureDevice.h>
 #if QUTILS_LOCATION_ENABLED
     #import <CoreLocation/CoreLocation.h>
 #endif // QUTILS_LOCATION_ENABLED
@@ -106,7 +107,7 @@ void PermissionManagerPrivate::requestLocationPermission()
     if (m_LocationDelegate == nullptr) {
         m_LocationDelegate = [[LocationDelegate alloc] init];
     }
-    
+
     [m_LocationDelegate requestPermission];
 #endif // QUTILS_LOCATION_ENABLED
 }
@@ -134,6 +135,43 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getLocat
 #endif // QUTILS_LOCATION_ENABLED
 
     return authStatus;
+}
+
+void PermissionManagerPrivate::requestCameraAccess()
+{
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL handled) {
+        if (onCameraPermissionResult) {
+            if (handled == YES) {
+                onCameraPermissionResult(AuthorizationStatus::Authorized);
+            }
+            else {
+                onCameraPermissionResult(AuthorizationStatus::Denied);
+            }
+        }
+        else {
+            LOG_ERROR("onCameraPermissionResult callback is not set.");
+        }
+    }];
+}
+
+PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getCameraAccessAuthStatus() const
+{
+    AuthorizationStatus status = AuthorizationStatus::None;
+    const AVAuthorizationStatus avstatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (avstatus == AVAuthorizationStatusDenied) {
+        status = AuthorizationStatus::Denied;
+    }
+    else if (avstatus == AVAuthorizationStatusAuthorized) {
+        status = AuthorizationStatus::Authorized;
+    }
+    else if (avstatus == AVAuthorizationStatusRestricted) {
+        status = AuthorizationStatus::Restricted;
+    }
+    else if (avstatus == AVAuthorizationStatusNotDetermined) {
+        status = AuthorizationStatus::NotDetermined;
+    }
+
+    return status;
 }
 
 void PermissionManagerPrivate::locationServicesCallback(int authStatus)
