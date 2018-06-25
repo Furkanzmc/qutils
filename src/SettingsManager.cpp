@@ -22,7 +22,7 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
-    , m_SettingsTableName(tableName)
+    , m_TableName(tableName)
     , m_SqlManager()
     , m_IsTableCreated(false)
 {
@@ -64,7 +64,7 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_SettingsTableName, -1, &values);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
     const bool exists = existingData.size() > 0;
     QMap<QString, QVariant> newMap;
     newMap[COL_SETTING_NAME] = key;
@@ -83,15 +83,15 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
 
     if (exists) {
         const QVariantMap oldMap = existingData.at(0);
-        successful = m_SqlManager.updateInTable(database, m_SettingsTableName, newMap, values);
+        successful = m_SqlManager.updateInTable(database, m_TableName, newMap, values);
         QVariant oldValue = oldMap[COL_SETTING_VALUE];
         oldValue.convert(oldMap[COL_SETTING_TYPE].toInt());
 
-        emitSettingChangedInAllInstances(key, oldValue, value);
+        emitSettingChangedInAllInstances(key, oldValue, value, m_TableName, m_DatabaseName);
     }
     else {
-        successful = m_SqlManager.insertIntoTable(database, m_SettingsTableName, newMap);
-        emitSettingChangedInAllInstances(key, "", value);
+        successful = m_SqlManager.insertIntoTable(database, m_TableName, newMap);
+        emitSettingChangedInAllInstances(key, "", value, m_TableName, m_DatabaseName);
     }
 
     return successful;
@@ -107,7 +107,7 @@ QVariant SettingsManager::read(const QString &key)
     };
 
     QVariant value;
-    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_SettingsTableName, -1, &values);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
     const bool exists = existingData.size() > 0;
     if (exists) {
         value = existingData.at(0)[COL_SETTING_VALUE];
@@ -135,7 +135,7 @@ bool SettingsManager::remove(const QString &key)
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    return m_SqlManager.deleteInTable(database, m_SettingsTableName, constraints);
+    return m_SqlManager.deleteInTable(database, m_TableName, constraints);
 }
 
 bool SettingsManager::exists(const QString &key)
@@ -147,7 +147,7 @@ bool SettingsManager::exists(const QString &key)
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    return m_SqlManager.exists(database, m_SettingsTableName, constraints);
+    return m_SqlManager.exists(database, m_TableName, constraints);
 }
 
 bool SettingsManager::clear()
@@ -155,7 +155,7 @@ bool SettingsManager::clear()
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK();
 
-    bool successful = m_SqlManager.clearTable(database, m_SettingsTableName);
+    bool successful = m_SqlManager.clearTable(database, m_TableName);
     if (successful) {
         emitClearedSignals();
     }
@@ -172,7 +172,7 @@ QStringList SettingsManager::getKeys()
         return keys;
     }
 
-    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_SettingsTableName);
+    const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName);
 
     for (const QMap<QString, QVariant> &val : existingData) {
         keys.append(val.value(COL_SETTING_NAME).toString());
@@ -193,30 +193,35 @@ void SettingsManager::setDatabaseName(const QString &databaseName)
         return;
     }
 
-    m_DatabaseName = databaseName;
-    emit databasePathChanged();
+    const bool changed = m_DatabaseName != databaseName;
+    if (changed) {
+        m_IsTableCreated = false;
+        m_DatabaseName = databaseName;
 
-    restartDatabase();
-    createTable();
+        restartDatabase();
+        createTable();
+        emit databaseNameChanged();
+    }
 }
 
-QString SettingsManager::getSettingsTableName() const
+QString SettingsManager::getTableName() const
 {
-    return m_SettingsTableName;
+    return m_TableName;
 }
 
-void SettingsManager::setSettingsTableName(const QString &tableName)
+void SettingsManager::setTableName(const QString &tableName)
 {
-    m_SettingsTableName = tableName;
-    emit settingsTableNameChanged();
+    const bool changed = m_TableName != tableName;
+    if (changed) {
+        m_TableName = tableName;
 
-    restartDatabase();
-    createTable();
+        createTable();
+        emit tableNameChanged();
+    }
 }
 
 bool SettingsManager::createTable()
 {
-
     if (m_IsTableCreated == false) {
         QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
         DATABASE_CHECK();
@@ -227,7 +232,10 @@ bool SettingsManager::createTable()
             SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::INTEGER, COL_SETTING_TYPE)
         };
 
-        m_IsTableCreated = m_SqlManager.createTable(database, columns, m_SettingsTableName);
+        m_IsTableCreated = m_SqlManager.createTable(database, columns, m_TableName);
+    }
+    else {
+        LOG("Table, " << m_TableName << ", was already created.");
     }
 
     return m_IsTableCreated;
@@ -258,14 +266,15 @@ void SettingsManager::restartDatabase()
     }
 }
 
-void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue)
+void SettingsManager::emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue,
+    const QString &tableName, const QString &databaseName)
 {
     if (oldSettingValue != newSettingValue) {
         auto begin = m_Instances.begin();
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
             SettingsManager *instance = it.value();
-            if (instance) {
+            if (instance && instance->getTableName() == tableName && instance->getDatabaseName() == databaseName) {
                 emit instance->settingChanged(settingName, oldSettingValue, newSettingValue);
             }
         }
