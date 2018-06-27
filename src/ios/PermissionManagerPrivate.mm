@@ -10,6 +10,7 @@
 // qutils
 #include "qutils/Macros.h"
 
+#if QUTILS_LOCATION_ENABLED
 @interface LocationDelegate : NSObject<CLLocationManagerDelegate> {}
 - (void)locationManager: (CLLocationManager *)manager didChangeAuthorizationStatus: (CLAuthorizationStatus)status;
 @end
@@ -33,6 +34,7 @@
 @end
 
 static LocationDelegate *m_LocationDelegate = nullptr;
+#endif // QUTILS_LOCATION_ENABLED
 
 namespace zmc
 {
@@ -176,6 +178,7 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getCamer
 
 void PermissionManagerPrivate::locationServicesCallback(int authStatus)
 {
+#if QUTILS_LOCATION_ENABLED
     AuthorizationStatus status = AuthorizationStatus::None;
     if (authStatus == kCLAuthorizationStatusDenied) {
         status = AuthorizationStatus::Denied;
@@ -201,6 +204,9 @@ void PermissionManagerPrivate::locationServicesCallback(int authStatus)
             instance->onLocationServicesResult(status);
         }
     }
+#else
+    Q_UNUSED(authStatus);
+#endif // QUTILS_LOCATION_ENABLED
 }
 
 }
