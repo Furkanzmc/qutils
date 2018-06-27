@@ -172,7 +172,6 @@ HEADERS += \
     $$PWD/include/qutils/CacheManager.h \
     $$PWD/include/qutils/Network/NetworkManager.h \
     $$PWD/include/qutils/Network/DownloadManager.h \
-    $$PWD/include/qutils/Network/HttpCodes.h \
     $$PWD/include/qutils/JsonUtils.h \
     $$PWD/include/qutils/SignalManager.h \
     $$PWD/include/qutils/DateManager.h \
