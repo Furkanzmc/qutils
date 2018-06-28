@@ -469,11 +469,8 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     AndroidButtonEvent *event = new AndroidButtonEvent();
     auto begin = m_Instances.rbegin();
     auto end = m_Instances.rend();
-    int index = 0;
     for (auto it = begin; it != end; it++) {
         AndroidUtils *utils = (*it).second;
-        LOG(index << ": " << utils);
-        index++;
         if (utils != nullptr && utils->isButtonEventsEnabled()) {
             if (isBackButton) {
                 utils->emitBackButtonPressed(event);
