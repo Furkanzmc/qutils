@@ -60,8 +60,6 @@ void QutilsPlugin::registerQutils(const char *uri)
 
 void QutilsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(QString(uri) == QString("qutils"));
-
     registerQutils(uri);
 }
 
@@ -112,9 +110,13 @@ void QutilsPlugin::setPlatformContextProperties(QQmlContext *context)
     context->setContextProperty("FILE_PATH_PREFIX", QVariant(FILE_PATH_PREFIX));
 }
 
+#if QUTILS_DISABLE_AUTO_REGISTER == 0
+
 static void startupFunctionQutils()
 {
     QutilsPlugin::registerQutils();
 }
 
 Q_COREAPP_STARTUP_FUNCTION(startupFunctionQutils)
+
+#endif // QUTILS_DISABLE_AUTO_REGISTER

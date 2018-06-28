@@ -12,7 +12,7 @@ QT += sql network
 # fcm: Enables Firebase messaging integration.
 # multimedia: Enables multimedia features.
 # for_mobile: Enables mobile related features.
-
+# disable_auto_register: Add this to disable auto registering QML types.
 # QUTILS_APP_NAME: Used for naming auto-generaed files.
 # QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
 
@@ -46,6 +46,15 @@ contains(QUTILS_FEATURES, multimedia) {
 else {
     message("[qutils] Multimedia is disabled.")
     QUTILS_NO_MULTIMEDIA=false
+}
+
+contains(QUTILS_FEATURES, disable_auto_register) {
+    message("[qutils] Disabling auto register for QML types.")
+    DEFINES += QUTILS_DISABLE_AUTO_REGISTER=1
+}
+else {
+    message("[qutils] Enabling auto register for QML types.")
+    DEFINES += QUTILS_DISABLE_AUTO_REGISTER=0
 }
 
 contains(QUTILS_FEATURES, for_mobile) {
