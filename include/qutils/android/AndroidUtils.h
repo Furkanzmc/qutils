@@ -231,8 +231,7 @@ private:
      * This is used to identify the current instance in m_Instances.
      */
     const int m_InstanceID;
-    bool m_IsAlertShown,
-         m_IsDatePickerShown,
+    bool m_IsDatePickerShown,
          m_IsTimePickerShown,
          m_IsCameraShown,
          m_IsGalleryShown,
