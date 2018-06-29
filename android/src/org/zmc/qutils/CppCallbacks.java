@@ -9,9 +9,6 @@ public class CppCallbacks {
 
     public static native void menuButtonPressed();
 
-    // If all of the dates are -1, then the datePickerCancelled signal is emitted.
-    public static native void datePicked(int year, int month, int day);
-
     // If all of the parameters are -1, then the timePickerCancelled signal is emitted.
     public static native void timePicked(int hourOfDay, int minute);
 

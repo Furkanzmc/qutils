@@ -27,11 +27,6 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         (void *)JNICallbacks::menuButtonPressedCallback // function pointer
     },
     {
-        "datePicked", // const char* function name;
-        "(III)V", // const char* function signature
-        (void *)JNICallbacks::datePickedCallback // function pointer
-    },
-    {
         "timePicked", // const char* function name;
         "(II)V", // const char* function signature
         (void *)JNICallbacks::timePickedCallback // function pointer
@@ -149,11 +144,6 @@ void JNICallbacks::backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
 void JNICallbacks::menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
 {
     zmc::AndroidUtils::emitButtonPressedSignals(false, true);
-}
-
-void JNICallbacks::datePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint year, jint month, jint day)
-{
-    zmc::AndroidUtils::emitDatePickedSignals(year, month, day);
 }
 
 void JNICallbacks::timePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint hourOfDay, jint minute)

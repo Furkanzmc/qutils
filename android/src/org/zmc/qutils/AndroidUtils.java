@@ -36,8 +36,6 @@ import java.util.ArrayList;
 // qutils
 import org.zmc.qutils.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
-import org.zmc.qutils.DatePickerFragment;
-
 import org.zmc.qutils.TimePickerFragment;
 import org.zmc.qutils.Constants;
 
@@ -172,11 +170,6 @@ public class AndroidUtils extends QtActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         m_MainContext.startActivity(Intent.createChooser(sendIntent, dialogTitle));
-    }
-
-    public static void showDatePicker() {
-        DialogFragment newFragment = new DatePickerFragment(m_MainContext);
-        newFragment.show(m_MainContext.getFragmentManager(), "datePicker");
     }
 
     public static void showTimePicker() {

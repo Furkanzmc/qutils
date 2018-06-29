@@ -27,20 +27,17 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
     connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::menuButtonPressed);
-    connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::datePicked);
-
-    connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::timePicked, this, &NativeUtils::timePicked);
-    connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
 
+    connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
-    connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 
+    connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
     connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
     connect(m_AndroidUtils, &AndroidUtils::enabledChanged, this, &NativeUtils::enabledChanged);
-    connect(m_AndroidUtils, &AndroidUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 
+    connect(m_AndroidUtils, &AndroidUtils::openedWithURL, this, &NativeUtils::openedWithURL);
     connect(m_AndroidUtils, &AndroidUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
     connect(m_AndroidUtils, &AndroidUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
 #endif // Q_OS_ANDROID
@@ -125,13 +122,6 @@ void NativeUtils::showAlertDialog(const QVariantMap &dialogProperties)
     m_iOSUtils->showAlertView(dialogProperties);
 #else
     Q_UNUSED(dialogProperties);
-#endif // Q_OS_ANDROID
-}
-
-void NativeUtils::showDatePicker()
-{
-#ifdef Q_OS_ANDROID
-    m_AndroidUtils->showDatePicker();
 #endif // Q_OS_ANDROID
 }
 

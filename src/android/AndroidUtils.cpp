@@ -39,8 +39,6 @@ void AndroidButtonEvent::setAccepted(bool accepted)
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_Instances.size())
-    , m_IsAlertShown(false)
-    , m_IsDatePickerShown(false)
     , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
@@ -145,23 +143,6 @@ void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
             "(Ljava/lang/String;Ljava/lang/String;)V",
             jniDialogTitle.object<jstring>(),
             jniText.object<jstring>());
-    };
-
-    QtAndroid::runOnAndroidThreadSync(runnable);
-}
-
-void AndroidUtils::showDatePicker()
-{
-    if (this->signalsBlocked()) {
-        return;
-    }
-
-    m_IsDatePickerShown = true;
-    auto runnable = []() {
-        QAndroidJniObject::callStaticMethod<void>(
-            ANDROID_UTILS_CLASS,
-            "showDatePicker",
-            "()V");
     };
 
     QtAndroid::runOnAndroidThreadSync(runnable);
@@ -296,19 +277,6 @@ void AndroidUtils::emitMenuButtonPressed(AndroidButtonEvent *event)
 
     if (m_IsButtonEventsEnabled) {
         emit menuButtonPressed(event);
-    }
-}
-
-void AndroidUtils::emitDatePicked(int year, int month, int day)
-{
-    if (m_IsDatePickerShown) {
-        m_IsDatePickerShown = false;
-        if (year == -1 && month == -1 && day == -1) {
-            emit datePickerCancelled();
-        }
-        else {
-            emit datePicked(year, month, day);
-        }
     }
 }
 
@@ -459,18 +427,6 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     event->deleteLater();
-}
-
-void AndroidUtils::emitDatePickedSignals(int year, int month, int day)
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = (*it).second;
-        if (utils) {
-            utils->emitDatePicked(year, month, day);
-        }
-    }
 }
 
 void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)

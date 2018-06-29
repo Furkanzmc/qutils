@@ -26,13 +26,6 @@ public:
     static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
 
     static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
-    static void datePickedCallback(
-        JNIEnv */*env*/,
-        jobject /*obj*/,
-        jint year,
-        jint month,
-        jint day
-    );
 
     static void timePickedCallback(
         JNIEnv */*env*/,
