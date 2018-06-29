@@ -56,12 +56,6 @@ public:
      * @brief If m_IsEnabled is false, you cannot use this function.
      * @return void
      */
-    Q_INVOKABLE void showTimePicker();
-
-    /**
-     * @brief If m_IsEnabled is false, you cannot use this function.
-     * @return void
-     */
     Q_INVOKABLE void showCamera(const QString &fileName);
 
     /**
@@ -124,7 +118,6 @@ public:
      */
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
 
-    static void emitTimePickedSignals(int hourOfDay, int minute);
     static void emitCameraCapturedSignals(const QString &capturePath);
     static void emitFileSelectedSignals(const QString &filePath);
 
@@ -174,9 +167,6 @@ signals:
      */
     void menuButtonPressed(AndroidButtonEvent *event);
 
-    void timePicked(int hourOfDay, int minute);
-
-    void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
     void cameraCaptureCancelled();
 
@@ -222,8 +212,7 @@ private:
      * This is used to identify the current instance in m_Instances.
      */
     const int m_InstanceID;
-    bool m_IsTimePickerShown,
-         m_IsCameraShown,
+    bool m_IsCameraShown,
          m_IsGalleryShown,
          m_IsDocumentPickerShown,
          m_IsMainController;
@@ -236,7 +225,6 @@ private:
     void emitBackButtonPressed(AndroidButtonEvent *event);
     void emitMenuButtonPressed(AndroidButtonEvent *event);
 
-    void emitTimePicked(int hourOfDay, int minute);
     void emitCameraCaptured(const QString &capturePath);
 
     void emitCameraCaptureCancelled();

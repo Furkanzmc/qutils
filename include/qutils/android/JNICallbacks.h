@@ -26,13 +26,6 @@ public:
     static void backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
 
     static void menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/);
-
-    static void timePickedCallback(
-        JNIEnv */*env*/,
-        jobject /*obj*/,
-        jint hourOfDay,
-        jint minute
-    );
     static void cameraCapturedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring capturePath);
     static void fileSelectedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring filePath);
 

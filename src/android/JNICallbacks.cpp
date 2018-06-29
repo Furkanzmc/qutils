@@ -27,11 +27,6 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         (void *)JNICallbacks::menuButtonPressedCallback // function pointer
     },
     {
-        "timePicked", // const char* function name;
-        "(II)V", // const char* function signature
-        (void *)JNICallbacks::timePickedCallback // function pointer
-    },
-    {
         "cameraCaptured", // const char* function name;
         "(Ljava/lang/String;)V", // const char* function signature
         (void *)JNICallbacks::cameraCapturedCallback // function pointer
@@ -144,11 +139,6 @@ void JNICallbacks::backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
 void JNICallbacks::menuButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
 {
     zmc::AndroidUtils::emitButtonPressedSignals(false, true);
-}
-
-void JNICallbacks::timePickedCallback(JNIEnv */*env*/, jobject /*obj*/, jint hourOfDay, jint minute)
-{
-    zmc::AndroidUtils::emitTimePickedSignals(hourOfDay, minute);
 }
 
 void JNICallbacks::cameraCapturedCallback(JNIEnv */*env*/, jobject /*obj*/, jstring capturePath)

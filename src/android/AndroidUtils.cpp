@@ -39,7 +39,6 @@ void AndroidButtonEvent::setAccepted(bool accepted)
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
     , m_InstanceID(m_Instances.size())
-    , m_IsTimePickerShown(false)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
     , m_IsDocumentPickerShown(false)
@@ -143,23 +142,6 @@ void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
             "(Ljava/lang/String;Ljava/lang/String;)V",
             jniDialogTitle.object<jstring>(),
             jniText.object<jstring>());
-    };
-
-    QtAndroid::runOnAndroidThreadSync(runnable);
-}
-
-void AndroidUtils::showTimePicker()
-{
-    if (this->signalsBlocked()) {
-        return;
-    }
-
-    m_IsTimePickerShown = true;
-    auto runnable = []() {
-        QAndroidJniObject::callStaticMethod<void>(
-            ANDROID_UTILS_CLASS,
-            "showTimePicker",
-            "()V");
     };
 
     QtAndroid::runOnAndroidThreadSync(runnable);
@@ -277,19 +259,6 @@ void AndroidUtils::emitMenuButtonPressed(AndroidButtonEvent *event)
 
     if (m_IsButtonEventsEnabled) {
         emit menuButtonPressed(event);
-    }
-}
-
-void AndroidUtils::emitTimePicked(int hourOfDay, int minute)
-{
-    if (m_IsTimePickerShown) {
-        m_IsTimePickerShown = false;
-        if (hourOfDay == -1 && minute == -1) {
-            emit timePickerCancelled();
-        }
-        else {
-            emit timePicked(hourOfDay, minute);
-        }
     }
 }
 
@@ -427,18 +396,6 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     event->deleteLater();
-}
-
-void AndroidUtils::emitTimePickedSignals(int hourOfDay, int minute)
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = (*it).second;
-        if (utils) {
-            utils->emitTimePicked(hourOfDay, minute);
-        }
-    }
 }
 
 void AndroidUtils::emitCameraCapturedSignals(const QString &capturePath)
