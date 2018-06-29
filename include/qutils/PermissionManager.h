@@ -1,6 +1,7 @@
 #pragma once
+// std
+#include <unordered_map>
 // Qt
-#include <QMap>
 #include <QObject>
 #if defined(Q_OS_ANDROID)
     #include <QtAndroid>
@@ -164,7 +165,9 @@ static const char *WRITE_VOICEMAIL = "android.permission.WRITE_VOICEMAIL";
 
 class PermissionRequestResult : public QObject
 {
-    Q_OBJECT Q_PROPERTY(int permission READ permission CONSTANT)
+    Q_OBJECT
+
+    Q_PROPERTY(int permission READ permission CONSTANT)
     Q_PROPERTY(int result READ result CONSTANT)
 
 public:
@@ -739,6 +742,12 @@ public:
     };
     Q_ENUM(Permissions);
 
+    /*!
+     * \typedef QObjectList
+     * \brief Synonym for std::unordered_map<PermissionManager::Permissions, const char *>.
+     */
+    using AndroidPermissionMap = std::unordered_map<PermissionManager::Permissions, const char *>;
+
 public:
     explicit PermissionManager(QObject *parent = nullptr);
 
@@ -822,6 +831,13 @@ private:
     PermissionManagerPrivate m_Private;
 #endif // Q_OS_IOS
 
+    /*!
+     * \internal
+     * \variable m_AndroidPermissionMap
+     * \brief Used to convert permission string to Permissions type and vice versa.
+     */
+    AndroidPermissionMap m_AndroidPermissionMap;
+
 private:
 #if defined(Q_OS_ANDROID)
     /*!
@@ -846,6 +862,13 @@ private:
      */
     void permissionResultCallback(Permissions permission, PermissionManagerPrivate::AuthorizationStatus status);
 #endif // Q_OS_IOS
+
+    /*!
+     * \internal
+     * \brief Returns a map of the Android permission name and types.
+     * \return std::unordered_map<PermissionManager::Permissions, const char *>
+     */
+    AndroidPermissionMap getPermissionsMap() const;
 };
 
 }
