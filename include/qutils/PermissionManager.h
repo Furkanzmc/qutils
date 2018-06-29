@@ -746,7 +746,7 @@ public:
      * \typedef QObjectList
      * \brief Synonym for std::unordered_map<PermissionManager::Permissions, const char *>.
      */
-    using AndroidPermissionMap = std::unordered_map<PermissionManager::Permissions, const char *>;
+    using AndroidPermissionMap = std::unordered_map<int, const char *>;
 
 public:
     explicit PermissionManager(QObject *parent = nullptr);
