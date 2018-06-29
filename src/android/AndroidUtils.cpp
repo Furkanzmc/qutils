@@ -150,25 +150,6 @@ void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
     QtAndroid::runOnAndroidThreadSync(runnable);
 }
 
-void AndroidUtils::showAlertDialog(const QVariantMap &dialogProperties)
-{
-    if (this->signalsBlocked()) {
-        return;
-    }
-
-    m_IsAlertShown = true;
-    const QAndroidJniObject hashMapClass = getJNIHashMap(dialogProperties);
-    auto runnable = [hashMapClass]() {
-        QAndroidJniObject::callStaticMethod<void>(
-            ANDROID_UTILS_CLASS,
-            "showAlertDialog",
-            "(Ljava/util/HashMap;)V",
-            hashMapClass.object<jobject>());
-    };
-
-    QtAndroid::runOnAndroidThreadSync(runnable);
-}
-
 void AndroidUtils::showDatePicker()
 {
     if (this->signalsBlocked()) {
@@ -315,14 +296,6 @@ void AndroidUtils::emitMenuButtonPressed(AndroidButtonEvent *event)
 
     if (m_IsButtonEventsEnabled) {
         emit menuButtonPressed(event);
-    }
-}
-
-void AndroidUtils::emitAlertDialogClicked(int buttonIndex)
-{
-    if (m_IsAlertShown) {
-        m_IsAlertShown = false;
-        emit alertDialogClicked(buttonIndex);
     }
 }
 
@@ -486,18 +459,6 @@ void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton
     }
 
     event->deleteLater();
-}
-
-void AndroidUtils::emitAlertDialogClickedSignals(int buttonIndex)
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        AndroidUtils *utils = (*it).second;
-        if (utils) {
-            utils->emitAlertDialogClicked(buttonIndex);
-        }
-    }
 }
 
 void AndroidUtils::emitDatePickedSignals(int year, int month, int day)

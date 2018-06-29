@@ -53,48 +53,6 @@ public:
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
 
     /**
-     * @brief Shows a native AlertDialog according to the given dialog properties.
-     * `title` and `message` properties are mandatory. And at least one type of button should be given.
-     * When it is clicked, these values are returned with the signal:
-     * - Positive Button: 1
-     * - Neutral Button: 0
-     * - Negative Button: -1
-     *
-     * If m_IsEnabled is false, this function will not work.
-     *
-     * If the property contains the `items` key then the other buttons will be ignored, the item indexes will be reported with the `buttonIndex` variable.
-     * Be careful that when you set the `message` property the `items` will be ignored.
-     *
-     * **Example**
-     * @code
-     * // Show an alert sheet with items
-     * var properties = {
-     *     "title": "Select An Item",
-     *     "items": [
-     *         "Item 1",
-     *         "Item 2"
-     *     ]
-     * };
-     *
-     * nu.showAlertDialog(properties);
-     *
-     * // Show an alert sheet with three buttons and a message
-     * var properties = {
-     *     "positive": "Yes",
-     *     "negative": "No",
-     *     "neutral": "Maybe",
-     *     "title": "Would you?",
-     *     "message": "Would you not?"
-     * };
-     *
-     * nu.showAlertDialog(properties);
-     * @endcode
-     * @param dialogData
-     * @return void
-     */
-    Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
-
-    /**
      * @brief If m_IsEnabled is false, you cannot use this function.
      * @return void
      */
@@ -171,7 +129,6 @@ public:
      * @param isMenuButton
      */
     static void emitButtonPressedSignals(bool isBackButton, bool isMenuButton);
-    static void emitAlertDialogClickedSignals(int buttonIndex);
     static void emitDatePickedSignals(int year, int month, int day);
 
     static void emitTimePickedSignals(int hourOfDay, int minute);
@@ -223,7 +180,6 @@ signals:
      * @brief Only the last instance is informed of the menu button signal.
      */
     void menuButtonPressed(AndroidButtonEvent *event);
-    void alertDialogClicked(int buttonIndex);
 
     void datePicked(int year, int month, int day);
     void datePickerCancelled();
@@ -290,7 +246,6 @@ private:
 private:
     void emitBackButtonPressed(AndroidButtonEvent *event);
     void emitMenuButtonPressed(AndroidButtonEvent *event);
-    void emitAlertDialogClicked(int buttonIndex);
 
     void emitDatePicked(int year, int month, int day);
     void emitTimePicked(int hourOfDay, int minute);

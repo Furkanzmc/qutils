@@ -27,16 +27,14 @@ NativeUtils::NativeUtils(QObject *parent)
 #ifdef Q_OS_ANDROID
     connect(m_AndroidUtils, &AndroidUtils::backButtonPressed, this, &NativeUtils::backButtonPressed);
     connect(m_AndroidUtils, &AndroidUtils::menuButtonPressed, this, &NativeUtils::menuButtonPressed);
-    connect(m_AndroidUtils, &AndroidUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
-
     connect(m_AndroidUtils, &AndroidUtils::datePicked, this, &NativeUtils::datePicked);
+
     connect(m_AndroidUtils, &AndroidUtils::datePickerCancelled, this, &NativeUtils::datePickerCancelled);
     connect(m_AndroidUtils, &AndroidUtils::timePicked, this, &NativeUtils::timePicked);
-
     connect(m_AndroidUtils, &AndroidUtils::timePickerCancelled, this, &NativeUtils::timePickerCancelled);
+
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_AndroidUtils, &AndroidUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
-
     connect(m_AndroidUtils, &AndroidUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
 
     connect(m_AndroidUtils, &AndroidUtils::buttonEventsEnabledChanged, this, &NativeUtils::buttonEventsEnabledChanged);
@@ -123,9 +121,7 @@ void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
 
 void NativeUtils::showAlertDialog(const QVariantMap &dialogProperties)
 {
-#if defined(Q_OS_ANDROID)
-    m_AndroidUtils->showAlertDialog(dialogProperties);
-#elif defined(Q_OS_IOS)
+#if defined(Q_OS_IOS)
     m_iOSUtils->showAlertView(dialogProperties);
 #else
     Q_UNUSED(dialogProperties);
