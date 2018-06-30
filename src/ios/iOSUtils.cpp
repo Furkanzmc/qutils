@@ -144,37 +144,6 @@ void iOSUtils::showCamera()
     m_iOSNative->showCamera();
 }
 
-void iOSUtils::emitOpenedWithURLSignal(QString url)
-{
-    if (m_Instances.size() == 0) {
-        m_URLOpenedWith = url;
-    }
-    else {
-        auto begin = m_Instances.begin();
-        auto end = m_Instances.end();
-        for (auto it = begin; it != end; it++) {
-            iOSUtils *utils = it.value();
-            if (utils && utils->isMainController()) {
-                QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithURL, utils, url), Qt::QueuedConnection);
-                break;
-            }
-        }
-    }
-}
-
-void iOSUtils::emitOpenedWithoutURLSignal()
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        iOSUtils *utils = it.value();
-        if (utils && utils->isMainController()) {
-            QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithoutURL, utils), Qt::QueuedConnection);
-            break;
-        }
-    }
-}
-
 bool iOSUtils::isMainController() const
 {
     return m_IsMainController;
@@ -222,6 +191,37 @@ bool iOSUtils::isStatusBarVisible() const
 void iOSUtils::setStatusBarVisible(bool visible)
 {
     m_iOSNative->setStatusBarVisible(visible);
+}
+
+void iOSUtils::emitOpenedWithURLSignal(QString url)
+{
+    if (m_Instances.size() == 0) {
+        m_URLOpenedWith = url;
+    }
+    else {
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            iOSUtils *utils = it.value();
+            if (utils && utils->isMainController()) {
+                QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithURL, utils, url), Qt::QueuedConnection);
+                break;
+            }
+        }
+    }
+}
+
+void iOSUtils::emitOpenedWithoutURLSignal()
+{
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        iOSUtils *utils = it.value();
+        if (utils && utils->isMainController()) {
+            QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithoutURL, utils), Qt::QueuedConnection);
+            break;
+        }
+    }
 }
 
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)

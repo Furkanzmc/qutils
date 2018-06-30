@@ -65,6 +65,11 @@ iOSNativeUtils::~iOSNativeUtils()
 
 void iOSNativeUtils::showAlertView(const QString &title, const QString &message, const QStringList &buttons)
 {
+    if (buttons.isEmpty()) {
+        LOG_ERROR("Empty button list is given. Will not show the alert dialog.");
+        return;
+    }
+
     if (m_IsAlertDialogVisible) {
         LOG("Only one alert dialog can be shown at a time.");
         return;
@@ -74,7 +79,7 @@ void iOSNativeUtils::showAlertView(const QString &title, const QString &message,
     UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
                                                                    message: [NSString stringWithUTF8String: message.toStdString().c_str()]
                                                             preferredStyle: UIAlertControllerStyleAlert
-                                ];
+                               ];
 
     for (auto it = buttons.constBegin(); it != buttons.constEnd(); it++) {
         const QString buttonText = (*it);
@@ -84,7 +89,7 @@ void iOSNativeUtils::showAlertView(const QString &title, const QString &message,
                                                            NSUInteger index = [[alert actions] indexOfObject: action];
                                                            iOSNativeUtils::emitAlertDialogClickedSignal(static_cast<unsigned int>(index));
                                                        }
-                                 ];
+                                ];
         [alert addAction: button];
     }
 
@@ -104,6 +109,11 @@ void iOSNativeUtils::shareText(const QString &text)
 
 void iOSNativeUtils::showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect)
 {
+    if (buttons.isEmpty()) {
+        LOG_ERROR("Empty button list is given. Will not show the action sheet.");
+        return;
+    }
+
     UIApplication *app = [UIApplication sharedApplication];
     UIViewController *viewController = [[app keyWindow] rootViewController];
     UIViewController *presentedView = [viewController presentedViewController];
@@ -126,7 +136,7 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
     UIAlertController *alert = [UIAlertController alertControllerWithTitle: [NSString stringWithUTF8String: title.toStdString().c_str()]
                                                                    message: [NSString stringWithUTF8String: message.toStdString().c_str()]
                                                             preferredStyle: UIAlertControllerStyleActionSheet
-                                ];
+                               ];
 
     for (const QVariant &button : buttons) {
         UIAlertActionStyle alertActionStyle = UIAlertActionStyleDefault;
@@ -147,7 +157,7 @@ void iOSNativeUtils::showActionSheet(const QString &title, const QString &messag
                                                                  NSUInteger index = [[alert actions] indexOfObject: action];
                                                                  iOSNativeUtils::emitActionSheetDialogClickedSignal(static_cast<unsigned int>(index));
                                                              }
-                                       ];
+                                      ];
         [alert addAction: actionButton];
     }
 
@@ -208,28 +218,38 @@ void iOSNativeUtils::openSafari(const QString &url)
 
 void iOSNativeUtils::openGallery()
 {
-    m_IsImagePickerOpen = true;
+    if (!m_IsImagePickerOpen) {
+        m_IsImagePickerOpen = true;
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.allowsEditing = NO;
-    picker.delegate = (id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)m_QutilsDelegate;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.allowsEditing = NO;
+        picker.delegate = (id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)m_QutilsDelegate;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-    UIApplication *app = [UIApplication sharedApplication];
-    [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
+        UIApplication *app = [UIApplication sharedApplication];
+        [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
+    }
+    else {
+        LOG_WARNING("Gallery is already open.");
+    }
 }
 
 void iOSNativeUtils::showCamera()
 {
-    m_IsCameraOpen = true;
+    if (!m_IsCameraOpen) {
+        m_IsCameraOpen = true;
 
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.allowsEditing = NO;
-    picker.delegate = (id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)m_QutilsDelegate;
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.allowsEditing = NO;
+        picker.delegate = (id<UINavigationControllerDelegate, UIImagePickerControllerDelegate>)m_QutilsDelegate;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 
-    UIApplication *app = [UIApplication sharedApplication];
-    [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
+        UIApplication *app = [UIApplication sharedApplication];
+        [[[app keyWindow] rootViewController] presentViewController: picker animated: YES completion: nil];
+    }
+    else {
+        LOG_WARNING("Camera is already open.");
+    }
 }
 
 bool iOSNativeUtils::isImagePickerOpen() const
@@ -332,12 +352,14 @@ void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
 
 void iOSNativeUtils::callImagePickerFinishedCallback(QVariantMap &data)
 {
-    if (onImagePickerControllerFinishedPicking) {
-        onImagePickerControllerFinishedPicking(data);
-    }
+    if (m_IsImagePickerOpen) {
+        if (onImagePickerControllerFinishedPicking) {
+            onImagePickerControllerFinishedPicking(data);
+        }
 
-    m_IsImagePickerOpen = false;
-    m_IsCameraOpen = false;
+        m_IsImagePickerOpen = false;
+        m_IsCameraOpen = false;
+    }
 }
 
 void iOSNativeUtils::callImagePickerCancelledCallback()

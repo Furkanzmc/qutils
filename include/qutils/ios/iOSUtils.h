@@ -52,97 +52,98 @@ public:
      * };
      * \endcode
      * \param dialogData
+     *
+     * \sa iOSNativeUtils::showAlertView()
      */
     void showAlertView(const QVariantMap &dialogProperties);
 
     /*!
-     * \brief Show the default share dialog on iOS. There's no dialog title on iOS.
+     * \brief See iOSNativeUtils::shareText
      * \param text
+     * \sa iOSNativeUtils::shareText()
      */
     void shareText(const QString &text);
 
     /*!
-     * \brief Shows an action sheet with the given parameters.
+     * \brief See iOSNativeUtils::showActionSheet()
      * \param title
      * \param message
      * \param buttons
      * \param rect
-     *
-     * \a rect is required on iPad devices. \a rect should be the area that this action sheet's center will be.
+     * \sa iOSNativeUtils::showActionSheet()
      */
     void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
     /*!
-     * \brief Dismisses the keyboard.
+     * \brief See iOSNativeUtils::dismissKeyboard()
+     * \sa iOSNativeUtils::dismissKeyboard()
      */
     void dismissKeyboard();
 
     /*!
-     * \brief Sets the application's icon badge number. Set to 0 to clear it.
+     * \brief See iOSNativeUtils::setApplicationIconBadgeNumber()
      * \param number
+     * \sa iOSNativeUtils::setApplicationIconBadgeNumber()
      */
     void setApplicationIconBadgeNumber(const int &number);
 
     /*!
-     * \brief Returns true If the device running the app is an iPad.
+     * \brief See iOSNativeUtils::isiPad()
+     * \sa iOSNativeUtils::isiPad()
      */
     bool isiPad() const;
 
     /*!
-     * \brief If Safari services is enabled, opens the link in an in app browser. Otherwise it does nothing.
+     * \brief See iOSNativeUtils::openSafari()
      * \param url
+     * \sa iOSNativeUtils::openSafari()
      */
     void openSafari(const QString &url);
 
     /*!
-     * \brief See iOSNativeUtils::openGallery.
+     * \brief See iOSNativeUtils::openGallery().
+     * \sa iOSNativeUtils::openGallery()
      */
     void openGallery();
 
     /*!
      * \brief See iOSNativeUtils::getDeviceName().
      * \return QString
+     * \sa iOSNativeUtils::getDeviceName()
      */
     QString getDeviceName() const;
 
     /*!
      * \brief See iOSNativeUtils::getStatusBarSize().
      * \return QSize
+     * \sa iOSNativeUtils::getStatusBarSize()
      */
     QSize getStatusBarSize() const;
 
     /*!
      * \brief See iOSNativeUtils::getStatusBarColor().
      * \return QColor
+     * \sa iOSNativeUtils::getStatusBarColor()
      */
     QColor getStatusBarColor() const;
 
     /*!
      * \brief See iOSNativeUtils::openAppSettings().
+     * \sa iOSNativeUtils::openAppSettings()
      */
     void openAppSettings() const;
 
     /*!
      * \brief See iOSNativeUtils::setStatusBarColor().
+     * \sa iOSNativeUtils::setStatusBarColor()
      */
     void setStatusBarColor(const QColor &color);
 
     /*!
-     * \brief Opens the camera.
+     * \brief See iOSNativeUtils::showCamera().
+     * \sa iOSNativeUtils::showCamera()
      */
     void showCamera();
-
-    /*!
-     * \brief Only the first instance will be notified of this.
-     * \param url
-     */
-    static void emitOpenedWithURLSignal(QString url);
-
-    /*!
-     * \brief Only the first instance will be notified of this.
-     * \param url
-     */
-    static void emitOpenedWithoutURLSignal();
 
     /*!
      * \brief Returns true if this is the main controller.
@@ -185,17 +186,30 @@ public:
     void setEnabled(bool enabled);
 
     /*!
-     * \brief Refer to iOSNativeUtils::isStatusBarVisible()
+     * \brief See iOSNativeUtils::isStatusBarVisible().
      * \return bool
+     * \sa iOSNativeUtils::isStatusBarVisible()
      */
     bool isStatusBarVisible() const;
 
     /*!
-     * \brief Refer to iOSNativeUtils::setStatusBarVisible()
+     * \brief See iOSNativeUtils::setStatusBarVisible().
      * \param visible
-     * \return void
+     * \sa iOSNativeUtils::setStatusBarVisible()
      */
     void setStatusBarVisible(bool visible);
+
+    /*!
+     * \brief Only the first instance will be notified of this.
+     * \param url
+     */
+    static void emitOpenedWithURLSignal(QString url);
+
+    /*!
+     * \brief Only the first instance will be notified of this.
+     * \param url
+     */
+    static void emitOpenedWithoutURLSignal();
 
 signals:
 
@@ -270,6 +284,7 @@ signals:
 private:
 
     /*!
+     * \internal
      * \variable static QMap<int, CacheManager *> iOSUtils::m_Instances
      * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
      */
@@ -277,6 +292,7 @@ private:
     static QString m_URLOpenedWith;
 
     /*!
+     * \internal
      * \variable iOSUtils::m_InstanceID
      * \brief This variable is initilized in the constructor to the size value of m_Instances.
      *
@@ -290,6 +306,7 @@ private:
 private:
 
     /*!
+     * \internal
      * \brief Determines the source of the image (e.g camera or gallery) and emits the associated signals.
      * \param data
      */
