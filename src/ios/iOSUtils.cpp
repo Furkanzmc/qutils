@@ -155,7 +155,7 @@ void iOSUtils::emitOpenedWithURLSignal(QString url)
         for (auto it = begin; it != end; it++) {
             iOSUtils *utils = it.value();
             if (utils && utils->isMainController()) {
-                emit utils->openedWithURL(url);
+                QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithURL, utils, url), Qt::QueuedConnection);
                 break;
             }
         }
@@ -169,7 +169,7 @@ void iOSUtils::emitOpenedWithoutURLSignal()
     for (auto it = begin; it != end; it++) {
         iOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
-            emit utils->openedWithoutURL();
+            QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithoutURL, utils), Qt::QueuedConnection);
             break;
         }
     }

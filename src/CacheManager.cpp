@@ -259,7 +259,7 @@ void CacheManager::emitCacheChangedInAllInstances(const QString &cacheName, cons
         for (auto it = begin; it != end; it++) {
             CacheManager *instance = it.value();
             if (instance && instance->getDatabaseName() == databaseName && instance->getTableName() == tableName) {
-                emit instance->cacheChanged(cacheName, oldCachedValue, newCachedValue);
+                QMetaObject::invokeMethod(instance, std::bind(&CacheManager::cacheChanged, instance, cacheName, oldCachedValue, newCachedValue), Qt::QueuedConnection);
             }
         }
     }

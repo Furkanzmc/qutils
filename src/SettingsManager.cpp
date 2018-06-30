@@ -173,7 +173,6 @@ QStringList SettingsManager::getKeys()
     }
 
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName);
-
     for (const QMap<QString, QVariant> &val : existingData) {
         keys.append(val.value(COL_SETTING_NAME).toString());
     }
@@ -275,7 +274,7 @@ void SettingsManager::emitSettingChangedInAllInstances(const QString &settingNam
         for (auto it = begin; it != end; it++) {
             SettingsManager *instance = it.value();
             if (instance && instance->getTableName() == tableName && instance->getDatabaseName() == databaseName) {
-                emit instance->settingChanged(settingName, oldSettingValue, newSettingValue);
+                QMetaObject::invokeMethod(instance, std::bind(&SettingsManager::settingChanged, instance, settingName, oldSettingValue, newSettingValue), Qt::QueuedConnection);
             }
         }
     }
@@ -288,7 +287,7 @@ void SettingsManager::emitClearedSignals()
     for (auto it = begin; it != end; it++) {
         SettingsManager *instance = it.value();
         if (instance) {
-            emit instance->cleared();
+            QMetaObject::invokeMethod(instance, std::bind(&SettingsManager::cleared, instance), Qt::QueuedConnection);
         }
     }
 }
