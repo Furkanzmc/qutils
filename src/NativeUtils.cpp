@@ -44,10 +44,12 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::alertDialogClicked, this, &NativeUtils::alertDialogClicked);
     connect(m_iOSUtils, &iOSUtils::actionSheetClicked, this, &NativeUtils::actionSheetClicked);
     connect(m_iOSUtils, &iOSUtils::keyboardHeightChanged, this, &NativeUtils::keyboardHeightChanged);
-    connect(m_iOSUtils, &iOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
 
+    connect(m_iOSUtils, &iOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
     connect(m_iOSUtils, &iOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
     connect(m_iOSUtils, &iOSUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
+
+    connect(m_iOSUtils, &iOSUtils::enabledChanged, this, &NativeUtils::enabledChanged);
     connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
 #endif // Q_OS_IOS
