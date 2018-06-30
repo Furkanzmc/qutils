@@ -21,9 +21,9 @@ iOSUtils::iOSUtils(QObject *parent)
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
     m_iOSNative->onKeyboardHeightChanged = std::bind(&iOSUtils::keyboardHeightChanged, this, std::placeholders::_1);
 
-    m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imagePickerCancelledCallback, this);
+    m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imageSelectionCancelled, this);
     m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
-    m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCancelledCallback, this);
+    m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCaptureCancelled, this);
 
     if (isMainController()) {
         if (m_URLOpenedWith.length() > 0) {
@@ -224,11 +224,6 @@ void iOSUtils::setStatusBarVisible(bool visible)
     m_iOSNative->setStatusBarVisible(visible);
 }
 
-void iOSUtils::imagePickerCancelledCallback()
-{
-    emit imageSelectionCancelled();
-}
-
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
 {
     if (data["isSourceCamera"].toBool() == true) {
@@ -237,11 +232,6 @@ void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
     else {
         emit imageSelected(data["tempUrl"].toString());
     }
-}
-
-void iOSUtils::cameraCancelledCallback()
-{
-    emit cameraCaptureCancelled();
 }
 
 }
