@@ -2,8 +2,8 @@
 // Qt
 #include <QTimer>
 // Local
-#include "qutils/ios/iOSNativeUtils.h"
 #include "qutils/Macros.h"
+#include "qutils/ios/iOSNativeUtils.h"
 
 namespace zmc
 {

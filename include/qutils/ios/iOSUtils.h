@@ -8,6 +8,7 @@
 namespace zmc
 {
 
+// Forward Decleration
 class iOSNativeUtils;
 
 /*!
@@ -15,13 +16,11 @@ class iOSNativeUtils;
  * \brief The iOSUtils class provides access to iOS specific features. Under the hood, it uses iOSNativeUtils.
  *
  * It is a better idea to use NativeUtils to access cros-platform functionalities. This will only be compiled for
- * iOS targets.
+ * iOS targets. This class is not meant to be used in QML.
  */
 class iOSUtils : public QObject
 {
     Q_OBJECT
-
-    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
 
 public:
     explicit iOSUtils(QObject *parent = nullptr);
@@ -54,13 +53,13 @@ public:
      * \endcode
      * \param dialogData
      */
-    Q_INVOKABLE void showAlertView(const QVariantMap &dialogProperties);
+    void showAlertView(const QVariantMap &dialogProperties);
 
     /*!
      * \brief Show the default share dialog on iOS. There's no dialog title on iOS.
      * \param text
      */
-    Q_INVOKABLE void shareText(const QString &text);
+    void shareText(const QString &text);
 
     /*!
      * \brief Shows an action sheet with the given parameters.
@@ -71,62 +70,62 @@ public:
      *
      * \a rect is required on iPad devices. \a rect should be the area that this action sheet's center will be.
      */
-    Q_INVOKABLE void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
+    void showActionSheet(const QString &title, const QString &message, const QVariantList &buttons, QRect rect = QRect());
 
     /*!
      * \brief Dismisses the keyboard.
      */
-    Q_INVOKABLE void dismissKeyboard();
+    void dismissKeyboard();
 
     /*!
      * \brief Sets the application's icon badge number. Set to 0 to clear it.
      * \param number
      */
-    Q_INVOKABLE void setApplicationIconBadgeNumber(const int &number);
+    void setApplicationIconBadgeNumber(const int &number);
 
     /*!
      * \brief Returns true If the device running the app is an iPad.
      */
-    Q_INVOKABLE bool isiPad() const;
+    bool isiPad() const;
 
     /*!
      * \brief If Safari services is enabled, opens the link in an in app browser. Otherwise it does nothing.
      * \param url
      */
-    Q_INVOKABLE void openSafari(const QString &url);
+    void openSafari(const QString &url);
 
     /*!
      * \brief See iOSNativeUtils::openGallery.
      */
-    Q_INVOKABLE void openGallery();
+    void openGallery();
 
     /*!
      * \brief See iOSNativeUtils::getDeviceName().
      * \return QString
      */
-    Q_INVOKABLE QString getDeviceName() const;
+    QString getDeviceName() const;
 
     /*!
      * \brief See iOSNativeUtils::getStatusBarSize().
      * \return QSize
      */
-    Q_INVOKABLE QSize getStatusBarSize() const;
+    QSize getStatusBarSize() const;
 
     /*!
      * \brief See iOSNativeUtils::getStatusBarColor().
      * \return QColor
      */
-    Q_INVOKABLE QColor getStatusBarColor() const;
+    QColor getStatusBarColor() const;
 
     /*!
      * \brief See iOSNativeUtils::openAppSettings().
      */
-    Q_INVOKABLE void openAppSettings() const;
+    void openAppSettings() const;
 
     /*!
      * \brief See iOSNativeUtils::setStatusBarColor().
      */
-    Q_INVOKABLE void setStatusBarColor(const QColor &color);
+    void setStatusBarColor(const QColor &color);
 
     /*!
      * \brief Opens the camera.
@@ -149,7 +148,7 @@ public:
      * \brief Returns true if this is the main controller.
      * \return bool
      */
-    Q_INVOKABLE bool isMainController() const;
+    bool isMainController() const;
 
     /*!
      * \brief Set the main controller to this one.
@@ -165,23 +164,23 @@ public:
      *     - openedWithUrl
      *     - openedWithoutUrl
      */
-    Q_INVOKABLE void setMainController(bool isMain, bool disableOthers = true);
+    void setMainController(bool isMain, bool disableOthers = true);
 
     /*!
-     * \brief Returns the enabled status
+     * \brief Returns true If the instance is enabled.
      * \return bool
-     */
-    bool isEnabled() const;
-
-    /*!
-     * \brief If m_IsEnabled is set to false, this instance will not receive any signals from the system.
-     * \param enabled
-     * \return void
      *
+     * If enabled is set to false, this instance will not receive any signals from the system.
      * So, when m_IsEnabled is false, you cannot show an alert dialog or show the date picker.
      * Basically, anything that requires a callback back to you cannot be used.
      *
      * The only exceptions are the openedWithoutURL() and openedWithURL() signals.
+     */
+    bool isEnabled() const;
+
+    /*!
+     * \brief Enable or disable the instance.
+     * \param enabled
      */
     void setEnabled(bool enabled);
 
@@ -189,14 +188,14 @@ public:
      * \brief Refer to iOSNativeUtils::isStatusBarVisible()
      * \return bool
      */
-    Q_INVOKABLE bool isStatusBarVisible() const;
+    bool isStatusBarVisible() const;
 
     /*!
      * \brief Refer to iOSNativeUtils::setStatusBarVisible()
      * \param visible
      * \return void
      */
-    Q_INVOKABLE void setStatusBarVisible(bool visible);
+    void setStatusBarVisible(bool visible);
 
 signals:
 
