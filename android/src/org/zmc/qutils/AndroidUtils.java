@@ -142,6 +142,10 @@ public class AndroidUtils extends QtActivity {
         return QutilsActivity.isStatusBarVisible();
     }
 
+    public static boolean isImmersiveModeEnabled() {
+        return QutilsActivity.isImmersiveModeEnabled();
+    }
+
     public static void setImmersiveMode(boolean enabled) {
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = m_MainContext.getWindow().getDecorView();
@@ -169,16 +173,6 @@ public class AndroidUtils extends QtActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         m_MainContext.startActivity(Intent.createChooser(sendIntent, dialogTitle));
-    }
-
-    public static void showTaost(String text, boolean isLongDuration) {
-        int duration = Toast.LENGTH_SHORT;
-        if (isLongDuration) {
-            duration = Toast.LENGTH_LONG;
-        }
-
-        Toast toast = Toast.makeText(m_MainContext, text, duration);
-        toast.show();
     }
 
     public static void openGallery(String fileType) {
