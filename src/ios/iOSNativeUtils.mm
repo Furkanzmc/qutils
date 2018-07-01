@@ -356,6 +356,9 @@ void iOSNativeUtils::callImagePickerFinishedCallback(QVariantMap &data)
         if (onImagePickerControllerFinishedPicking) {
             onImagePickerControllerFinishedPicking(data);
         }
+        else {
+            LOG_WARNING("onImagePickerControllerFinishedPicking callback is not set!");
+        }
 
         m_IsImagePickerOpen = false;
         m_IsCameraOpen = false;
@@ -368,12 +371,18 @@ void iOSNativeUtils::callImagePickerCancelledCallback()
         if (onImagePickerControllerCancelled) {
             onImagePickerControllerCancelled();
         }
+        else {
+            LOG_WARNING("onImagePickerControllerCancelled callback is not set!");
+        }
 
         m_IsImagePickerOpen = false;
     }
     else if (m_IsCameraOpen) {
         if (onCameraCancelled) {
             onCameraCancelled();
+        }
+        else {
+            LOG_WARNING("onCameraCancelled callback is not set!");
         }
 
         m_IsCameraOpen = false;
@@ -384,6 +393,9 @@ void iOSNativeUtils::emitKeyboardHeightChanged(int height)
 {
     if (onKeyboardHeightChanged) {
         onKeyboardHeightChanged(height);
+    }
+    else {
+        LOG_WARNING("onKeyboardHeightChanged callback is not set!");
     }
 }
 
@@ -417,6 +429,9 @@ void iOSNativeUtils::callAlertDialogClickedCallback(unsigned int index)
         if (onAlertDialogClicked) {
             onAlertDialogClicked(index);
         }
+        else {
+            LOG_WARNING("onAlertDialogClicked callback is not set!");
+        }
 
         m_IsAlertDialogVisible = false;
     }
@@ -427,6 +442,9 @@ void iOSNativeUtils::callActionSheetDialogClickedCallback(unsigned int index)
     if (m_IsActionSheetDialogVisible) {
         if (onActionSheetClicked) {
             onActionSheetClicked(index);
+        }
+        else {
+            LOG_WARNING("onActionSheetClicked callback is not set!");
         }
 
         m_IsActionSheetDialogVisible = false;
