@@ -250,6 +250,10 @@ public class QutilsActivity extends QtActivity {
         m_IsImmersiveModeEnabled = enabled;
     }
 
+    public static boolean isImmersiveModeEnabled() {
+        return m_IsImmersiveModeEnabled;
+    }
+
     public static void setStatusBarVisible(boolean visible) {
         m_IsStatusBarVisible = visible;
     }

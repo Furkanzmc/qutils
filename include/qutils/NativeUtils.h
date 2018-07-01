@@ -44,8 +44,6 @@ public:
     Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
     Q_INVOKABLE void showAlertDialog(const QVariantMap &dialogProperties);
 
-    Q_INVOKABLE void showDatePicker();
-    Q_INVOKABLE void showTimePicker();
     Q_INVOKABLE void showCamera(const QString &photoName);
 
     Q_INVOKABLE void showToast(const QString &text, bool isLongDuration);
@@ -79,11 +77,6 @@ signals:
 #endif // Q_OS_ANDRID
     void alertDialogClicked(int buttonIndex);
 
-    void datePicked(int year, int month, int day);
-    void datePickerCancelled();
-    void timePicked(int hourOfDay, int minute);
-
-    void timePickerCancelled();
     void cameraCaptured(const QString &capturePath);
     void cameraCaptureCancelled();
 

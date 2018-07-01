@@ -13,9 +13,6 @@ import android.view.View;
 
 import android.os.Build;
 import android.content.Intent;
-import android.app.AlertDialog.Builder;
-
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.app.DialogFragment;
 
@@ -39,9 +36,6 @@ import java.util.ArrayList;
 // qutils
 import org.zmc.qutils.CppCallbacks;
 import org.zmc.qutils.QutilsActivity;
-import org.zmc.qutils.DatePickerFragment;
-
-import org.zmc.qutils.TimePickerFragment;
 import org.zmc.qutils.Constants;
 
 // Qt
@@ -148,6 +142,10 @@ public class AndroidUtils extends QtActivity {
         return QutilsActivity.isStatusBarVisible();
     }
 
+    public static boolean isImmersiveModeEnabled() {
+        return QutilsActivity.isImmersiveModeEnabled();
+    }
+
     public static void setImmersiveMode(boolean enabled) {
         if (Build.VERSION.SDK_INT >= 19) {
             View decorView = m_MainContext.getWindow().getDecorView();
@@ -175,95 +173,6 @@ public class AndroidUtils extends QtActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
         m_MainContext.startActivity(Intent.createChooser(sendIntent, dialogTitle));
-    }
-
-    public static void showAlertDialog(HashMap properties) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(m_MainContext);
-        builder.setCancelable(false);
-        builder.setTitle((String) properties.get("title"));
-        if (properties.containsKey("message")) {
-            builder.setMessage((String) properties.get("message"));
-        }
-
-        builder.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, android.view.KeyEvent event) {
-                if (keyCode == android.view.KeyEvent.KEYCODE_BACK && event.getAction() == android.view.KeyEvent.ACTION_UP) {
-                    dialog.cancel();
-                    CppCallbacks.alertDialogClicked(-2);
-                    return false;
-                }
-
-                return true;
-            }
-        });
-
-        String buttonText = "";
-        if (properties.containsKey("positive")) {
-            buttonText = (String) properties.get("positive");
-            builder.setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(1);
-                }
-            });
-        }
-        if (properties.containsKey("neutral")) {
-            buttonText = (String) properties.get("neutral");
-            builder.setNeutralButton(buttonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(0);
-                }
-            });
-        }
-        if (properties.containsKey("negative")) {
-            buttonText = (String) properties.get("negative");
-            builder.setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    CppCallbacks.alertDialogClicked(-1);
-                }
-            });
-        }
-
-        if (properties.containsKey("items")) {
-            ArrayList list = (ArrayList) properties.get("items");
-            CharSequence[] items = new CharSequence[list.size()];
-            for (int i = 0; i < items.length; i++) {
-                items[i] = list.get(i).toString();
-            }
-
-            builder.setItems(items, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                CppCallbacks.alertDialogClicked(which);
-                }
-            });
-        }
-
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public static void showDatePicker() {
-        DialogFragment newFragment = new DatePickerFragment(m_MainContext);
-        newFragment.show(m_MainContext.getFragmentManager(), "datePicker");
-    }
-
-    public static void showTimePicker() {
-        DialogFragment newFragment = new TimePickerFragment(m_MainContext);
-        newFragment.show(m_MainContext.getFragmentManager(), "timePicker");
-    }
-
-    public static void showTaost(String text, boolean isLongDuration) {
-        int duration = Toast.LENGTH_SHORT;
-        if (isLongDuration) {
-            duration = Toast.LENGTH_LONG;
-        }
-
-        Toast toast = Toast.makeText(m_MainContext, text, duration);
-        toast.show();
     }
 
     public static void openGallery(String fileType) {

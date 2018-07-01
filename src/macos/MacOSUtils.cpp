@@ -79,7 +79,7 @@ void MacOSUtils::emitOpenedWithURLSignal(QString url)
     for (auto it = begin; it != end; it++) {
         MacOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
-            emit utils->openedWithURL(url);
+            QMetaObject::invokeMethod(utils, std::bind(&MacOSUtils::openedWithURL, utils, url), Qt::QueuedConnection);
             break;
         }
     }
@@ -92,7 +92,7 @@ void MacOSUtils::emitOpenedWithoutURLSignal()
     for (auto it = begin; it != end; it++) {
         MacOSUtils *utils = it.value();
         if (utils && utils->isMainController()) {
-            emit utils->openedWithoutURL();
+            QMetaObject::invokeMethod(utils, std::bind(&MacOSUtils::openedWithoutURL, utils), Qt::QueuedConnection);
             break;
         }
     }

@@ -2,8 +2,8 @@
 // Qt
 #include <QTimer>
 // Local
-#include "qutils/ios/iOSNativeUtils.h"
 #include "qutils/Macros.h"
+#include "qutils/ios/iOSNativeUtils.h"
 
 namespace zmc
 {
@@ -21,9 +21,9 @@ iOSUtils::iOSUtils(QObject *parent)
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
     m_iOSNative->onKeyboardHeightChanged = std::bind(&iOSUtils::keyboardHeightChanged, this, std::placeholders::_1);
 
-    m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imagePickerCancelledCallback, this);
+    m_iOSNative->onImagePickerControllerCancelled = std::bind(&iOSUtils::imageSelectionCancelled, this);
     m_iOSNative->onImagePickerControllerFinishedPicking = std::bind(&iOSUtils::imagePickerFinishedPickingCallback, this, std::placeholders::_1);
-    m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCancelledCallback, this);
+    m_iOSNative->onCameraCancelled = std::bind(&iOSUtils::cameraCaptureCancelled, this);
 
     if (isMainController()) {
         if (m_URLOpenedWith.length() > 0) {
@@ -144,37 +144,6 @@ void iOSUtils::showCamera()
     m_iOSNative->showCamera();
 }
 
-void iOSUtils::emitOpenedWithURLSignal(QString url)
-{
-    if (m_Instances.size() == 0) {
-        m_URLOpenedWith = url;
-    }
-    else {
-        auto begin = m_Instances.begin();
-        auto end = m_Instances.end();
-        for (auto it = begin; it != end; it++) {
-            iOSUtils *utils = it.value();
-            if (utils && utils->isMainController()) {
-                emit utils->openedWithURL(url);
-                break;
-            }
-        }
-    }
-}
-
-void iOSUtils::emitOpenedWithoutURLSignal()
-{
-    auto begin = m_Instances.begin();
-    auto end = m_Instances.end();
-    for (auto it = begin; it != end; it++) {
-        iOSUtils *utils = it.value();
-        if (utils && utils->isMainController()) {
-            emit utils->openedWithoutURL();
-            break;
-        }
-    }
-}
-
 bool iOSUtils::isMainController() const
 {
     return m_IsMainController;
@@ -224,9 +193,35 @@ void iOSUtils::setStatusBarVisible(bool visible)
     m_iOSNative->setStatusBarVisible(visible);
 }
 
-void iOSUtils::imagePickerCancelledCallback()
+void iOSUtils::emitOpenedWithURLSignal(QString url)
 {
-    emit imageSelectionCancelled();
+    if (m_Instances.size() == 0) {
+        m_URLOpenedWith = url;
+    }
+    else {
+        auto begin = m_Instances.begin();
+        auto end = m_Instances.end();
+        for (auto it = begin; it != end; it++) {
+            iOSUtils *utils = it.value();
+            if (utils && utils->isMainController()) {
+                QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithURL, utils, url), Qt::QueuedConnection);
+                break;
+            }
+        }
+    }
+}
+
+void iOSUtils::emitOpenedWithoutURLSignal()
+{
+    auto begin = m_Instances.begin();
+    auto end = m_Instances.end();
+    for (auto it = begin; it != end; it++) {
+        iOSUtils *utils = it.value();
+        if (utils && utils->isMainController()) {
+            QMetaObject::invokeMethod(utils, std::bind(&iOSUtils::openedWithoutURL, utils), Qt::QueuedConnection);
+            break;
+        }
+    }
 }
 
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
@@ -237,11 +232,6 @@ void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
     else {
         emit imageSelected(data["tempUrl"].toString());
     }
-}
-
-void iOSUtils::cameraCancelledCallback()
-{
-    emit cameraCaptureCancelled();
 }
 
 }
