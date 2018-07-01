@@ -26,6 +26,8 @@ public:
      * \property AndroidButtonEvent::accepted
      * \brief Returns true If the event was accepted by one of the listeners.
      * \return bool
+     *
+     * If you set accepted to true, the event propagation will be stopped.
      */
     bool isAccepted() const;
     void setAccepted(bool accepted);
@@ -57,27 +59,46 @@ public:
     ~AndroidUtils();
 
     /*!
-     * \property AndroidUtils::statusBarColor
-     * \brief Returns the current status bar color as hex color.
+     * \brief Returns the current status bar color as hex color string.
      * \return QString
      */
     QString statusBarColor() const;
+
+    /*!
+     * \brief Change the status bar color.
+     * \param color
+     *
+     * This method expects \a color to be a valid color.
+     * If the status bar color chanes, emits statusBarColorChanged() signal.
+     */
     void setStatusBarColor(QColor color);
 
     /*!
-     * \property AndroidUtils::statusBarVisible
      * \brief Returns true If the status bar is visible.
      * \return bool
      */
     bool statusBarVisible() const;
+
+    /*!
+     * \brief Changes the status bar visibility.
+     * \param visible
+     *
+     * If the visibility changes, emits statusBarVisibleChanged() signal.
+     */
     void setStatusBarVisible(bool visible);
 
     /*!
-     * \property AndroidUtils::immersiveModeEnabled
      * \brief Returns true If the immersive mode is enabled.
      * \return bool
      */
     bool immersiveModeEnabled() const;
+
+    /*!
+     * \brief Enable\disable immersive mode.
+     * \param enabled
+     *
+     * If the mode changes, emits immersiveModeEnabledChanged() signal.
+     */
     void setImmersiveModeEnabled(bool enabled);
 
     /*!
@@ -132,30 +153,44 @@ public:
     QString getDeviceModel() const;
 
     /*!
-     * \property AndroidUtils::buttonEventsEnabled
      * \brief Returns true If the button events are being handled by this instance.
      * \return bool
      */
     bool isButtonEventsEnabled() const;
+
+    /*!
+     * \brief Enable button events to recieve back button and menu button signals.
+     * \param enabled
+     */
     void setButtonEventsEnabled(bool enabled);
 
     /*!
-     * \property AndroidUtils::enabled
      * \brief Returns true If this instance is enabled.
      * \return bool
+     */
+    bool isEnabled() const;
+
+    /*!
+     * \brief Enable disable the instance.
+     * \param enabled
      *
      * If enabled is set to false, this instance will not receive any signals from the system. Basically, anything that
      * requires a callback back to you cannot be used when this instance is disabled.
      *
      * The only exceptions are the openedWithoutURL() and openedWithURL() signals. These two signals are always emitted.
      */
-    bool isEnabled() const;
     void setEnabled(bool enabled);
 
     /*!
-     * \property AndroidUtils::mainController
      * \brief Returns true if this is the main controller.
      * \return bool
+     */
+    bool mainController() const;
+
+    /*!
+     * \brief Set this instance as the main controller.
+     * \param isMain
+     * \param disableOthers
      *
      * When an instance is set as main controller, certain signals will only be emitted for this instance.
      * Only one instance can be the main controller. When an instance is set as main controller while there is already
@@ -163,10 +198,11 @@ public:
      * be the new main controller.
      *
      * The signals that are designated to main controller are:
-     * - openedWithUrl
-     * - openedWithoutUrl
+     * \list
+     *     \li openedWithUrl
+     *     \li openedWithoutUrl
+     * \endlist
      */
-    bool mainController() const;
     void setMainController(bool isMain, bool disableOthers = true);
 
     /*!
