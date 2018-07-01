@@ -57,8 +57,8 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
 
-    connect(m_AndroidUtils, &iOSUtils::statusBarColorChanged, this, &NativeUtils::statusBarColorChanged);
-    connect(m_AndroidUtils, &iOSUtils::statusBarVisibleChanged, this, &NativeUtils::statusBarVisibleChanged);
+    connect(m_iOSUtils, &iOSUtils::statusBarColorChanged, this, &NativeUtils::statusBarColorChanged);
+    connect(m_iOSUtils, &iOSUtils::statusBarVisibleChanged, this, &NativeUtils::statusBarVisibleChanged);
 #endif // Q_OS_IOS
 
 #if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)

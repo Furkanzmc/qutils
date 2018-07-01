@@ -281,6 +281,16 @@ signals:
      */
     void enabledChanged();
 
+    /*!
+     * \brief Emitted when the status bar visibility changes.
+     */
+    void statusBarVisibleChanged();
+
+    /*!
+     * \brief Emitted when the status bar color changes.
+     */
+    void statusBarColorChanged();
+
 private:
 
     /*!

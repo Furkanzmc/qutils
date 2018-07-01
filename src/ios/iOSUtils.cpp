@@ -132,7 +132,11 @@ void iOSUtils::openAppSettings() const
 
 void iOSUtils::setStatusBarColor(const QColor &color)
 {
-    m_iOSNative->setStatusBarColor(color);
+    const bool changed = color != m_iOSNative->getStatusBarColor();
+    if (changed) {
+        m_iOSNative->setStatusBarColor(color);
+        emit statusBarColorChanged();
+    }
 }
 
 void iOSUtils::showCamera()
@@ -190,7 +194,10 @@ bool iOSUtils::isStatusBarVisible() const
 
 void iOSUtils::setStatusBarVisible(bool visible)
 {
-    m_iOSNative->setStatusBarVisible(visible);
+    const bool changed = visible != m_iOSNative->isStatusBarVisible();
+    if (changed) {
+        m_iOSNative->setStatusBarVisible(visible);
+    }
 }
 
 void iOSUtils::emitOpenedWithURLSignal(QString url)
