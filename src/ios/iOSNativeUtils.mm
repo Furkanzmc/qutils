@@ -352,7 +352,8 @@ void iOSNativeUtils::emitKeyboardHeightChangedSignals(int height)
 
 void iOSNativeUtils::callImagePickerFinishedCallback(QVariantMap &data)
 {
-    if (m_IsImagePickerOpen) {
+    const bool isSourceCamera = data["isSourceCamera"].toBool();
+    if ((m_IsImagePickerOpen && !isSourceCamera) || (m_IsCameraOpen && isSourceCamera)) {
         if (onImagePickerControllerFinishedPicking) {
             onImagePickerControllerFinishedPicking(data);
         }
