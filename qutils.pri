@@ -13,6 +13,7 @@ QT += sql network
 # multimedia: Enables multimedia features.
 # for_mobile: Enables mobile related features.
 # disable_auto_register: Add this to disable auto registering QML types.
+# safari_services: Add in-app browser support.
 # QUTILS_APP_NAME: Used for naming auto-generaed files.
 # QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
 
