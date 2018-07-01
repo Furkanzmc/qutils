@@ -38,6 +38,10 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_AndroidUtils, &AndroidUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
 
     connect(m_AndroidUtils, &AndroidUtils::mainControllerChanged, this, &NativeUtils::mainControllerChanged);
+    connect(m_AndroidUtils, &AndroidUtils::statusBarColorChanged, this, &NativeUtils::statusBarColorChanged);
+    connect(m_AndroidUtils, &AndroidUtils::statusBarVisibleChanged, this, &NativeUtils::statusBarVisibleChanged);
+
+    connect(m_AndroidUtils, &AndroidUtils::immersiveModeEnabledChanged, this, &NativeUtils::immersiveModeEnabledChanged);
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_IOS
@@ -52,12 +56,45 @@ NativeUtils::NativeUtils(QObject *parent)
     connect(m_iOSUtils, &iOSUtils::enabledChanged, this, &NativeUtils::enabledChanged);
     connect(m_iOSUtils, &iOSUtils::cameraCaptured, this, &NativeUtils::cameraCaptured);
     connect(m_iOSUtils, &iOSUtils::cameraCaptureCancelled, this, &NativeUtils::cameraCaptureCancelled);
+
+    connect(m_AndroidUtils, &iOSUtils::statusBarColorChanged, this, &NativeUtils::statusBarColorChanged);
+    connect(m_AndroidUtils, &iOSUtils::statusBarVisibleChanged, this, &NativeUtils::statusBarVisibleChanged);
 #endif // Q_OS_IOS
 
 #if defined(Q_OS_MACOS) && !defined(Q_OS_IOS)
     connect(m_MacOSUtils, &MacOSUtils::openedWithURL, this, &NativeUtils::openedWithURL);
     connect(m_MacOSUtils, &MacOSUtils::openedWithoutURL, this, &NativeUtils::openedWithoutURL);
 #endif // Q_OS_MACOS
+}
+
+bool NativeUtils::isButtonEventsEnabled() const
+{
+#ifdef Q_OS_ANDROID
+    return m_AndroidUtils->isButtonEventsEnabled();
+#else
+    return false;
+#endif // Q_OS_ANDROID
+}
+
+void NativeUtils::setButtonEventsEnabled(bool enabled)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->setButtonEventsEnabled(enabled);
+#else
+    Q_UNUSED(enabled);
+#endif // Q_OS_ANDROID
+}
+
+QString NativeUtils::statusBarColor() const
+{
+    QString color = "black";
+#if defined(Q_OS_ANDROID)
+    color = m_AndroidUtils->statusBarColor();
+#elif defined(Q_OS_IOS)
+    color = m_iOSUtils->getStatusBarColor().name(QColor::NameFormat::HexRgb);
+#endif // Q_OS_ANDROID
+
+    return color;
 }
 
 void NativeUtils::setStatusBarColor(QColor color)
@@ -71,16 +108,24 @@ void NativeUtils::setStatusBarColor(QColor color)
 #endif // Q_OS_ANDROID
 }
 
-QString NativeUtils::getStatusBarColor()
+QString NativeUtils::getStatusBarColor() const
 {
-    QString color = "black";
-#if defined(Q_OS_ANDROID)
-    color = m_AndroidUtils->statusBarColor();
-#elif defined(Q_OS_IOS)
-    color = m_iOSUtils->getStatusBarColor().name(QColor::NameFormat::HexRgb);
+    LOG_WARNING("This method is deprecated. Use the statusBarColor property instead.");
+    return statusBarColor();
+}
+
+bool NativeUtils::statusBarVisible() const
+{
+    bool visible = false;
+#ifdef Q_OS_IOS
+    visible = m_iOSUtils->isStatusBarVisible();
+#endif // Q_OS_IOS
+
+#ifdef Q_OS_ANDROID
+    visible = m_AndroidUtils->statusBarVisible();
 #endif // Q_OS_ANDROID
 
-    return color;
+    return visible;
 }
 
 void NativeUtils::setStatusBarVisible(bool visible)
@@ -94,13 +139,93 @@ void NativeUtils::setStatusBarVisible(bool visible)
 #endif // defined(Q_OS_ANDROID)
 }
 
-void NativeUtils::setImmersiveMode(bool visible)
+bool NativeUtils::isStatusBarVisible() const
+{
+    LOG_WARNING("This method is deprecated. Use the statusBarVisible property instead.");
+    return statusBarVisible();
+}
+
+bool NativeUtils::immersiveModeEnabled() const
+{
+    bool enabled = false;
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->immersiveModeEnabled();
+#endif // Q_OS_ANDROID
+
+    return enabled;
+}
+
+void NativeUtils::setImmersiveModeEnabled(bool visible)
 {
 #ifdef Q_OS_ANDROID
     m_AndroidUtils->setImmersiveModeEnabled(visible);
 #else
     Q_UNUSED(visible);
 #endif // Q_OS_ANDROID
+}
+
+bool NativeUtils::enabled() const
+{
+#ifdef Q_OS_ANDROID
+    return m_AndroidUtils->isEnabled();
+#else
+    return true;
+#endif // Q_OS_ANDROID
+}
+
+void NativeUtils::setEnabled(bool enabled)
+{
+#ifdef Q_OS_ANDROID
+    m_AndroidUtils->setEnabled(enabled);
+#else
+    Q_UNUSED(enabled);
+#endif // Q_OS_ANDROID
+}
+
+bool NativeUtils::isIPad() const
+{
+#ifdef Q_OS_IOS
+    return m_iOSUtils->isiPad();
+#else
+    return false;
+#endif // Q_OS_IOS
+}
+
+bool NativeUtils::mainController() const
+{
+#if defined(Q_OS_IOS)
+    return m_iOSUtils->isMainController();
+#elif defined(Q_OS_ANDROID)
+    return m_AndroidUtils->mainController();
+#endif // Q_OS_ANDROID
+
+    return false;
+}
+
+void NativeUtils::setMainController(bool isMain)
+{
+#ifdef Q_OS_IOS
+    m_iOSUtils->setMainController(isMain);
+#elif defined(Q_OS_ANDROID)
+    m_AndroidUtils->setMainController(isMain);
+#elif defined(Q_OS_MACOS)
+    m_MacOSUtils->setMainController(isMain);
+#else
+    Q_UNUSED(isMain);
+#endif // Q_OS_ANDROID
+}
+
+QSize NativeUtils::statusBarSize() const
+{
+    QSize size;
+#ifdef Q_OS_IOS
+    size = m_iOSUtils->getStatusBarSize();
+#endif // Q_OS_IOS
+
+#ifdef Q_OS_ANDROID
+#endif // Q_OS_ANDROID
+
+    return size;
 }
 
 void NativeUtils::shareText(const QString &dialogTitle, const QString &text)
@@ -179,15 +304,6 @@ void NativeUtils::setApplicationIconBadgeNumber(const unsigned int &number)
 #endif // Q_OS_IOS
 }
 
-bool NativeUtils::isiPad() const
-{
-#ifdef Q_OS_IOS
-    return m_iOSUtils->isiPad();
-#else
-    return false;
-#endif // Q_OS_IOS
-}
-
 void NativeUtils::openSafari(const QString &url)
 {
 #ifdef Q_OS_IOS
@@ -219,98 +335,11 @@ QString NativeUtils::getDeviceModel()
     return model;
 }
 
-bool NativeUtils::isStatusBarVisible() const
-{
-    bool visible = false;
-#ifdef Q_OS_IOS
-    visible = m_iOSUtils->isStatusBarVisible();
-#endif // Q_OS_IOS
-
-#ifdef Q_OS_ANDROID
-    visible = m_AndroidUtils->statusBarVisible();
-#endif // Q_OS_ANDROID
-
-    return visible;
-}
-
-QSize NativeUtils::getStatusBarSize() const
-{
-    QSize size;
-#ifdef Q_OS_IOS
-    size = m_iOSUtils->getStatusBarSize();
-#endif // Q_OS_IOS
-
-#ifdef Q_OS_ANDROID
-#endif // Q_OS_ANDROID
-
-    return size;
-}
-
 void NativeUtils::openAppSettings() const
 {
 #ifdef Q_OS_IOS
     m_iOSUtils->openAppSettings();
 #endif // Q_OS_IOS
-}
-
-bool NativeUtils::isButtonEventsEnabled() const
-{
-#ifdef Q_OS_ANDROID
-    return m_AndroidUtils->isButtonEventsEnabled();
-#else
-    return false;
-#endif // Q_OS_ANDROID
-}
-
-void NativeUtils::setButtonEventsEnabled(bool enabled)
-{
-#ifdef Q_OS_ANDROID
-    m_AndroidUtils->setButtonEventsEnabled(enabled);
-#else
-    Q_UNUSED(enabled);
-#endif // Q_OS_ANDROID
-}
-
-bool NativeUtils::isEnabled() const
-{
-#ifdef Q_OS_ANDROID
-    return m_AndroidUtils->isEnabled();
-#else
-    return true;
-#endif // Q_OS_ANDROID
-}
-
-void NativeUtils::setEnabled(bool enabled)
-{
-#ifdef Q_OS_ANDROID
-    m_AndroidUtils->setEnabled(enabled);
-#else
-    Q_UNUSED(enabled);
-#endif // Q_OS_ANDROID
-}
-
-bool NativeUtils::isMainController() const
-{
-#if defined(Q_OS_IOS)
-    return m_iOSUtils->isMainController();
-#elif defined(Q_OS_ANDROID)
-    return m_AndroidUtils->mainController();
-#endif // Q_OS_ANDROID
-
-    return false;
-}
-
-void NativeUtils::setMainController(bool isMain)
-{
-#ifdef Q_OS_IOS
-    m_iOSUtils->setMainController(isMain);
-#elif defined(Q_OS_ANDROID)
-    m_AndroidUtils->setMainController(isMain);
-#elif defined(Q_OS_MACOS)
-    m_MacOSUtils->setMainController(isMain);
-#else
-    Q_UNUSED(isMain);
-#endif // Q_OS_ANDROID
 }
 
 }
