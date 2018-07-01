@@ -103,12 +103,6 @@ void AndroidUtils::setStatusBarColor(QColor color)
     }
 }
 
-QString AndroidUtils::getStatusBarColor() const
-{
-    LOG_WARNING("AndroidUtils::getStatusBarColor() method is deprecated. Use the statusBarColor property instead.");
-    return statusBarColor();
-}
-
 bool AndroidUtils::statusBarVisible() const
 {
     return QAndroidJniObject::callStaticMethod<jboolean>(ANDROID_UTILS_CLASS, "isStatusBarVisible", "()Z") == 1;
@@ -129,12 +123,6 @@ void AndroidUtils::setStatusBarVisible(bool visible)
     }
 }
 
-bool AndroidUtils::isStatusBarVisible() const
-{
-    LOG_WARNING("AndroidUtils::isStatusBarVisible() method is deprecated. Use statusBarVisible property instead.");
-    return statusBarVisible();
-}
-
 bool AndroidUtils::immersiveModeEnabled() const
 {
     return QAndroidJniObject::callStaticMethod<jboolean>(ANDROID_UTILS_CLASS, "isImmersiveModeEnabled", "()Z") == 1;
@@ -153,12 +141,6 @@ void AndroidUtils::setImmersiveModeEnabled(bool enabled)
 
         emit immersiveModeEnabledChanged();;
     }
-}
-
-void AndroidUtils::setImmersiveMode(bool enabled)
-{
-    LOG_WARNING("AndroidUtils::setImmersiveMode(bool enabled) is deprecated. Use the immersiveModeEnabled property instead.");
-    setImmersiveModeEnabled(enabled);
 }
 
 void AndroidUtils::shareText(const QString &dialogTitle, const QString &text)
@@ -304,7 +286,7 @@ void AndroidUtils::setMainController(bool IsMainController, bool disableOthers)
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
             AndroidUtils *utils = (*it).second;
-            if (utils && utils->isMainController()) {
+            if (utils && utils->mainController()) {
                 utils->setMainController(false);
                 break;
             }
@@ -315,12 +297,6 @@ void AndroidUtils::setMainController(bool IsMainController, bool disableOthers)
         emit mainControllerChanged();
         m_IsMainController = IsMainController;
     }
-}
-
-bool AndroidUtils::isMainController() const
-{
-    LOG_WARNING("AndroidUtils::isMainController() method is deprecated. Use mainController property instead.");
-    return mainController();
 }
 
 void AndroidUtils::emitButtonPressedSignals(bool isBackButton, bool isMenuButton)
@@ -421,7 +397,7 @@ void AndroidUtils::emitOpenedWithURLSignal(const QString &url)
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
             AndroidUtils *utils = (*it).second;
-            if (utils && utils->isMainController()) {
+            if (utils && utils->mainController()) {
                 QMetaObject::invokeMethod(utils, std::bind(&AndroidUtils::openedWithURL, utils, url), Qt::QueuedConnection);
                 break;
             }
@@ -435,7 +411,7 @@ void AndroidUtils::emitOpenedWithoutURLSignal()
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
         AndroidUtils *utils = (*it).second;
-        if (utils && utils->isMainController()) {
+        if (utils && utils->mainController()) {
             QMetaObject::invokeMethod(utils, std::bind(&AndroidUtils::openedWithoutURL, utils), Qt::QueuedConnection);
             break;
         }

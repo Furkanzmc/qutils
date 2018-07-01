@@ -13,7 +13,7 @@ namespace zmc
  * \class AndroidButtonEvent
  * \brief The AndroidButtonEvent class can be used to break the button event propagation to the other AndroidUtils classes.
  *
- * If you set m_IsAccepted to true, the event propagation will be stopped.
+ * If you set accepted to true, the event propagation will be stopped. This class has QML accessible properties.
  */
 class AndroidButtonEvent : public QObject
 {
@@ -46,19 +46,11 @@ private:
  * \brief The AndroidUtils class contains utility methods for Android.
  *
  * This is included only for Android targets. You should opt in to use NativeUtils as the entry point to native
- * functionalities for a smooth cross platform experience.
+ * functionalities for a smooth cross platform experience. This class does not support QML usage.
  */
 class AndroidUtils : public QObject
 {
     Q_OBJECT
-
-    Q_PROPERTY(bool buttonEventsEnabled READ isButtonEventsEnabled WRITE setButtonEventsEnabled NOTIFY buttonEventsEnabledChanged)
-    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
-    Q_PROPERTY(QString statusBarColor READ statusBarColor WRITE setStatusBarColor NOTIFY statusBarColorChanged)
-
-    Q_PROPERTY(bool statusBarVisible READ statusBarVisible WRITE setStatusBarVisible NOTIFY statusBarVisibleChanged)
-    Q_PROPERTY(bool immersiveModeEnabled READ immersiveModeEnabled WRITE setImmersiveModeEnabled NOTIFY immersiveModeEnabledChanged)
-    Q_PROPERTY(bool mainController READ mainController WRITE setMainController NOTIFY mainControllerChanged)
 
 public:
     explicit AndroidUtils(QObject *parent = 0);
@@ -70,8 +62,7 @@ public:
      * \return QString
      */
     QString statusBarColor() const;
-    Q_INVOKABLE void setStatusBarColor(QColor color);
-    Q_INVOKABLE QString getStatusBarColor() const;
+    void setStatusBarColor(QColor color);
 
     /*!
      * \property AndroidUtils::statusBarVisible
@@ -79,8 +70,7 @@ public:
      * \return bool
      */
     bool statusBarVisible() const;
-    Q_INVOKABLE void setStatusBarVisible(bool visible);
-    Q_INVOKABLE bool isStatusBarVisible() const;
+    void setStatusBarVisible(bool visible);
 
     /*!
      * \property AndroidUtils::immersiveModeEnabled
@@ -89,20 +79,19 @@ public:
      */
     bool immersiveModeEnabled() const;
     void setImmersiveModeEnabled(bool enabled);
-    Q_INVOKABLE void setImmersiveMode(bool enabled);
 
     /*!
      * \brief Shares the given text using Intent.ACTION_SEND with text/plain MIME type.
      * \param dialogTitle
      * \param text
      */
-    Q_INVOKABLE void shareText(const QString &dialogTitle, const QString &text);
+    void shareText(const QString &dialogTitle, const QString &text);
 
     /*!
      * \brief If m_IsEnabled is false, you cannot use this function.
      * \return void
      */
-    Q_INVOKABLE void showCamera(const QString &fileName);
+    void showCamera(const QString &fileName);
 
     /*!
      * \brief Shows toast with the given text.
@@ -110,7 +99,7 @@ public:
      * \param isLongDuration
      * \return void
      */
-    Q_INVOKABLE void showToast(const QString &message, bool isLongDuration);
+    void showToast(const QString &message, bool isLongDuration);
 
     /*!
      * \brief Opens the gallery for an pick file operation.
@@ -118,7 +107,7 @@ public:
      *
      * If the instance is disabled, you cannot use this function. The MIME type defaults to image/\*.
      */
-    Q_INVOKABLE void openGallery();
+    void openGallery();
 
     /*!
      * \brief Opens the gallery for an pick file operation.
@@ -128,19 +117,19 @@ public:
      * If the instance is disabled, you cannot use this function. You can split the MIME types with "|" to set multiple
      * MIME types. Example: `application/pdf|image/jpeg|text/plain`.
      */
-    Q_INVOKABLE void openDocumentPicker(const QString &fileType);
+    void openDocumentPicker(const QString &fileType);
 
     /*!
      * \brief Dismisses the keyboard from the view.
      * \return void
      */
-    Q_INVOKABLE void dismissKeyboard();
+    void dismissKeyboard();
 
     /*!
      * \brief Returns the device model
      * \return QString
      */
-    Q_INVOKABLE QString getDeviceModel() const;
+    QString getDeviceModel() const;
 
     /*!
      * \property AndroidUtils::buttonEventsEnabled
@@ -178,8 +167,7 @@ public:
      * - openedWithoutUrl
      */
     bool mainController() const;
-    Q_INVOKABLE void setMainController(bool isMain, bool disableOthers = true);
-    Q_INVOKABLE bool isMainController() const;
+    void setMainController(bool isMain, bool disableOthers = true);
 
     /*!
      * \internal

@@ -75,7 +75,7 @@ QString NativeUtils::getStatusBarColor()
 {
     QString color = "black";
 #if defined(Q_OS_ANDROID)
-    color = m_AndroidUtils->getStatusBarColor();
+    color = m_AndroidUtils->statusBarColor();
 #elif defined(Q_OS_IOS)
     color = m_iOSUtils->getStatusBarColor().name(QColor::NameFormat::HexRgb);
 #endif // Q_OS_ANDROID
@@ -97,7 +97,7 @@ void NativeUtils::setStatusBarVisible(bool visible)
 void NativeUtils::setImmersiveMode(bool visible)
 {
 #ifdef Q_OS_ANDROID
-    m_AndroidUtils->setImmersiveMode(visible);
+    m_AndroidUtils->setImmersiveModeEnabled(visible);
 #else
     Q_UNUSED(visible);
 #endif // Q_OS_ANDROID
@@ -227,7 +227,7 @@ bool NativeUtils::isStatusBarVisible() const
 #endif // Q_OS_IOS
 
 #ifdef Q_OS_ANDROID
-    visible = m_AndroidUtils->isStatusBarVisible();
+    visible = m_AndroidUtils->statusBarVisible();
 #endif // Q_OS_ANDROID
 
     return visible;
@@ -294,7 +294,7 @@ bool NativeUtils::isMainController() const
 #if defined(Q_OS_IOS)
     return m_iOSUtils->isMainController();
 #elif defined(Q_OS_ANDROID)
-    return m_AndroidUtils->isMainController();
+    return m_AndroidUtils->mainController();
 #endif // Q_OS_ANDROID
 
     return false;
