@@ -51,10 +51,12 @@ public:
      * \brief Callback for image picker.
      *
      * The following keys will be present in the map:
-     *     - mediaType: The media type for the file.
-     *     - tempUrl: The file that resides at the temporary location for read and write access by the app.
-     *     - referenceUrl: The reference URL provided by PHImageManager.
-     *     - isSourceCamera: A bool value that indicates If the image was taken from the camera.
+     * \list
+     *     \li mediaType: The media type for the file.
+     *     \li tempUrl: The file that resides at the temporary location for read and write access by the app.
+     *     \li referenceUrl: The reference URL provided by PHImageManager.
+     *     \li isSourceCamera: A bool value that indicates If the image was taken from the camera.
+     * \endlist
      */
     std::function<void(const QVariantMap &/*info*/)> onImagePickerControllerFinishedPicking;
 
