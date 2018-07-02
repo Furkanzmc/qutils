@@ -285,10 +285,15 @@ void iOSNativeUtils::setStatusBarColor(const QColor &color)
 
 QColor iOSNativeUtils::getStatusBarColor() const
 {
+    QColor color;
     UIApplication *app = [UIApplication sharedApplication];
     UIView *statusBar = (UIView *)[app valueForKey: @"statusBar"];
     const CGFloat *colors = CGColorGetComponents(statusBar.backgroundColor.CGColor);
-    return QColor(colors[0] * 255, colors[1] * 255, colors[2] * 255);
+    if (colors) {
+        color = QColor(colors[0] * 255, colors[1] * 255, colors[2] * 255);
+    }
+
+    return color;
 }
 
 void iOSNativeUtils::openAppSettings() const
