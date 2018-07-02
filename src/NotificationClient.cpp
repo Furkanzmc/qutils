@@ -5,11 +5,15 @@
 #ifdef Q_OS_ANDROID
     #include <QtAndroidExtras/QAndroidJniObject>
 #endif // Q_OS_ANDROID
-#include <QGuiApplication>
-#include <QMetaMethod>
-#include <QDateTime>
-#include <QThread>
 #include <QTimer>
+#include <QThread>
+#include <QDateTime>
+#include <QMetaMethod>
+#include <QGuiApplication>
+// QtFirebase
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    #include "QtFirebase/src/qtfirebasemessaging.h"
+#endif // FCM_ENABLED
 // Local
 #ifdef Q_OS_ANDROID
     #include "qutils/android/JNICallbacks.h"
@@ -17,15 +21,15 @@
 #ifdef Q_OS_IOS
     #include "qutils/ios/iOSNativeUtils.h"
 #endif // Q_OS_IOS
-#include "qutils/Notification.h"
 #include "qutils/Macros.h"
+#include "qutils/JsonUtils.h"
+#include "qutils/Notification.h"
 
 using ClientPair = std::pair<std::pair<QString, int>, zmc::NotificationClient *>;
 using ClientsList = std::vector<ClientPair>;
 
 #ifdef Q_OS_ANDROID
     #define NOTIFICATION_CLIENT_CLASS "org/zmc/qutils/notification/NotificationClient"
-    #define FIREBASE_INSTANCE_ID_SERVICE "org/zmc/qutils/notification/QutilsFirebaseInstanceIDService"
 #endif // Q_OS_ANDROID
 
 namespace zmc
@@ -46,16 +50,20 @@ NotificationClient::NotificationClient(QObject *parent)
 #ifdef Q_OS_IOS
     , m_iOSNative(new iOSNativeUtils())
 #endif // Q_OS_IOS
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    , m_FCMMessaging(new QtFirebaseMessaging(this))
+#endif // FCM_ENABLED
+    , m_LastPayload()
 {
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
     m_Instances.insert(m_InstanceIndex, this);
 
-#if FCM_ENABLED == 1
-    if (m_FCMToken.length() > 0) {
-        QTimer::singleShot(1, std::bind(NotificationClient::emitFCMTokenReceivedSignal, m_FCMToken));
-        m_FCMToken = "";
-    }
-#endif // FCM_ENABLED == 1
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    // Call this to connect the signals. QtFirebase is designed to be used with QML.
+    m_FCMMessaging->componentComplete();
+    connect(m_FCMMessaging, &QtFirebaseMessaging::messageReceived, this, &NotificationClient::onMessageReceived);
+    connect(m_FCMMessaging, &QtFirebaseMessaging::tokenChanged, this, &NotificationClient::onTokenChanged);
+#endif // FCM_ENABLED
 }
 
 NotificationClient::~NotificationClient()
@@ -130,8 +138,7 @@ QString NotificationClient::getFCMToken() const
 #endif // Q_OS_IOS
 
 #ifdef Q_OS_ANDROID
-    const QAndroidJniObject jniToken = QAndroidJniObject::callStaticObjectMethod(FIREBASE_INSTANCE_ID_SERVICE, "getFMCToken", "()Ljava/lang/String;");
-    token = jniToken.toString();
+
 #endif // Q_OS_ANDROID
     return token;
 }
@@ -139,7 +146,8 @@ QString NotificationClient::getFCMToken() const
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
 #ifdef Q_OS_MOBILE
-    emit notificationReceived(payload);
+    m_LastPayload = JsonUtils::toVariantMap(payload);
+    emit notificationReceived();
 #else
     Q_UNUSED(payload);
 #endif // Q_OS_MOBILE
@@ -148,7 +156,8 @@ void NotificationClient::emitNotificationReceivedSignal(QString payload)
 void NotificationClient::emitNotificationTappedSignal(QString payload)
 {
 #ifdef Q_OS_MOBILE
-    emit notificationTapped(payload);
+    m_LastPayload = JsonUtils::toVariantMap(payload);
+    emit notificationTapped();
 #else
     Q_UNUSED(payload);
 #endif // Q_OS_MOBILE
@@ -186,13 +195,14 @@ void NotificationClient::addNotifiationQueue(const NotificationQueueMember &tup)
 void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 {
 #ifdef Q_OS_MOBILE
+    Q_UNUSED(token);
     if (m_Instances.size() > 0) {
         auto begin = m_Instances.begin();
         auto end = m_Instances.end();
         for (auto it = begin; it != end; it++) {
             NotificationClient *client = it.value();
             if (client) {
-                client->fcmTokenReceived(token);
+                QMetaObject::invokeMethod(client, std::bind(&NotificationClient::fcmTokenReceived, client), Qt::QueuedConnection);
             }
         }
     }
@@ -204,6 +214,23 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
 #else
     Q_UNUSED(token);
 #endif // Q_OS_MOBILE
+}
+
+QVariantMap NotificationClient::payload() const
+{
+    return m_LastPayload;
+}
+
+QString NotificationClient::token() const
+{
+    QString tk = "";
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    tk = m_FCMMessaging->token();
+#elif defined(Q_OS_IOS)
+    tk = m_iOSNative->getFCMToken();
+#endif // FCM_ENABLED
+
+    return tk;
 }
 
 void NotificationClient::setNotificationProperties(const Notification *notification)
@@ -230,7 +257,7 @@ void NotificationClient::processQueue()
     QString objectName = this->objectName();
     for (unsigned int index = 0; index < m_NotificationQueue.size(); index++) {
         const NotificationQueueMember &tup = m_NotificationQueue[index];
-        const QString payload = std::get<3>(tup);
+        m_LastPayload = JsonUtils::toVariantMap(std::get<3>(tup));
 
         const QString managerName = std::get<2>(tup);
         bool shouldNotify = false;
@@ -244,10 +271,10 @@ void NotificationClient::processQueue()
 
         if (shouldNotify) {
             if (std::get<4>(tup) == true) {
-                emit notificationTapped(payload);
+                emit notificationTapped();
             }
             else {
-                emit notificationReceived(payload);
+                emit notificationReceived();
             }
         }
     }
@@ -257,115 +284,12 @@ void NotificationClient::processQueue()
 
 void NotificationClient::setNotificationPropertiesAndroid(const Notification *notification)
 {
-    // Set defaults
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setDefaults",
-        "(I)V",
-        notification->getDefaults());
-
-    // Set flags
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setFlags",
-        "(I)V",
-        notification->getFlags());
-
-    // Set priority
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setPriority",
-        "(I)V",
-        notification->getPriority());
-
-    // Set category
-    QAndroidJniObject jniCategory = QAndroidJniObject::fromString(notification->getCategory());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setCategory",
-        "(Ljava/lang/String;)V",
-        jniCategory.object<jstring>());
-
-    // Set led color
-    QString ledColor = "";
-    if (notification->getLedColor().isValid()) {
-        ledColor = notification->getLedColor().name(QColor::NameFormat::HexArgb);
-    }
-
-    QAndroidJniObject jniColor = QAndroidJniObject::fromString(ledColor);
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setCategory",
-        "(Ljava/lang/String;)V",
-        jniColor.object<jstring>());
-
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setLedOnMS",
-        "(I)V",
-        notification->getLedOnMS());
-
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setLedOffMS",
-        "(I)V",
-        notification->getLedOffMS());
-
-    // Set sound
-    QAndroidJniObject jniSound = QAndroidJniObject::fromString(notification->getSound());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setSound",
-        "(Ljava/lang/String;)V",
-        jniSound.object<jstring>());
-
-    // Set notification tag
-    QAndroidJniObject jniNotTag = QAndroidJniObject::fromString(notification->getNotificationTag());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setNotificationTag",
-        "(Ljava/lang/String;)V",
-        jniNotTag.object<jstring>());
-
-    // Set target manager
-    QAndroidJniObject jniManagerName = QAndroidJniObject::fromString(notification->getNotificationManagerName());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "setTargetNotificationManager",
-        "(Ljava/lang/String;)V",
-        jniManagerName.object<jstring>());
+    Q_UNUSED(notification);
 }
 
 void NotificationClient::scheduleNotificationAndroid(Notification *notification)
 {
-    notification->setNotificationManagerName(this->objectName());
-    setNotificationProperties(notification);
-
-    qint64 delay = notification->getDelay();
-    const QDateTime date = notification->getDate();
-    if (date.isValid()) {
-        const QDateTime current = QDateTime::currentDateTime();
-        delay = current.msecsTo(date);
-    }
-
-    int notificationID = QAndroidJniObject::callStaticMethod<jint>(
-            NOTIFICATION_CLIENT_CLASS,
-            "getLastNotificationID",
-            "()I");
-
-    m_Clients.push_back(std::make_pair(std::make_pair(notification->getNotificationTag(), notificationID), this));
-
-    QAndroidJniObject javaNotificationTitle = QAndroidJniObject::fromString(notification->getTitle());
-    QAndroidJniObject javaNotification = QAndroidJniObject::fromString(notification->getText());
-    QAndroidJniObject javaNotificationData = QAndroidJniObject::fromString(notification->getPayload());
-    QAndroidJniObject::callStaticMethod<void>(
-        NOTIFICATION_CLIENT_CLASS,
-        "notify",
-        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V",
-        javaNotification.object<jstring>(),
-        javaNotificationTitle.object<jstring>(),
-        javaNotificationData.object<jstring>(),
-        delay);
+    Q_UNUSED(notification);
 }
 
 #endif // Q_OS_ANDROID
@@ -388,4 +312,18 @@ void NotificationClient::scheduleNotificationIOS(zmc::Notification *notification
 }
 
 #endif // Q_OS_IOS
+
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+void NotificationClient::onMessageReceived()
+{
+    m_LastPayload = m_FCMMessaging->data();
+    emit notificationReceived();
+}
+
+void NotificationClient::onTokenChanged()
+{
+    emit fcmTokenReceived();
+}
+#endif // FCM_ENABLED
+
 }

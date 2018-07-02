@@ -2,6 +2,11 @@
 // Qt
 #include <QObject>
 #include <QVariantMap>
+// QtFirebase
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    #include "QtFirebase/src/qtfirebasemessaging.h"
+    class QtFirebaseMessaging;
+#endif // FCM_ENABLED
 
 namespace zmc
 {
@@ -18,6 +23,9 @@ using NotificationQueue = std::vector<NotificationQueueMember>;
 class NotificationClient : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QVariantMap payload READ payload CONSTANT)
+    Q_PROPERTY(QString token READ token CONSTANT)
 
 public:
     explicit NotificationClient(QObject *parent = 0);
@@ -69,10 +77,24 @@ public:
 
     static void emitFCMTokenReceivedSignal(const QString &token);
 
+    /*!
+     * \property NotificationClient::payload
+     * \brief The payload from the latest notification.
+     * \return QVariantMap
+     */
+    QVariantMap payload() const;
+
+    /*!
+     * \property NotificationClient::token
+     * \brief Token from the push notification service.
+     * \return QString
+     */
+    QString token() const;
+
 signals:
-    void notificationReceived(const QString &payload);
-    void notificationTapped(QString payload);
-    void fcmTokenReceived(const QString &token);
+    void notificationReceived();
+    void notificationTapped();
+    void fcmTokenReceived();
 
 private:
     static int m_NotificationID;
@@ -99,6 +121,12 @@ private:
     iOSNativeUtils *m_iOSNative;
 #endif // Q_OS_IOS
 
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    QtFirebaseMessaging *m_FCMMessaging;
+#endif // FCM_ENABLED
+
+    QVariantMap m_LastPayload;
+
 private:
     void setNotificationProperties(const Notification *notification);
     void processQueue();
@@ -111,6 +139,11 @@ private:
     void setNotificationPropertiesIOS(const Notification *notification);
     void scheduleNotificationIOS(zmc::Notification *notification);
 #endif // Q_OS_IOS
+
+#if FCM_ENABLED && defined(Q_OS_ANDROID)
+    void onMessageReceived();
+    void onTokenChanged();
+#endif // FCM_ENABLED
 };
 
 }

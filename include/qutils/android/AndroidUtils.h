@@ -3,8 +3,6 @@
 #include <QColor>
 #include <QObject>
 #include <QtAndroidExtras/QAndroidJniObject>
-// Local
-#include "qutils/NotificationClient.h"
 
 namespace zmc
 {

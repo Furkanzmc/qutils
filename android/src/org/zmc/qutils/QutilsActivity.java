@@ -1,43 +1,27 @@
 package org.zmc.qutils;
 
 // Java
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 // Android
+import android.net.Uri;
+import android.util.Log;
+import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.view.Display;
+import android.graphics.Rect;
+import android.view.KeyEvent;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.content.Intent;
-import android.view.Display;
-import android.view.Window;
-
-import android.view.View;
-import android.view.KeyEvent;
-import android.provider.MediaStore;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-
-import android.os.Build;
-import android.provider.DocumentsContract;
-import android.os.Environment;
-
-import android.content.ContentUris;
-import android.graphics.Rect;
 import android.view.ViewTreeObserver;
 
-import android.util.Log;
-
-// qutils
-import org.zmc.qutils.notification.NotificationClient;
-import org.zmc.qutils.notification.NotificationReceiver;
+// Firebase
+import com.google.firebase.messaging.MessageForwardingService;
 
 // Qt
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -47,16 +31,12 @@ import org.qtproject.qt5.android.bindings.QtActivity;
  */
 public class QutilsActivity extends QtActivity {
     private static QutilsActivity m_Instance;
-    protected static NotificationClient m_NotificationClient;
     protected static AndroidUtils m_AndroidUtils;
-
     protected static boolean m_IsImmersiveModeEnabled = false;
+
     protected static boolean m_IsStatusBarVisible = true;
     public static HashMap m_CustomData;
-
     private static int m_PreviousKeyboardHeight = -1;
-    private static int m_LastHandledNotificationID = -1;
-    private static String m_LastHandledFCMMessageID = "";
 
     public QutilsActivity() {
         m_Instance = this;
@@ -66,7 +46,6 @@ public class QutilsActivity extends QtActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        m_NotificationClient = new NotificationClient(this);
         m_AndroidUtils = new AndroidUtils(this);
 
         final Window rootWindow = m_Instance.getWindow();
@@ -106,7 +85,6 @@ public class QutilsActivity extends QtActivity {
         super.onResume();
 
         Intent intent = getIntent();
-        checkForNotification(intent);
         handleAppLink(intent);
     }
 
@@ -114,9 +92,19 @@ public class QutilsActivity extends QtActivity {
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
+        checkNotification(intent);
+
         setIntent(intent);
-        checkForNotification(intent);
         handleAppLink(intent);
+    }
+
+    private void checkNotification(Intent intent) {
+        Log.d("org.zmc.qutils", "A message was sent to this app while it was in the background.");
+        Intent message = new Intent(this, MessageForwardingService.class);
+        message.setAction(MessageForwardingService.ACTION_REMOTE_INTENT);
+        message.putExtras(intent);
+        message.setData(intent.getData());
+        startService(message);
     }
 
     @Override
@@ -170,79 +158,6 @@ public class QutilsActivity extends QtActivity {
         }
         else {
             Log.d("org.zmc.quitls", "onActivityResult failed with result code " + String.valueOf(resultCode) + " for request " + String.valueOf(requestCode));
-        }
-    }
-
-    static public void checkForNotification(Intent intent) {
-        if (intent.getExtras() != null) {
-            int id = intent.getIntExtra(NotificationReceiver.KEY_NOTIFICATION_ID, -1);
-            String messageID = intent.getStringExtra("google.message_id");
-            boolean isFCMNotification = messageID != null && messageID.length() > 0;
-
-            if (id > -1 || isFCMNotification) {
-                if (!isFCMNotification && m_LastHandledNotificationID == id) {
-                    return;
-                }
-
-                if (isFCMNotification && m_LastHandledFCMMessageID == messageID) {
-                    return;
-                }
-
-                String tag = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_TAG);
-                String notificationManagerName = intent.getStringExtra(NotificationReceiver.KEY_NOTIFICATION_MANAGER);
-                String payload;
-
-                if (!isFCMNotification) {
-                    payload = intent.getStringExtra(NotificationReceiver.KEY_PAYLOAD);
-                    m_LastHandledNotificationID = id;
-                }
-                else {
-                    m_LastHandledFCMMessageID = messageID;
-                    Bundle extras = intent.getExtras();
-                    Set<String> keySet = extras.keySet();
-                    /*
-                     * Here's the payload data that comes from the created notification by the Firebase SDK.
-                     * {
-                     *     "google.sent_time": 1501533936476,
-                     *     "from": "353277717468",
-                     *     "google.message_id": "0:1501533936482206%8fe8bb7f8fe8bb7f",
-                     *     "collapse_key": "org.edmoware.arifname"
-                     * }
-                     */
-                    StringBuilder jsonBuilder = new StringBuilder();
-                    jsonBuilder.append("{");
-                    int extrasSize = extras.size();
-                    for (String key : keySet) {
-                        extrasSize--;
-
-                        if (key.equals("google.sent_time")) {
-                            jsonBuilder.append("\"sent_time\":");
-                        }
-                        else if (key.equals("google.message_id")) {
-                            jsonBuilder.append("\"message_id\":");
-                        }
-                        else {
-                            jsonBuilder.append("\"" + key + "\":");
-                        }
-
-                        Object value = extras.get(key);
-                        if (value.getClass().equals(String.class)) {
-                            jsonBuilder.append("\"" + value + "\"");
-                        }
-                        else {
-                            jsonBuilder.append(value);
-                        }
-
-                        if (extrasSize > 0) {
-                            jsonBuilder.append(",");
-                        }
-                    }
-                    jsonBuilder.append("}");
-                    payload = jsonBuilder.toString();
-                }
-
-                CppCallbacks.notificationTapped(tag, id, notificationManagerName, payload);
-            }
         }
     }
 

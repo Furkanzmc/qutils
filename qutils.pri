@@ -91,15 +91,7 @@ else {
 android {
     QT += androidextras
 
-    isEqual(FCM_ENABLED, true) {
-        OTHER_FILES += \
-            $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseInstanceIDService.java \
-            $$PWD/android/src/org/zmc/qutils/notification/QutilsFirebaseMessagingService.java
-    }
-
     OTHER_FILES += \
-        $$PWD/android/src/org/zmc/qutils/notification/NotificationClient.java \
-        $$PWD/android/src/org/zmc/qutils/notification/NotificationReceiver.java \
         $$PWD/android/src/org/zmc/qutils/CppCallbacks.java \
         $$PWD/android/src/org/zmc/qutils/QutilsActivity.java \
         $$PWD/android/src/org/zmc/qutils/AndroidUtils.java

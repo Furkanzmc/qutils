@@ -7,16 +7,6 @@
 
 static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
     {
-        "notificationReceived", // const char* function name;
-        "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;)V", // const char* function signature
-        (void *)JNICallbacks::notificationReceivedCallback // function pointer
-    },
-    {
-        "notificationTapped", // const char* function name;
-        "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;)V", // const char* function signature
-        (void *)JNICallbacks::notificationTappedCallback // function pointer
-    },
-    {
         "backButtonPressed", // const char* function name;
         "()V", // const char* function signature
         (void *)JNICallbacks::backButtonPressedCallback // function pointer
@@ -52,11 +42,6 @@ static const JNINativeMethod JAVA_CALLBACK_METHODS[] = {
         (void *)JNICallbacks::keyboardHeightChangedCallback // function pointer
     },
     {
-        "fcmTokenReceived", // const char* function name;
-        "(Ljava/lang/String;)V", // const char* function signature
-        (void *)JNICallbacks::fcmTokenReceived // function pointer
-    },
-    {
         "openedWithURL", // const char* function name;
         "(Ljava/lang/String;)V", // const char* function signature
         (void *)JNICallbacks::openedWithURL // function pointer
@@ -89,46 +74,6 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void * /*reserved*/)
 JNICallbacks::JNICallbacks()
 {
 
-}
-
-void JNICallbacks::notificationReceivedCallback(
-    JNIEnv */*env*/,
-    jobject /*obj*/,
-    jstring jtag,
-    jint id,
-    jstring jnotificationManagerName,
-    jstring notificationPayload)
-{
-    const QString tag = QAndroidJniObject(jtag).toString();
-    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
-    const QString payload = QAndroidJniObject(notificationPayload).toString();
-    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
-    if (client) {
-        client->emitNotificationReceivedSignal(payload);
-    }
-    else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload, false));
-    }
-}
-
-void JNICallbacks::notificationTappedCallback(
-    JNIEnv */*env*/,
-    jobject /*obj*/,
-    jstring jtag,
-    jint id,
-    jstring jnotificationManagerName,
-    jstring notificationPayload)
-{
-    const QString tag = QAndroidJniObject(jtag).toString();
-    const QString managerName = QAndroidJniObject(jnotificationManagerName).toString();
-    const QString payload = QAndroidJniObject(notificationPayload).toString();
-    zmc::NotificationClient *client = zmc::NotificationClient::getInstance(tag, id);
-    if (client) {
-        client->emitNotificationTappedSignal(payload);
-    }
-    else {
-        zmc::NotificationClient::addNotifiationQueue(std::make_tuple(tag, id, managerName, payload, true));
-    }
 }
 
 void JNICallbacks::backButtonPressedCallback(JNIEnv */*env*/, jobject /*obj*/)
@@ -166,12 +111,6 @@ void JNICallbacks::fileSelectionCancelledCallback(JNIEnv */*env*/, jobject /*obj
 void JNICallbacks::keyboardHeightChangedCallback(JNIEnv */*env*/, jobject /*obj*/, jint keyboardHeight)
 {
     zmc::AndroidUtils::emitKeyboardHeightChangedSignals(keyboardHeight);
-}
-
-void JNICallbacks::fcmTokenReceived(JNIEnv *, jobject, jstring jniToken)
-{
-    const QString token = QAndroidJniObject(jniToken).toString();
-    zmc::NotificationClient::emitFCMTokenReceivedSignal(token);
 }
 
 void JNICallbacks::openedWithURL(JNIEnv *, jobject, jstring jniURL)

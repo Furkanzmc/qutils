@@ -1,10 +1,6 @@
 package org.zmc.qutils;
 
 public class CppCallbacks {
-    public static native void notificationReceived(String tag, int id, String notificationManagerName, String notificationPayload);
-
-    public static native void notificationTapped(String tag, int id, String notificationManagerName, String notificationPayload);
-
     public static native void backButtonPressed();
 
     public static native void menuButtonPressed();
@@ -20,8 +16,6 @@ public class CppCallbacks {
 
     // keyboadrdHeight will be 0 If it is invisible, otherwise it will have a value greater than 0.
     public static native void keyboardHeightChanged(int keyboardHeight);
-
-    public static native void fcmTokenReceived(String token);
 
     public static native void openedWithURL(String url);
 }
