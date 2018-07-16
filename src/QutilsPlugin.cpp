@@ -22,6 +22,9 @@
 #if QUTILS_MULTIMEDIA_ENABLED
     #include "qutils/AudioRecorder.h"
 #endif // QUTILS_MULTIMEDIA_ENABLED
+#if defined(QT_QML_LIB)
+    #include "qutils/QMLRefresh.h"
+#endif // QT_QML_LIB
 
 QutilsPlugin::QutilsPlugin(QObject *parent)
     : QQmlExtensionPlugin(parent)
@@ -56,6 +59,10 @@ void QutilsPlugin::registerQutils(const char *uri)
 
     qmlRegisterType<zmc::PermissionManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
+
+#if defined(QT_QML_LIB)
+    qmlRegisterType<zmc::QMLRefresh>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QMLRefresh");
+#endif // QT_QML_LIB
 }
 
 void QutilsPlugin::registerTypes(const char *uri)

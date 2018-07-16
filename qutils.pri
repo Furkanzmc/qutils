@@ -161,7 +161,6 @@ osx {
 
 HEADERS += \
     $$PWD/include/qutils/ScreenHelper.h \
-    $$PWD/include/qutils/QMLRefresh.h \
     $$PWD/include/qutils/NotificationClient.h \
     $$PWD/include/qutils/Notification.h \
     $$PWD/include/qutils/Macros.h \
@@ -178,7 +177,6 @@ HEADERS += \
     $$PWD/include/qutils/QutilsLog.h \
     $$PWD/include/qutils/FileUtils.h \
     $$PWD/include/qutils/CppTypes.h \
-    $$PWD/include/qutils/QutilsPlugin.h \
     $$PWD/include/qutils/UpdateChecker.h \
     $$PWD/include/qutils/SystemInfo.h \
     $$PWD/include/qutils/PermissionManager.h
@@ -195,15 +193,23 @@ SOURCES += \
     $$PWD/src/JsonUtils.cpp \
     $$PWD/src/SignalManager.cpp \
     $$PWD/src/DateManager.cpp \
-    $$PWD/src/QMLRefresh.cpp \
     $$PWD/src/NotificationClient.cpp \
     $$PWD/src/Notification.cpp \
     $$PWD/src/QutilsLog.cpp \
     $$PWD/src/FileUtils.cpp \
-    $$PWD/src/QutilsPlugin.cpp \
     $$PWD/src/UpdateChecker.cpp \
     $$PWD/src/SystemInfo.cpp \
     $$PWD/src/PermissionManager.cpp
+
+contains(QT, qml) {
+    HEADERS += \
+        $$PWD/include/qutils/QMLRefresh.h \
+        $$PWD/include/qutils/QutilsPlugin.h
+
+    SOURCES += \
+        $$PWD/src/QMLRefresh.cpp \
+        $$PWD/src/QutilsPlugin.cpp
+}
 
 equals(QUTILS_NO_MULTIMEDIA, true) {
     HEADERS += \

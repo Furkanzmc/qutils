@@ -3,8 +3,10 @@
 #include <QObject>
 
 // Forward Declerations
-class QQmlEngine;
+#if defined(QT_QML_LIB)
 class QJSEngine;
+class QQmlEngine;
+#endif // QT_QML_LIB
 
 namespace zmc
 {
@@ -39,7 +41,9 @@ class SystemInfo : public QObject
 public:
     explicit SystemInfo(QObject *parent = nullptr);
 
+#if defined(QT_QML_LIB)
     static QObject *singletonProvider(QQmlEngine *, QJSEngine *);
+#endif // QT_QML_LIB
 
     /*!
      * \property SystemInfo::bootUniqueId

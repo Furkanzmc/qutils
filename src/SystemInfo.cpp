@@ -4,8 +4,10 @@
 #endif // Q_OS_MAC
 // Qt
 #include <QSysInfo>
-#include <QQmlEngine>
-#include <QJSEngine>
+#if defined(QT_QML_LIB)
+    #include <QJSEngine>
+    #include <QQmlEngine>
+#endif // QT_QML_LIB
 //qutils
 #include "qutils/Macros.h"
 #if defined(Q_OS_ANDROID)
@@ -25,6 +27,7 @@ SystemInfo::SystemInfo(QObject *parent)
 
 }
 
+#if defined(QT_QML_LIB)
 QObject *SystemInfo::singletonProvider(QQmlEngine *qmlEngine, QJSEngine *)
 {
     if (m_Instance == nullptr) {
@@ -33,6 +36,7 @@ QObject *SystemInfo::singletonProvider(QQmlEngine *qmlEngine, QJSEngine *)
 
     return m_Instance;
 }
+#endif // QT_QML_LIB
 
 QByteArray SystemInfo::bootUniqueId() const
 {

@@ -2,11 +2,11 @@
 // std
 #include <functional>
 // Qt
-#include <QQmlApplicationEngine>
-#include <QQuickWindow>
 #include <QObject>
 #include <QTimer>
 #include <QDebug>
+#include <QQuickWindow>
+#include <QQmlApplicationEngine>
 
 namespace zmc
 {

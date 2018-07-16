@@ -1,7 +1,7 @@
 #pragma once
 // Qt
-#include <QQmlExtensionPlugin>
 #include <QQmlContext>
+#include <QQmlExtensionPlugin>
 
 class QutilsPlugin : public QQmlExtensionPlugin
 {
