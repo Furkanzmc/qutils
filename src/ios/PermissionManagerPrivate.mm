@@ -1,6 +1,8 @@
 #include "qutils/ios/PermissionManagerPrivate.h"
 // iOS
-#import <AVFoundation/AVCaptureDevice.h>
+#if QUTILS_CAMERA_ENABLED
+    #import <AVFoundation/AVCaptureDevice.h>
+#endif // QUTILS_CAMERA_ENABLED
 #if QUTILS_LOCATION_ENABLED
     #import <CoreLocation/CoreLocation.h>
 #endif // QUTILS_LOCATION_ENABLED
@@ -141,6 +143,7 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getLocat
 
 void PermissionManagerPrivate::requestCameraAccess()
 {
+#if QUTILS_CAMERA_ENABLED
     [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL handled) {
         if (onCameraPermissionResult) {
             if (handled == YES) {
@@ -154,11 +157,13 @@ void PermissionManagerPrivate::requestCameraAccess()
             LOG_ERROR("onCameraPermissionResult callback is not set.");
         }
     }];
+#endif // QUTILS_CAMERA_ENABLED
 }
 
 PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getCameraAccessAuthStatus() const
 {
     AuthorizationStatus status = AuthorizationStatus::None;
+#if QUTILS_CAMERA_ENABLED
     const AVAuthorizationStatus avstatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (avstatus == AVAuthorizationStatusDenied) {
         status = AuthorizationStatus::Denied;
@@ -172,7 +177,7 @@ PermissionManagerPrivate::AuthorizationStatus PermissionManagerPrivate::getCamer
     else if (avstatus == AVAuthorizationStatusNotDetermined) {
         status = AuthorizationStatus::NotDetermined;
     }
-
+#endif // QUTILS_CAMERA_ENABLED
     return status;
 }
 

@@ -13,6 +13,7 @@ QT += sql network
 # multimedia: Enables multimedia features.
 # for_mobile: Enables mobile related features.
 # disable_auto_register: Add this to disable auto registering QML types.
+# camera_enabled: [iOS Only] This is used to enable camera related functions such as permissions. It links AVFoundation.
 # safari_services: Add in-app browser support.
 # QUTILS_APP_NAME: Used for naming auto-generaed files.
 # QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
@@ -115,6 +116,15 @@ ios {
         message("[qutils] Photos framework is enabled by default. To explicitly disable, add `no_photos` to QUTILS_FEATURES.")
         DEFINES += QUTILS_PHOTOS_ENABLED=1
         LIBS += -framework Photos
+    }
+
+    contains(QUTILS_FEATURES, camera_enabled) {
+        DEFINES += QUTILS_CAMERA_ENABLED=1
+        LIBS += -framework AVFoundation
+        message("[qutils] Camera related functions are enabled.")
+    }
+    else {
+        DEFINES += QUTILS_CAMERA_ENABLED=0
     }
 
     contains(QUTILS_FEATURES, $$QUTILS_FEATURE_SAFARI_SERVICES) {
