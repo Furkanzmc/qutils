@@ -111,53 +111,53 @@ public:
     explicit NetworkManager(QObject *parent = nullptr);
     ~NetworkManager();
 
-    /**
-     * @brief Sends a get request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
+    /*!
+     * \brief Sends a get request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
      * appended to the end of the URL.
-     * @param url
-     * @param queryParams
-     * @param callback
+     * \param url
+     * \param queryParams
+     * \param callback
      */
     void sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams = QVariantMap());
 
-    /**
-     * @brief Sends a head request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
+    /*!
+     * \brief Sends a head request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are
      * appended to the end of the URL.
-     * @param url
-     * @param queryParams
-     * @param callback
+     * \param url
+     * \param queryParams
+     * \param callback
      */
     void sendHead(const QString &url, RequestCallback callback, const QVariantMap &queryParams = QVariantMap());
 
-    /**
-     * @brief Sends a delete request. When the request is finished, the callback is called.
-     * @param url
-     * @param callback
+    /*!
+     * \brief Sends a delete request. When the request is finished, the callback is called.
+     * \param url
+     * \param callback
      */
     void sendDelete(const QString &url, RequestCallback callback);
 
-    /**
-     * @brief Sends a post request. When the request is finished, the callback is called.
-     * @param url
-     * @param data
-     * @param callback
+    /*!
+     * \brief Sends a post request. When the request is finished, the callback is called.
+     * \param url
+     * \param data
+     * \param callback
      */
     void sendPost(const QString &url, const QString &data, RequestCallback callback);
 
-    /**
-     * @brief Sends a put request. When the request is finished, the callback is called.
-     * @param url
-     * @param data
-     * @param callback
+    /*!
+     * \brief Sends a put request. When the request is finished, the callback is called.
+     * \param url
+     * \param data
+     * \param callback
      */
     void sendPut(const QString &url, const QString &data, RequestCallback callback);
 
-    /**
-     * @brief Uploads the given files with HTTP multipart.
-     * @param url
-     * @param files QMap<UPLOAD_KEY, UPLOAD_FILE>
-     * @param textParams QMap<UPLOAD_KEY, UPLOAD_VALUE>
-     * @param callback
+    /*!
+     * \brief Uploads the given files with HTTP multipart.
+     * \param url
+     * \param files QMap<UPLOAD_KEY, UPLOAD_FILE>
+     * \param textParams QMap<UPLOAD_KEY, UPLOAD_VALUE>
+     * \param callback
      */
     void sendMultipartRequest(
         const QString &url,
@@ -182,12 +182,12 @@ public:
         UploadProgressCallback uploadProgressCallback = nullptr
     );
 
-    /**
-     * @brief Uses the sendMultipartRequest to upload the given files.
-     * @param url
-     * @param files
-     * @param textParams
-     * @param callback
+    /*!
+     * \brief Uses the sendMultipartRequest to upload the given files.
+     * \param url
+     * \param files
+     * \param textParams
+     * \param callback
      */
     void uploadFiles(
         const QString &url,
@@ -197,29 +197,29 @@ public:
         UploadProgressCallback uploadProgressCallback = nullptr
     );
 
-    /**
-     * @brief Returns true if connected to internet.
-     * @todo Fix this function. Currently it always returns true.
-     * @return bool
+    /*!
+     * \brief Returns true if connected to internet.
+     * \todo Fix this function. Currently it always returns true.
+     * \return bool
      */
     bool isConnectedToInternet();
 
-    /**
-     * @brief Increases m_RequestCount and returns the resulting ID
-     * @return
+    /*!
+     * \brief Increases m_RequestCount and returns the resulting ID
+     * \return
      */
     int getNextrequestID();
 
-    /**
-     * @brief When a header is set, it is used for all of the requests. If a header with the same headerName exists, it is overwritten.
-     * @param headerName
-     * @param headerValue
+    /*!
+     * \brief When a header is set, it is used for all of the requests. If a header with the same headerName exists, it is overwritten.
+     * \param headerName
+     * \param headerValue
      */
     void setHeader(const QString &headerName, const QString &headerValue);
 
-    /**
-     * @brief Removes the header with the given name.
-     * @param headerName
+    /*!
+     * \brief Removes the header with the given name.
+     * \param headerName
      */
     void removeHeader(const QString &headerName);
 
@@ -239,17 +239,17 @@ private:
     void onReceivedResponse(const Response &response, int threadIndex);
     void onUploadProgressChanged(qint64 bytesSent, qint64 bytesTotal);
 
-    /**
-     * @brief Returns the first nullptr thread index. If none found, returns -1
-     * @return
+    /*!
+     * \brief Returns the first nullptr thread index. If none found, returns -1
+     * \return
      */
     int getAvailableIndex();
 
     void insertCallback(const int &threadIndex, RequestCallback &&callback);
 
-    /**
-     * @brief If a token exists, sets the Authorization header of the HTTPRequest
-     * @param request
+    /*!
+     * \brief If a token exists, sets the Authorization header of the HTTPRequest
+     * \param request
      */
     void setHeaders(QNetworkRequest &request);
 };
