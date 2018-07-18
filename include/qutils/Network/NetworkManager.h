@@ -153,6 +153,18 @@ public:
     void sendPut(const QString &url, const QString &data, RequestCallback callback);
 
     /*!
+     * \brief Send a put request using a QIODevice.
+     * \param url
+     * \param data
+     * \param callback
+     * \return QNetworkReply *
+     *
+     * You are responsible to keep the \a data open while the request is in progress.
+     * The request also sets the Content-Length header to the size of \a data.
+     */
+    QNetworkReply *sendPut(const QString &url, QIODevice *data, RequestCallback callback);
+
+    /*!
      * \brief Uploads the given files with HTTP multipart.
      * \param url
      * \param files QMap<UPLOAD_KEY, UPLOAD_FILE>

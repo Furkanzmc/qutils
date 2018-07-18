@@ -119,6 +119,23 @@ void NetworkManager::sendPut(const QString &url, const QString &data, RequestCal
     insertCallback(threadIndex, std::move(callback));
 }
 
+QNetworkReply *NetworkManager::sendPut(const QString &url, QIODevice *data, RequestCallback callback)
+{
+    const int availableIndex = getAvailableIndex();
+    const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
+    const QUrl qurl(url);
+
+    QNetworkRequest request(qurl);
+    setHeaders(request);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentLengthHeader, data->size());
+
+    QNetworkReply *reply = m_Network.put(request, data);
+    reply->setObjectName(QString::number(threadIndex));
+    insertCallback(threadIndex, std::move(callback));
+
+    return reply;
+}
+
 void NetworkManager::sendMultipartRequest(
     const QString &url,
     const QMap<QString, QString> &files,
