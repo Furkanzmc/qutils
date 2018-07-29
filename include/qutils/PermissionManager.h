@@ -743,7 +743,7 @@ public:
     Q_ENUM(Permissions);
 
     /*!
-     * \typedef QObjectList
+     * \typedef AndroidPermissionMap
      * \brief Synonym for std::unordered_map<PermissionManager::Permissions, const char *>.
      */
     using AndroidPermissionMap = std::unordered_map<int, const char *>;
