@@ -1,8 +1,9 @@
 #pragma once
 // Qt
-#include <QVariantMap>
 #include <QObject>
 #include <QThread>
+#include <QDateTime>
+#include <QVariantMap>
 
 namespace zmc
 {
@@ -35,6 +36,121 @@ private:
     QString m_ImagePath;
     int m_Quality;
     QString m_NewPath;
+};
+
+/*!
+ * \class FileInfo
+ * \brief The FileInfo class contains information about a file on the file system.
+ *
+ * The information on this class is gathered using \c QFileInfo.
+ */
+class FileInfo : public QObject
+{
+    Q_OBJECT
+
+    Q_PROPERTY(bool exists READ exists CONSTANT)
+    Q_PROPERTY(QString absoluteFilePath READ absoluteFilePath CONSTANT)
+    Q_PROPERTY(QString baseName READ baseName CONSTANT)
+
+    Q_PROPERTY(QString completeBaseName READ completeBaseName CONSTANT)
+    Q_PROPERTY(QString completeSuffix READ completeSuffix CONSTANT)
+    Q_PROPERTY(QDateTime created READ created CONSTANT)
+
+    Q_PROPERTY(QString fileName READ fileName CONSTANT)
+    Q_PROPERTY(qint64 size READ size CONSTANT)
+    Q_PROPERTY(QString absoluteDirPath READ absoluteDirPath CONSTANT)
+
+public:
+    FileInfo() = default;
+
+    /*!
+     * \property FileInfo::exists
+     * \return bool
+     * \sa QFileInfo::exists
+     */
+    bool exists() const;
+    void setExists(bool ex);
+
+    /*!
+     * \property FileInfo::absoluteFilePath
+     * \return QString
+     * \sa QFileInfo::absoluteFilePath
+     */
+    QString absoluteFilePath() const;
+    void setAbsoluteFilePath(QString path);
+
+    /*!
+     * \property FileInfo::baseName
+     * \return QString
+     * \sa QFileInfo::baseName
+     */
+    QString baseName() const;
+    void setBaseName(QString name);
+
+    /*!
+     * \property FileInfo::completeBaseName
+     * \return QString
+     * \sa QFileInfo::completeBaseName
+     */
+    QString completeBaseName() const;
+    void setCompleteBaseName(QString name);
+
+    /*!
+     * \property FileInfo::completeSuffix
+     * \return QString
+     * \sa QFileInfo::completeSuffix
+     */
+    QString completeSuffix() const;
+    void setCompleteSuffix(QString suffix);
+
+    /*!
+     * \property FileInfo::created
+     * \return QString
+     * \sa QFileInfo::created
+     */
+    QDateTime created() const;
+    void setCreated(QDateTime dt);
+
+    /*!
+     * \property FileInfo::fileName
+     * \return QString
+     * \sa QFileInfo::fileName
+     */
+    QString fileName() const;
+    void setFileName(QString name);
+
+    /*!
+     * \property FileInfo::size
+     * \return qint64
+     * \sa QFileInfo::size
+     */
+    qint64 size() const;
+    void setSize(qint64 sz);
+
+    /*!
+     * \property FileInfo::absoluteDirPath
+     * \return QString
+     * \sa QFileInfo::absoluteDirPath
+     */
+    QString absoluteDirPath() const;
+    void setAbsoluteDirPath(QString path);
+
+    /*!
+     * \brief Resets the internal values to their default.
+     */
+    void reset();
+
+private:
+    QString m_AbsoluteFilePath = "",
+            m_BaseName = "",
+            m_CompleteBaseName = "",
+            m_CompleteSuffix = "",
+            m_FileName = "",
+            m_AbsoluteDirPath = "";
+
+    bool m_Exists = false;
+    qint64 m_Size = 0;
+    QDateTime m_Created = QDateTime();
 };
 
 /**
@@ -79,7 +195,7 @@ public:
      * @param filePath
      * @return QVariantMap
      */
-    Q_INVOKABLE QVariantMap getFileInfo(QString filePath);
+    Q_INVOKABLE FileInfo *getFileInfo(QString filePath);
 
     /**
      * @brief Deletes the given file from the file systen and returns true if succeeds.
@@ -194,6 +310,7 @@ private:
 #elif defined(Q_OS_ANDROID)
     AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
+    FileInfo m_FileInfo;
 
 private:
     void showImage(int num);

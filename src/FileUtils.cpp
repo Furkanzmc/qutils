@@ -47,6 +47,113 @@ void ImageQualityWorkerThread::run()
     emit resultReady(success, m_NewPath);
 }
 
+// ----- FileInfo ----- //
+
+bool FileInfo::exists() const
+{
+    return m_Exists;
+}
+
+void FileInfo::setExists(bool ex)
+{
+    m_Exists = ex;
+}
+
+QString FileInfo::absoluteFilePath() const
+{
+    return m_AbsoluteFilePath;
+}
+
+void FileInfo::setAbsoluteFilePath(QString path)
+{
+    m_AbsoluteFilePath = path;
+}
+
+QString FileInfo::baseName() const
+{
+    return m_BaseName;
+}
+
+void FileInfo::setBaseName(QString name)
+{
+    m_BaseName = name;
+}
+
+QString FileInfo::completeBaseName() const
+{
+    return m_CompleteBaseName;
+}
+
+void FileInfo::setCompleteBaseName(QString name)
+{
+    m_CompleteBaseName = name;
+}
+
+QString FileInfo::completeSuffix() const
+{
+    return m_CompleteSuffix;
+}
+
+void FileInfo::setCompleteSuffix(QString suffix)
+{
+    m_CompleteSuffix = suffix;
+}
+
+QDateTime FileInfo::created() const
+{
+    return m_Created;
+}
+
+void FileInfo::setCreated(QDateTime dt)
+{
+    m_Created = dt;
+}
+
+QString FileInfo::fileName() const
+{
+    return m_FileName;
+}
+
+void FileInfo::setFileName(QString name)
+{
+    m_FileName = name;
+}
+
+qint64 FileInfo::size() const
+{
+    return m_Size;
+}
+
+void FileInfo::setSize(qint64 sz)
+{
+    m_Size = sz;
+}
+
+QString FileInfo::absoluteDirPath() const
+{
+    return m_AbsoluteDirPath;
+}
+
+void FileInfo::setAbsoluteDirPath(QString path)
+{
+    m_AbsoluteDirPath = path;
+}
+
+void FileInfo::reset()
+{
+    m_AbsoluteFilePath = "";
+    m_BaseName = "";
+    m_CompleteBaseName = "";
+    m_CompleteSuffix = "";
+    m_FileName = "";
+    m_AbsoluteDirPath = "";
+
+    m_Exists = false;
+    m_Size = 0;
+    m_Created = QDateTime();
+}
+
+
 // ----- FileUtils ----- //
 
 FileUtils::FileUtils(QObject *parent)
@@ -57,6 +164,7 @@ FileUtils::FileUtils(QObject *parent)
 #elif defined(Q_OS_ANDROID)
     , m_AndroidUtils(new AndroidUtils(this))
 #endif // Q_OS_IOS
+    , m_FileInfo()
 {
 #if defined(Q_OS_IOS)
     m_FileUtilsPrivate->onDocumentPickerCanceled = std::bind(&FileUtils::documentPickerCanceled, this);
@@ -95,35 +203,34 @@ void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int
     workerThread->start();
 }
 
-QVariantMap FileUtils::getFileInfo(QString filePath)
+FileInfo *FileUtils::getFileInfo(QString filePath)
 {
     if (filePath.contains(FILE_PATH_PREFIX)) {
         filePath.remove(FILE_PATH_PREFIX);
     }
 
-    QVariantMap info;
+    m_FileInfo.reset();
     const QFileInfo fileInfo(filePath);
-    if (fileInfo.exists() == false) {
-        info["exists"] = false;
-    }
-    else {
-        info["absoluteFilePath"] = fileInfo.absoluteFilePath();
-        info["baseName"] = fileInfo.baseName();
-        info["completeBaseName"] = fileInfo.completeBaseName();
+    m_FileInfo.setExists(fileInfo.exists());
 
-        info["completeSuffix"] = fileInfo.completeSuffix();
+    if (fileInfo.exists()) {
+        m_FileInfo.setAbsoluteFilePath(fileInfo.absoluteFilePath());
+        m_FileInfo.setBaseName(fileInfo.baseName());
+        m_FileInfo.setCompleteBaseName(fileInfo.completeBaseName());
+
+        m_FileInfo.setCompleteSuffix(fileInfo.completeSuffix());
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-        info["created"] = fileInfo.birthTime().toString(Qt::DateFormat::ISODate);
+        m_FileInfo.setCreated(fileInfo.birthTime());
 #else
-        info["created"] = fileInfo.created().toString(Qt::DateFormat::ISODate);
+        m_FileInfo.setCreated(fileInfo.created());
 #endif // (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-        info["fileName"] = fileInfo.fileName();
 
-        info["size"] = fileInfo.size();
-        info["absoluteDirPath"] = fileInfo.absoluteDir().absolutePath();
+        m_FileInfo.setFileName(fileInfo.fileName());
+        m_FileInfo.setSize(fileInfo.size());
+        m_FileInfo.setAbsoluteDirPath(fileInfo.absoluteDir().absolutePath());
     }
 
-    return info;
+    return &m_FileInfo;
 }
 
 bool FileUtils::remove(QString filePath)
