@@ -15,7 +15,9 @@ namespace zmc
  */
 class AndroidButtonEvent : public QObject
 {
-    Q_OBJECT Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted NOTIFY acceptedChanged)
+    Q_OBJECT
+
+    Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted NOTIFY acceptedChanged)
 
 public:
     AndroidButtonEvent(QObject *parent = nullptr);
