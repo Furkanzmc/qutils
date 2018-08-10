@@ -72,30 +72,32 @@ void DownloadManager::downloadFile(const QUrl &url, const QString &filePath, con
 QString DownloadManager::getSaveFileName(const QNetworkReply *reply) const
 {
     QString filePath = reply->property("file_path").toString();
-    const QFileInfo fileInfo(filePath);
 
-    const QString contentDisposition = reply->rawHeader("Content-Disposition");
-    QRegularExpression re("filename[^;=\n]*=(UTF-8(['\"]*))?(.*)");
-    QRegularExpressionMatch match = re.match(contentDisposition);
-    if (match.hasMatch()) {
-        QString matched = match.captured(0);
-        if (matched.contains("filename*=UTF-8''")) {
-            matched.remove("UTF-8''");
-            matched.remove("filename*");
+    if (filePath.isEmpty()) {
+        const QFileInfo fileInfo(filePath);
+        const QString contentDisposition = reply->rawHeader("Content-Disposition");
+        QRegularExpression re("filename[^;=\n]*=(UTF-8(['\"]*))?(.*)");
+        QRegularExpressionMatch match = re.match(contentDisposition);
+        if (match.hasMatch()) {
+            QString matched = match.captured(0);
+            if (matched.contains("filename*=UTF-8''")) {
+                matched.remove("UTF-8''");
+                matched.remove("filename*");
+            }
+
+            if (matched.contains("filename=")) {
+                matched.remove("filename=");
+                matched.remove("\"");
+            }
+
+            const QStringList split = matched.split("=");
+            const QString fileName = split.size() == 2 ? split.at(1) : split.at(0);
+            filePath = FileUtils::getTemporaryFile(fileName, fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
         }
-
-        if (matched.contains("filename=")) {
-            matched.remove("filename=");
-            matched.remove("\"");
+        else {
+            const QUrl url = reply->url();
+            filePath = FileUtils::getTemporaryFile(url.fileName(), fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
         }
-
-        const QStringList split = matched.split("=");
-        const QString fileName = split.size() == 2 ? split.at(1) : split.at(0);
-        filePath = FileUtils::getTemporaryFile(fileName, fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
-    }
-    else {
-        const QUrl url = reply->url();
-        filePath = FileUtils::getTemporaryFile(url.fileName(), fileInfo.isDir() ? fileInfo.absoluteFilePath() : "");
     }
 
     return filePath;
