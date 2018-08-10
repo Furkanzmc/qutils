@@ -49,6 +49,12 @@ void ImageQualityWorkerThread::run()
 
 // ----- FileInfo ----- //
 
+FileInfo::FileInfo(QObject *parent)
+    : QObject(parent)
+{
+
+}
+
 bool FileInfo::exists() const
 {
     return m_Exists;
@@ -164,7 +170,7 @@ FileUtils::FileUtils(QObject *parent)
 #elif defined(Q_OS_ANDROID)
     , m_AndroidUtils(new AndroidUtils(this))
 #endif // Q_OS_IOS
-    , m_FileInfo()
+    , m_FileInfo(nullptr)
 {
 #if defined(Q_OS_IOS)
     m_FileUtilsPrivate->onDocumentPickerCanceled = std::bind(&FileUtils::documentPickerCanceled, this);
@@ -203,34 +209,38 @@ void FileUtils::changeImageQuality(QString imagePath, QString newPath, const int
     workerThread->start();
 }
 
-FileInfo *FileUtils::getFileInfo(QString filePath)
+QObject *FileUtils::getFileInfo(QString filePath)
 {
     if (filePath.contains(FILE_PATH_PREFIX)) {
         filePath.remove(FILE_PATH_PREFIX);
     }
 
-    m_FileInfo.reset();
-    const QFileInfo fileInfo(filePath);
-    m_FileInfo.setExists(fileInfo.exists());
-
-    if (fileInfo.exists()) {
-        m_FileInfo.setAbsoluteFilePath(fileInfo.absoluteFilePath());
-        m_FileInfo.setBaseName(fileInfo.baseName());
-        m_FileInfo.setCompleteBaseName(fileInfo.completeBaseName());
-
-        m_FileInfo.setCompleteSuffix(fileInfo.completeSuffix());
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-        m_FileInfo.setCreated(fileInfo.birthTime());
-#else
-        m_FileInfo.setCreated(fileInfo.created());
-#endif // (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-
-        m_FileInfo.setFileName(fileInfo.fileName());
-        m_FileInfo.setSize(fileInfo.size());
-        m_FileInfo.setAbsoluteDirPath(fileInfo.absoluteDir().absolutePath());
+    if (m_FileInfo == nullptr) {
+        m_FileInfo = new FileInfo(this);
     }
 
-    return &m_FileInfo;
+    m_FileInfo->reset();
+    const QFileInfo fileInfo(filePath);
+    m_FileInfo->setExists(fileInfo.exists());
+
+    if (fileInfo.exists()) {
+        m_FileInfo->setAbsoluteFilePath(fileInfo.absoluteFilePath());
+        m_FileInfo->setBaseName(fileInfo.baseName());
+        m_FileInfo->setCompleteBaseName(fileInfo.completeBaseName());
+
+        m_FileInfo->setCompleteSuffix(fileInfo.completeSuffix());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        m_FileInfo->setCreated(fileInfo.birthTime());
+#else
+        m_FileInfo->setCreated(fileInfo.created());
+#endif // (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+
+        m_FileInfo->setFileName(fileInfo.fileName());
+        m_FileInfo->setSize(fileInfo.size());
+        m_FileInfo->setAbsoluteDirPath(fileInfo.absoluteDir().absolutePath());
+    }
+
+    return static_cast<QObject *>(m_FileInfo);
 }
 
 bool FileUtils::remove(QString filePath)

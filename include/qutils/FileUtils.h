@@ -61,7 +61,7 @@ class FileInfo : public QObject
     Q_PROPERTY(QString absoluteDirPath READ absoluteDirPath CONSTANT)
 
 public:
-    FileInfo() = default;
+    explicit FileInfo(QObject *parent = nullptr);
 
     /*!
      * \property FileInfo::exists
@@ -180,22 +180,11 @@ public:
     Q_INVOKABLE void changeImageQuality(QString imagePath, QString newPath, const int &quality);
 
     /**
-     * @brief Returns some selected information about the file. If the file does not exist, an empty dictionary is returned. Here is the information contained
-     * in the dictionary:
-     * - absoluteFilePath
-     * - baseName
-     * - completeBaseName
-     * - completeSuffix
-     * - created: The time format is in Qt::DateFormat::ISODate
-     * - fileName
-     * - size
-     * - absoluteDirPath: The result of fileInfo.absoluteDir().absolutePath()
-     * - exists: If this is false, all the other fields will be missing.
-     * You can access them with the same names using the JSON dictionary. (e.g result.fileName)
+     * @brief Returns some selected information about the file.
      * @param filePath
-     * @return QVariantMap
+     * @return FileInfo *
      */
-    Q_INVOKABLE FileInfo *getFileInfo(QString filePath);
+    Q_INVOKABLE QObject *getFileInfo(QString filePath);
 
     /**
      * @brief Deletes the given file from the file systen and returns true if succeeds.
@@ -310,7 +299,7 @@ private:
 #elif defined(Q_OS_ANDROID)
     AndroidUtils *m_AndroidUtils;
 #endif // Q_OS_ANDROID
-    FileInfo m_FileInfo;
+    FileInfo *m_FileInfo;
 
 private:
     void showImage(int num);
