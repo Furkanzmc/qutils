@@ -11,7 +11,7 @@
 #define COL_SETTING_NAME "setting_name"
 #define COL_SETTING_VALUE "setting_value"
 #define COL_SETTING_TYPE "setting_type"
-#define DATABASE_CHECK() do { if (database.isOpen() == false) { LOG_WARNING("Database is not open!"); return false; } } while (0)
+#define DATABASE_CHECK(database) do { if (database.isOpen() == false) { LOG_WARNING("Database is not open!"); return false; } } while (0)
 
 namespace zmc
 {
@@ -42,7 +42,6 @@ SettingsManager::~SettingsManager()
 {
     m_Instances.remove(m_InstanceIndex);
     if (m_Instances.size() == 0) {
-        LOG("Removing database.");
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
 }
@@ -57,7 +56,7 @@ QString SettingsManager::getSystemLanguage() const
 bool SettingsManager::write(const QString &key, const QVariant &value)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     bool successful = false;
     const QList<SqliteManager::Constraint> values {
@@ -100,7 +99,7 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
 QVariant SettingsManager::read(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
@@ -129,7 +128,7 @@ QVariant SettingsManager::read(const QString &key)
 bool SettingsManager::remove(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
@@ -141,7 +140,7 @@ bool SettingsManager::remove(const QString &key)
 bool SettingsManager::exists(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
@@ -153,7 +152,7 @@ bool SettingsManager::exists(const QString &key)
 bool SettingsManager::clear()
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     bool successful = m_SqlManager.clearTable(database, m_TableName);
     if (successful) {
@@ -223,7 +222,7 @@ bool SettingsManager::createTable()
 {
     if (m_IsTableCreated == false) {
         QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-        DATABASE_CHECK();
+        DATABASE_CHECK(database);
 
         QList<SqliteManager::ColumnDefinition> columns {
             SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_SETTING_NAME),

@@ -11,7 +11,7 @@
 #define COL_CACHE_NAME "cache_name"
 #define COL_CACHE_VALUE "cache_value"
 #define COL_CACHE_TYPE "cache_type"
-#define DATABASE_CHECK() do { if (database.isOpen() == false) { LOG_WARNING("Database is not open!"); return false; } } while (0)
+#define DATABASE_CHECK(database) do { if (database.isOpen() == false) { LOG_WARNING("Database is not open!"); return false; } } while (0)
 
 namespace zmc
 {
@@ -42,7 +42,6 @@ CacheManager::~CacheManager()
     m_Instances.remove(m_InstanceIndex);
 
     if (m_Instances.size() == 0) {
-        LOG("Removing database.");
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
 }
@@ -50,7 +49,7 @@ CacheManager::~CacheManager()
 bool CacheManager::write(const QString &key, const QVariant &value)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     bool successful = false;
     const QList<SqliteManager::Constraint> constraints {
@@ -95,7 +94,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
 QVariant CacheManager::read(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
@@ -125,7 +124,7 @@ QVariant CacheManager::read(const QString &key)
 bool CacheManager::remove(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
@@ -137,7 +136,7 @@ bool CacheManager::remove(const QString &key)
 bool CacheManager::exists(const QString &key)
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
         std::make_tuple(COL_CACHE_NAME, key, "AND")
@@ -149,7 +148,7 @@ bool CacheManager::exists(const QString &key)
 bool CacheManager::clear()
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    DATABASE_CHECK();
+    DATABASE_CHECK(database);
 
     const bool success = m_SqlManager.clearTable(database, m_TableName);
     if (success) {
@@ -208,7 +207,7 @@ bool CacheManager::createTable()
 {
     if (m_IsTableCreated == false) {
         QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-        DATABASE_CHECK();
+        DATABASE_CHECK(database);
 
         QList<SqliteManager::ColumnDefinition> columns {
             SqliteManager::ColumnDefinition(false, SqliteManager::ColumnTypes::TEXT, COL_CACHE_NAME),
