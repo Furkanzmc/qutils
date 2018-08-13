@@ -175,7 +175,7 @@ QString ScreenHelper::getResource(const QString &fileName) const
     QString pathTemp = path;
     pathTemp.replace("qrc", "");
 
-    if (QFile::exists(pathTemp) == false) {
+    if (!QFile::exists(pathTemp)) {
         path = getCommonAssetFolder() + "/" + fileName;
     }
 
