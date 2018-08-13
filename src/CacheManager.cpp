@@ -18,18 +18,17 @@ namespace zmc
 
 QMap<int, CacheManager *> CacheManager::m_Instances = QMap<int, CacheManager *>();
 
-CacheManager::CacheManager(QString databaseName, QString tableName, QObject *parent)
+CacheManager::CacheManager(const QString &databaseName, const QString &tableName, QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_TableName(tableName)
-    , m_SqlManager()
     , m_IsTableCreated(false)
 {
     m_Instances.insert(m_InstanceIndex, this);
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    if (dir.exists() == false) {
+    if (!dir.exists()) {
         dir.mkpath(dir.path());
     }
 
@@ -41,7 +40,7 @@ CacheManager::~CacheManager()
 {
     m_Instances.remove(m_InstanceIndex);
 
-    if (m_Instances.size() == 0) {
+    if (m_Instances.isEmpty()) {
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
 }
@@ -57,7 +56,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
     };
 
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &constraints);
-    const bool exists = existingData.size() > 0;
+    const bool exists = !existingData.isEmpty();
     const QVariant::Type dataTypeID = value.type();
 
     QMap<QString, QVariant> newMap;
@@ -76,7 +75,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
     newMap[COL_CACHE_TYPE] = QVariant::fromValue<int>(static_cast<int>(value.type()));
 
     if (exists) {
-        const QVariantMap oldMap = existingData.at(0);
+        const QVariantMap &oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(database, m_TableName, newMap, constraints);
         QVariant oldValue = oldMap[COL_CACHE_VALUE];
         oldValue.convert(oldMap[COL_CACHE_VALUE].toInt());
@@ -103,7 +102,7 @@ QVariant CacheManager::read(const QString &key)
 
     QVariant value;
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
-    const bool exists = existingData.size() > 0;
+    const bool exists = !existingData.isEmpty();
     if (exists) {
         value = existingData.at(0)[COL_CACHE_VALUE];
         const int dataTypeID = existingData.at(0)[COL_CACHE_TYPE].toInt();
@@ -205,7 +204,7 @@ QString CacheManager::getWritableLocation() const
 
 bool CacheManager::createTable()
 {
-    if (m_IsTableCreated == false) {
+    if (!m_IsTableCreated) {
         QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
         DATABASE_CHECK(database);
 
@@ -227,7 +226,7 @@ bool CacheManager::createTable()
 void CacheManager::openDatabase()
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         database = m_SqlManager.openDatabase(m_DatabaseName);
         if (database.isOpen()) {
             emit databaseOpened();
