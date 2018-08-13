@@ -22,7 +22,7 @@ QString UpdateInfo::name() const
     return m_Name;
 }
 
-void UpdateInfo::setName(QString name)
+void UpdateInfo::setName(const QString &name)
 {
     m_Name = name;
 }
@@ -32,7 +32,7 @@ QString UpdateInfo::version() const
     return m_Version;
 }
 
-void UpdateInfo::setVersion(QString ver)
+void UpdateInfo::setVersion(const QString &ver)
 {
     m_Version = ver;
 }
@@ -153,7 +153,7 @@ void UpdateChecker::onProcessFinished(int exitCode, QProcess::ExitStatus exitSta
             objectList.append(static_cast<QObject *>(i));
         }
 
-        if (updates.size() > 0) {
+        if (!updates.isEmpty()) {
             emit updateAvailable(objectList);
 
             for (UpdateInfo *info : updates) {
