@@ -18,19 +18,18 @@ namespace zmc
 
 QMap<int, SettingsManager *> SettingsManager::m_Instances = QMap<int, SettingsManager *>();
 
-SettingsManager::SettingsManager(QString databaseName, QString tableName, QObject *parent)
+SettingsManager::SettingsManager(const QString &databaseName, const QString &tableName, QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_Instances.size())
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_TableName(tableName)
-    , m_SqlManager()
     , m_IsTableCreated(false)
 {
     m_Instances.insert(m_InstanceIndex, this);
 
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    if (dir.exists() == false) {
+    if (!dir.exists()) {
         dir.mkpath(dir.path());
     }
 
@@ -41,7 +40,7 @@ SettingsManager::SettingsManager(QString databaseName, QString tableName, QObjec
 SettingsManager::~SettingsManager()
 {
     m_Instances.remove(m_InstanceIndex);
-    if (m_Instances.size() == 0) {
+    if (m_Instances.isEmpty()) {
         m_SqlManager.removeDatabase(m_DatabaseName);
     }
 }
@@ -64,10 +63,12 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
     };
 
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
-    const bool exists = existingData.size() > 0;
+    const bool exists = !existingData.isEmpty();
+
     QMap<QString, QVariant> newMap;
     newMap[COL_SETTING_NAME] = key;
     const int dataTypeID = value.type();
+
     if (dataTypeID == QVariant::Type::List || dataTypeID == QVariant::Type::StringList) {
         newMap[COL_SETTING_VALUE] = JsonUtils::toJsonString(value.toList());
     }
@@ -81,7 +82,7 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
     newMap[COL_SETTING_TYPE] = QVariant::fromValue<int>(value.type());
 
     if (exists) {
-        const QVariantMap oldMap = existingData.at(0);
+        const QVariantMap &oldMap = existingData.at(0);
         successful = m_SqlManager.updateInTable(database, m_TableName, newMap, values);
         QVariant oldValue = oldMap[COL_SETTING_VALUE];
         oldValue.convert(oldMap[COL_SETTING_TYPE].toInt());
@@ -101,13 +102,14 @@ QVariant SettingsManager::read(const QString &key)
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
     DATABASE_CHECK(database);
 
+    QVariant value;
     const QList<SqliteManager::Constraint> values {
         std::make_tuple(COL_SETTING_NAME, key, "AND")
     };
 
-    QVariant value;
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
-    const bool exists = existingData.size() > 0;
+    const bool exists = !existingData.size();
+
     if (exists) {
         value = existingData.at(0)[COL_SETTING_VALUE];
         const int dataTypeID = existingData.at(0)[COL_SETTING_TYPE].toInt();
@@ -166,7 +168,7 @@ QStringList SettingsManager::getKeys()
 {
     QStringList keys;
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_WARNING("Database is not open!");
         return keys;
     }
@@ -220,7 +222,7 @@ void SettingsManager::setTableName(const QString &tableName)
 
 bool SettingsManager::createTable()
 {
-    if (m_IsTableCreated == false) {
+    if (!m_IsTableCreated) {
         QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
         DATABASE_CHECK(database);
 
@@ -242,7 +244,7 @@ bool SettingsManager::createTable()
 void SettingsManager::openDatabase()
 {
     QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         database = m_SqlManager.openDatabase(m_DatabaseName);
         if (database.isOpen()) {
             emit databaseOpened();
