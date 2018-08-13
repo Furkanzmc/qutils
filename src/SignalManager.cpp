@@ -17,12 +17,13 @@ SignalManager::~SignalManager()
     m_Instances.remove(m_InstanceIndex);
 }
 
-void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariantMap data)
+void SignalManager::emitSignal(const QString &signalName, const QString &targetObjectName, const QVariantMap &data)
 {
     auto begin = m_Instances.begin();
     auto end = m_Instances.end();
     for (auto it = begin; it != end; it++) {
         SignalManager *instance = it.value();
+
         if (instance) {
             if (targetObjectName.length() > 0) {
                 if (targetObjectName == instance->objectName()) {

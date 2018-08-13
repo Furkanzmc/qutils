@@ -24,7 +24,7 @@ public:
      * @param signalName
      * @param targetObjectName
      */
-    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "", const QVariantMap data = QVariantMap());
+    Q_INVOKABLE void emitSignal(const QString &signalName, const QString &targetObjectName = "", const QVariantMap &data = QVariantMap());
 
 signals:
     /**
