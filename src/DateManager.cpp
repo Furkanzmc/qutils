@@ -20,37 +20,37 @@ QDate DateManager::addMonths(const unsigned int &months)
     return m_DateTime.date();
 }
 
-QDate DateManager::addDays(QDate from, const unsigned int &days)
+QDate DateManager::addDays(const QDate &from, const unsigned int &days)
 {
     return from.addDays(days);
 }
 
-QDate DateManager::addMonths(QDate from, const unsigned int &months)
+QDate DateManager::addMonths(const QDate &from, const unsigned int &months)
 {
     return from.addMonths(months);
 }
 
-QDate DateManager::addYears(QDate from, const unsigned int &years)
+QDate DateManager::addYears(const QDate &from, const unsigned int &years)
 {
     return from.addYears(years);
 }
 
-QDateTime DateManager::addDays(QDateTime from, const int &days)
+QDateTime DateManager::addDays(const QDateTime &from, const int &days)
 {
     return from.addDays(days);
 }
 
-QDateTime DateManager::addMonths(QDateTime from, const int &months)
+QDateTime DateManager::addMonths(const QDateTime &from, const int &months)
 {
     return from.addMonths(months);
 }
 
-QDateTime DateManager::addYears(QDateTime from, const int &years)
+QDateTime DateManager::addYears(const QDateTime &from, const int &years)
 {
     return from.addYears(years);
 }
 
-QDateTime DateManager::addSeconds(QDateTime dateTime, const int &seconds) const
+QDateTime DateManager::addSeconds(const QDateTime &dateTime, const int &seconds) const
 {
     return dateTime.addSecs(seconds);
 }
@@ -256,32 +256,32 @@ QDateTime DateManager::fromDateTimeString(const QString &dateTimeStr, const Qt::
     return datetime;
 }
 
-QDateTime DateManager::convertToLocalDateTime(QDateTime datetime)
+QDateTime DateManager::convertToLocalDateTime(const QDateTime &datetime)
 {
     return datetime.toLocalTime();
 }
 
-QDateTime DateManager::convertToUTCDateTime(QDateTime datetime)
+QDateTime DateManager::convertToUTCDateTime(const QDateTime &datetime)
 {
     return datetime.toUTC();
 }
 
-qint64 DateManager::dayDifference(QDateTime from, QDateTime to)
+qint64 DateManager::dayDifference(const QDateTime &from, const QDateTime &to)
 {
     return from.daysTo(to);
 }
 
-qint64 DateManager::secondDifference(QDateTime from, QDateTime to)
+qint64 DateManager::secondDifference(const QDateTime &from, const QDateTime &to)
 {
     return from.secsTo(to);
 }
 
-float DateManager::minuteDifference(QDateTime from, QDateTime to)
+float DateManager::minuteDifference(const QDateTime &from, const QDateTime &to)
 {
     return from.secsTo(to) / 60.f;
 }
 
-float DateManager::hourDifference(QDateTime from, QDateTime to)
+float DateManager::hourDifference(const QDateTime &from, const QDateTime &to)
 {
     return minuteDifference(from, to) / 60.f;
 }
