@@ -77,7 +77,7 @@ public:
      * \sa QFileInfo::absoluteFilePath
      */
     QString absoluteFilePath() const;
-    void setAbsoluteFilePath(QString path);
+    void setAbsoluteFilePath(const QString &path);
 
     /*!
      * \property FileInfo::baseName
@@ -85,7 +85,7 @@ public:
      * \sa QFileInfo::baseName
      */
     QString baseName() const;
-    void setBaseName(QString name);
+    void setBaseName(const QString &name);
 
     /*!
      * \property FileInfo::completeBaseName
@@ -93,7 +93,7 @@ public:
      * \sa QFileInfo::completeBaseName
      */
     QString completeBaseName() const;
-    void setCompleteBaseName(QString name);
+    void setCompleteBaseName(const QString &name);
 
     /*!
      * \property FileInfo::completeSuffix
@@ -101,7 +101,7 @@ public:
      * \sa QFileInfo::completeSuffix
      */
     QString completeSuffix() const;
-    void setCompleteSuffix(QString suffix);
+    void setCompleteSuffix(const QString &suffix);
 
     /*!
      * \property FileInfo::created
@@ -109,7 +109,7 @@ public:
      * \sa QFileInfo::created
      */
     QDateTime created() const;
-    void setCreated(QDateTime dt);
+    void setCreated(const QDateTime &dt);
 
     /*!
      * \property FileInfo::fileName
@@ -117,7 +117,7 @@ public:
      * \sa QFileInfo::fileName
      */
     QString fileName() const;
-    void setFileName(QString name);
+    void setFileName(const QString &name);
 
     /*!
      * \property FileInfo::size
@@ -125,7 +125,7 @@ public:
      * \sa QFileInfo::size
      */
     qint64 size() const;
-    void setSize(qint64 sz);
+    void setSize(const qint64 &sz);
 
     /*!
      * \property FileInfo::absoluteDirPath
@@ -133,7 +133,7 @@ public:
      * \sa QFileInfo::absoluteDirPath
      */
     QString absoluteDirPath() const;
-    void setAbsoluteDirPath(QString path);
+    void setAbsoluteDirPath(const QString &path);
 
     /*!
      * \brief Resets the internal values to their default.

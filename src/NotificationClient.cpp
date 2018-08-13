@@ -53,7 +53,6 @@ NotificationClient::NotificationClient(QObject *parent)
 #if FCM_ENABLED && defined(Q_OS_ANDROID)
     , m_FCMMessaging(new QtFirebaseMessaging(this))
 #endif // FCM_ENABLED
-    , m_LastPayload()
 {
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
     m_Instances.insert(m_InstanceIndex, this);
@@ -250,7 +249,7 @@ void NotificationClient::setNotificationProperties(const Notification *notificat
 
 void NotificationClient::processQueue()
 {
-    if (m_NotificationQueue.size() == 0) {
+    if (m_NotificationQueue.empty()) {
         return;
     }
 
@@ -259,7 +258,7 @@ void NotificationClient::processQueue()
         const NotificationQueueMember &tup = m_NotificationQueue[index];
         m_LastPayload = JsonUtils::toVariantMap(std::get<3>(tup));
 
-        const QString managerName = std::get<2>(tup);
+        const QString &managerName = std::get<2>(tup);
         bool shouldNotify = false;
 
         if ((objectName.length() > 0 && objectName == managerName)) {

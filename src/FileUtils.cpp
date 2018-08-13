@@ -35,7 +35,7 @@ void ImageQualityWorkerThread::run()
     bool success = false;
     QFile file(m_NewPath);
 
-    if (file.open(QIODevice::OpenModeFlag::WriteOnly) == false) {
+    if (!file.open(QIODevice::OpenModeFlag::WriteOnly)) {
         LOG_ERROR("Cannot open file for writing. Reason: " << file.errorString());
     }
     else {
@@ -70,7 +70,7 @@ QString FileInfo::absoluteFilePath() const
     return m_AbsoluteFilePath;
 }
 
-void FileInfo::setAbsoluteFilePath(QString path)
+void FileInfo::setAbsoluteFilePath(const QString &path)
 {
     m_AbsoluteFilePath = path;
 }
@@ -80,7 +80,7 @@ QString FileInfo::baseName() const
     return m_BaseName;
 }
 
-void FileInfo::setBaseName(QString name)
+void FileInfo::setBaseName(const QString &name)
 {
     m_BaseName = name;
 }
@@ -90,7 +90,7 @@ QString FileInfo::completeBaseName() const
     return m_CompleteBaseName;
 }
 
-void FileInfo::setCompleteBaseName(QString name)
+void FileInfo::setCompleteBaseName(const QString &name)
 {
     m_CompleteBaseName = name;
 }
@@ -100,7 +100,7 @@ QString FileInfo::completeSuffix() const
     return m_CompleteSuffix;
 }
 
-void FileInfo::setCompleteSuffix(QString suffix)
+void FileInfo::setCompleteSuffix(const QString &suffix)
 {
     m_CompleteSuffix = suffix;
 }
@@ -110,7 +110,7 @@ QDateTime FileInfo::created() const
     return m_Created;
 }
 
-void FileInfo::setCreated(QDateTime dt)
+void FileInfo::setCreated(const QDateTime &dt)
 {
     m_Created = dt;
 }
@@ -120,7 +120,7 @@ QString FileInfo::fileName() const
     return m_FileName;
 }
 
-void FileInfo::setFileName(QString name)
+void FileInfo::setFileName(const QString &name)
 {
     m_FileName = name;
 }
@@ -130,7 +130,7 @@ qint64 FileInfo::size() const
     return m_Size;
 }
 
-void FileInfo::setSize(qint64 sz)
+void FileInfo::setSize(const qint64 &sz)
 {
     m_Size = sz;
 }
@@ -140,7 +140,7 @@ QString FileInfo::absoluteDirPath() const
     return m_AbsoluteDirPath;
 }
 
-void FileInfo::setAbsoluteDirPath(QString path)
+void FileInfo::setAbsoluteDirPath(const QString &path)
 {
     m_AbsoluteDirPath = path;
 }
@@ -387,7 +387,7 @@ QString FileUtils::readFile(QString filePath)
     }
 
     QFile file(filePath);
-    if (file.exists() == false) {
+    if (!file.exists()) {
         LOG_ERROR("File does not exist at " << filePath);
         return "";
     }

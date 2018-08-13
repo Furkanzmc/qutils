@@ -37,7 +37,7 @@ DownloadManager::~DownloadManager()
 
 void DownloadManager::downloadFile(const QUrl &url, const QString &filePath, const QString &downloadName)
 {
-    if (url.isValid() == false) {
+    if (!url.isValid()) {
         LOG_ERROR("Given URL (" << url.toEncoded() << ") is not valid. Aborting download.");
         return;
     }
@@ -145,7 +145,7 @@ void DownloadManager::onProcessFinishedDownload(QNetworkReply *reply)
 
     m_CurrentDownloads.removeAll(reply);
     reply->deleteLater();
-    if (m_CurrentDownloads.size() == 0) {
+    if (m_CurrentDownloads.isEmpty()) {
         emit allDownloadsFinished();
     }
 }

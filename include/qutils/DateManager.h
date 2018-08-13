@@ -33,7 +33,7 @@ public:
      * @param months
      * @return QDate
      */
-    Q_INVOKABLE QDate addDays(QDate from, const unsigned int &days);
+    Q_INVOKABLE QDate addDays(const QDate &from, const unsigned int &days);
 
     /**
      * @brief Add months to the given date and returns the new instance
@@ -41,7 +41,7 @@ public:
      * @param months
      * @return QDate
      */
-    Q_INVOKABLE QDate addMonths(QDate from, const unsigned int &months);
+    Q_INVOKABLE QDate addMonths(const QDate &from, const unsigned int &months);
 
     /**
      * @brief Add years to the given date and returns the new instance
@@ -49,7 +49,7 @@ public:
      * @param years
      * @return QDate
      */
-    Q_INVOKABLE QDate addYears(QDate from, const unsigned int &years);
+    Q_INVOKABLE QDate addYears(const QDate &from, const unsigned int &years);
 
     /**
      * @brief Add days to the given date and returns the new instance.
@@ -57,7 +57,7 @@ public:
      * @param months
      * @return QDateTime
      */
-    Q_INVOKABLE QDateTime addDays(QDateTime from, const int &days);
+    Q_INVOKABLE QDateTime addDays(const QDateTime &from, const int &days);
 
     /**
      * @brief Add months to the given date and returns the new instance
@@ -65,7 +65,7 @@ public:
      * @param months
      * @return QDateTime
      */
-    Q_INVOKABLE QDateTime addMonths(QDateTime from, const int &months);
+    Q_INVOKABLE QDateTime addMonths(const QDateTime &from, const int &months);
 
     /**
      * @brief Add years to the given date and returns the new instance
@@ -73,7 +73,7 @@ public:
      * @param years
      * @return QDateTime
      */
-    Q_INVOKABLE QDateTime addYears(QDateTime from, const int &years);
+    Q_INVOKABLE QDateTime addYears(const QDateTime &from, const int &years);
 
     /**
      * @brief Add seconds to the given date time. You can add negative seconds to get an earlier date.
@@ -81,7 +81,7 @@ public:
      * @param seconds
      * @return
      */
-    Q_INVOKABLE QDateTime addSeconds(QDateTime dateTime, const int &seconds) const;
+    Q_INVOKABLE QDateTime addSeconds(const QDateTime &dateTime, const int &seconds) const;
 
     /**
      * @brief Sets the day but keeps the month and the year the same. This will affect the date that this instance holds.
@@ -275,14 +275,14 @@ public:
      * @param datetime
      * @return QDateTime
      */
-    Q_INVOKABLE QDateTime convertToLocalDateTime(QDateTime datetime);
+    Q_INVOKABLE QDateTime convertToLocalDateTime(const QDateTime &datetime);
 
     /**
      * @brief Converts the given QDateTime to UTC time.
      * @param datetime
      * @return QDateTime
      */
-    Q_INVOKABLE QDateTime convertToUTCDateTime(QDateTime datetime);
+    Q_INVOKABLE QDateTime convertToUTCDateTime(const QDateTime &datetime);
 
     /**
      * @brief Returns the day difference between the two dates.
@@ -290,7 +290,7 @@ public:
      * @param to
      * @return qint64
      */
-    Q_INVOKABLE qint64 dayDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE qint64 dayDifference(const QDateTime &from, const QDateTime &to);
 
     /**
      * @brief Returns the second difference between the two dates.
@@ -298,7 +298,7 @@ public:
      * @param to
      * @return qint64
      */
-    Q_INVOKABLE qint64 secondDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE qint64 secondDifference(const QDateTime &from, const QDateTime &to);
 
     /**
      * @brief Returns the minute difference between the two dates.
@@ -306,7 +306,7 @@ public:
      * @param to
      * @return float
      */
-    Q_INVOKABLE float minuteDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE float minuteDifference(const QDateTime &from, const QDateTime &to);
 
     /**
      * @brief Returns the hour difference between the two dates.
@@ -314,7 +314,7 @@ public:
      * @param to
      * @return float
      */
-    Q_INVOKABLE float hourDifference(QDateTime from, QDateTime to);
+    Q_INVOKABLE float hourDifference(const QDateTime &from, const QDateTime &to);
 
     /**
      * @brief Returns the if `from` is earlier than `to`.

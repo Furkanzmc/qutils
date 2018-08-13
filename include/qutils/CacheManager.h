@@ -24,7 +24,7 @@ class CacheManager : public QObject
     Q_PROPERTY(QString cacheTableName READ getTableName WRITE setTableName NOTIFY tableNameChanged)
 
 public:
-    explicit CacheManager(QString databaseName = CACHE_DB_FILE_NAME, QString tableName = "cache", QObject *parent = 0);
+    explicit CacheManager(const QString &databaseName = CACHE_DB_FILE_NAME, const QString &tableName = "cache", QObject *parent = 0);
     ~CacheManager();
 
     /*!

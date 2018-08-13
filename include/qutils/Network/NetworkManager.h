@@ -109,7 +109,7 @@ public:
 
 public:
     explicit NetworkManager(QObject *parent = nullptr);
-    ~NetworkManager();
+    ~NetworkManager() = default;
 
     /*!
      * \brief Sends a get request. When the request is finished, the callback is called. If the queryParams parameter is provided, the query parameters are

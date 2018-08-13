@@ -85,7 +85,7 @@ public:
     using Constraint = std::tuple<QString/*columnName*/, QString/*value*/, QString/*AND|OR*/>;
 
 public:
-    SqliteManager();
+    SqliteManager() = default;
 
     /**
      * @brief Creates a sqlite3 instance and returns it. If there's an error, you can get the error with getLastError().

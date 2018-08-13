@@ -24,7 +24,7 @@ class SettingsManager : public QObject
     Q_PROPERTY(QString settingsTableName READ getTableName WRITE setTableName NOTIFY tableNameChanged)
 
 public:
-    explicit SettingsManager(QString databaseName = SETTINGS_DB_FILE_NAME, QString tableName = "settings", QObject *parent = 0);
+    explicit SettingsManager(const QString &databaseName = SETTINGS_DB_FILE_NAME, const QString &tableName = "settings", QObject *parent = 0);
     ~SettingsManager();
 
     /*!

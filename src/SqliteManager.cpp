@@ -8,12 +8,6 @@
 namespace zmc
 {
 
-SqliteManager::SqliteManager()
-    : m_LastError()
-{
-
-}
-
 QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
 {
     QSqlDatabase db;
@@ -23,7 +17,7 @@ QSqlDatabase SqliteManager::openDatabase(const QString &databasePath)
     else {
         db = QSqlDatabase::addDatabase("QSQLITE", databasePath);
         db.setDatabaseName(databasePath);
-        if (db.open() == false) {
+        if (!db.open()) {
             LOG_ERROR("Cannot open the database at " << databasePath << "\nError: " << db.lastError().text());
         }
     }
@@ -44,7 +38,7 @@ void SqliteManager::closeDatabase(QSqlDatabase &database)
 bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefinition> &columns, const QString &tableName)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Database is not open!");
         return successful;
     }
@@ -70,7 +64,7 @@ bool SqliteManager::createTable(QSqlDatabase &database, const QList<ColumnDefini
 
     QSqlQuery query(database);
     bool isExecSuccessful = query.exec(sqlQueryStr);
-    if (isExecSuccessful == false) {
+    if (!isExecSuccessful) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred creating table. Message: " << database.lastError().text());
         successful = false;
@@ -87,7 +81,7 @@ bool SqliteManager::isTableExist(QSqlDatabase &database, const QString &tableNam
 {
     bool isExist = false;
 
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return isExist;
     }
@@ -95,7 +89,7 @@ bool SqliteManager::isTableExist(QSqlDatabase &database, const QString &tableNam
     const QString sqlQueryStr = "SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='" + tableName + "'";
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
-    if (successfull == false) {
+    if (!successfull) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text());
     }
@@ -118,12 +112,12 @@ bool SqliteManager::isTableExist(QSqlDatabase &database, const QString &tableNam
 bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return successful;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
@@ -131,7 +125,7 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
     const QString sqlQueryStr = "DROP TABLE " + tableName;
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
-    if (successfull == false) {
+    if (!successfull) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text());
     }
@@ -145,12 +139,12 @@ bool SqliteManager::dropTable(QSqlDatabase &database, const QString &tableName)
 bool SqliteManager::clearTable(QSqlDatabase &database, const QString &tableName)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return successful;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
@@ -158,7 +152,7 @@ bool SqliteManager::clearTable(QSqlDatabase &database, const QString &tableName)
     const QString sqlQueryStr = "DELETE FROM " + tableName;
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
-    if (successfull == false) {
+    if (!successfull) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text());
     }
@@ -192,13 +186,13 @@ QString SqliteManager::constructWhereQuery(const QList<SqliteManager::Constraint
 QList<QMap<QString, QVariant>> SqliteManager::executeSelectQuery(QSqlDatabase &database, const QString &sqlQueryStr)
 {
     QList<QMap<QString, QVariant>> resultList;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return resultList;
     }
 
     QSqlQuery query(database);
-    if (query.exec(sqlQueryStr) == false) {
+    if (!query.exec(sqlQueryStr)) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text());
     }
@@ -221,12 +215,12 @@ QList<QMap<QString, QVariant>> SqliteManager::executeSelectQuery(QSqlDatabase &d
 QList<QMap<QString, QVariant>> SqliteManager::getFromTable(QSqlDatabase &database, const QString &tableName, const int &limit,
         const QList<Constraint> *constraints, const SelectOrder *selectOrder)
 {
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return QList<QMap<QString, QVariant>>();
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return QList<QMap<QString, QVariant>>();
     }
@@ -236,7 +230,7 @@ QList<QMap<QString, QVariant>> SqliteManager::getFromTable(QSqlDatabase &databas
         sqlQueryStr += " " + constructWhereQuery(*constraints);
     }
 
-    if (selectOrder && selectOrder->fieldName.length() > 0) {
+    if (selectOrder && !selectOrder->fieldName.isEmpty()) {
         const QString orderType = selectOrder->order == SelectOrder::OrderType::ASC ? "ASC" : "DESC";
         sqlQueryStr += " ORDER BY " + selectOrder->fieldName + " " + orderType;
     }
@@ -251,12 +245,12 @@ QList<QMap<QString, QVariant>> SqliteManager::getFromTable(QSqlDatabase &databas
 bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return successful;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
@@ -290,7 +284,7 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
         }
     }
 
-    if (query.exec() == false) {
+    if (!query.exec()) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << query.executedQuery());
     }
@@ -304,12 +298,12 @@ bool SqliteManager::insertIntoTable(QSqlDatabase &database, const QString &table
 bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableName, const QMap<QString, QVariant> &row, const QList<Constraint> &constraints)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return successful;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
@@ -342,7 +336,7 @@ bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableNa
         }
     }
 
-    if (query.exec() == false) {
+    if (!query.exec()) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << query.executedQuery());
     }
@@ -356,12 +350,12 @@ bool SqliteManager::updateInTable(QSqlDatabase &database, const QString &tableNa
 bool SqliteManager::deleteInTable(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints)
 {
     bool successful = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return successful;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return successful;
     }
@@ -370,7 +364,7 @@ bool SqliteManager::deleteInTable(QSqlDatabase &database, const QString &tableNa
     QString sqlQueryStr = "DELETE FROM " + tableName + " ";
     sqlQueryStr.append(constructWhereQuery(constraints));
 
-    if (query.exec(sqlQueryStr) == false) {
+    if (!query.exec(sqlQueryStr)) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text());
     }
@@ -384,17 +378,17 @@ bool SqliteManager::deleteInTable(QSqlDatabase &database, const QString &tableNa
 bool SqliteManager::exists(QSqlDatabase &database, const QString &tableName, const QList<Constraint> &constraints)
 {
     bool exists = false;
-    if (database.isOpen() == false) {
+    if (!database.isOpen()) {
         LOG_ERROR("Given database is not open!");
         return exists;
     }
 
-    if (isTableExist(database, tableName) == false) {
+    if (!isTableExist(database, tableName)) {
         LOG_ERROR("Given table, " << tableName << ", does not exist!");
         return exists;
     }
 
-    if (constraints.size() == 0) {
+    if (constraints.isEmpty()) {
         LOG_ERROR("Constraints size cannot be 0!");
         return exists;
     }
@@ -402,7 +396,7 @@ bool SqliteManager::exists(QSqlDatabase &database, const QString &tableName, con
     const QString sqlQueryStr = "SELECT COUNT(rowid) FROM " + tableName + " " + constructWhereQuery(constraints);
     QSqlQuery query(database);
     bool successfull = query.exec(sqlQueryStr);
-    if (successfull == false) {
+    if (!successfull) {
         updateError(database, sqlQueryStr);
         LOG_ERROR("Error occurred. Message: " << database.lastError().text() << ". Query: " << sqlQueryStr);
     }

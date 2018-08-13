@@ -34,7 +34,7 @@ public:
      * @param name
      * @return void
      */
-    void setName(QString name);
+    void setName(const QString &name);
 
     /**
      * @brief Returns the version of this update.
@@ -47,7 +47,7 @@ public:
      * @param ver
      * @return void
      */
-    void setVersion(QString ver);
+    void setVersion(const QString &ver);
 
     /**
      * @brief Returns the size of this update.
