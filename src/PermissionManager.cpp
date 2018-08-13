@@ -118,7 +118,7 @@ QString PermissionManager::permissionString(Permissions permission) const
     try {
         typeStr = m_AndroidPermissionMap.at(permission);
     }
-    catch (std::out_of_range ex) {
+    catch (std::out_of_range &ex) {
         Q_UNUSED(ex);
         LOG_WARNING("String for the given permission type cannot be found.");
     }
