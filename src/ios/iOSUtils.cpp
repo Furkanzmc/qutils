@@ -202,7 +202,7 @@ void iOSUtils::setStatusBarVisible(bool visible)
 
 void iOSUtils::emitOpenedWithURLSignal(QString url)
 {
-    if (m_Instances.size() == 0) {
+    if (m_Instances.isEmpty()) {
         m_URLOpenedWith = url;
     }
     else {
@@ -233,7 +233,7 @@ void iOSUtils::emitOpenedWithoutURLSignal()
 
 void iOSUtils::imagePickerFinishedPickingCallback(const QVariantMap &data)
 {
-    if (data["isSourceCamera"].toBool() == true) {
+    if (data["isSourceCamera"].toBool()) {
         emit cameraCaptured(data["tempUrl"].toString());
     }
     else {
