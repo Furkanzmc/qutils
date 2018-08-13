@@ -9,11 +9,6 @@
 namespace zmc
 {
 
-JsonUtils::JsonUtils()
-{
-
-}
-
 QString JsonUtils::toJsonString(const QVariantMap &data)
 {
     const QJsonObject &obj = QJsonObject::fromVariantMap(data);
@@ -45,7 +40,7 @@ QVariantMap JsonUtils::toVariantMap(const QString &data)
 {
     QVariantMap map;
     const QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
-    if (doc.isNull() == false) {
+    if (!doc.isNull()) {
         map = doc.object().toVariantMap();
     }
 
@@ -60,7 +55,7 @@ QList<QVariant> JsonUtils::toVariantList(const QString &data)
     if (data.length() > 0) {
         const QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
 
-        if (doc.isNull() == false && doc.isArray()) {
+        if (!doc.isNull() && doc.isArray()) {
             hasValidData = true;
             const QJsonArray array = doc.array();
             const int arraySize = array.size();
@@ -92,7 +87,7 @@ QList<QVariant> JsonUtils::toVariantList(const QString &data)
         }
     }
 
-    if (hasValidData == false) {
+    if (!hasValidData) {
         LOG_ERROR("Given data is nat valid to convert to QList<QVariant>: " << data);
     }
 

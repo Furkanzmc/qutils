@@ -8,7 +8,7 @@ namespace zmc
 class JsonUtils
 {
 public:
-    JsonUtils();
+    JsonUtils() = default;
 
     static QString toJsonString(const QVariantMap &data);
     static QString toJsonString(const QVariant &data);
