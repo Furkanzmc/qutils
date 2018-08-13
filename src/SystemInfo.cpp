@@ -111,9 +111,9 @@ QString SystemInfo::deviceModel() const
 
 #if defined(Q_OS_MACOS)
     size_t size;
-    sysctlbyname("hw.model", NULL, &size, NULL, 0);
+    sysctlbyname("hw.model", nullptr, &size, nullptr, 0);
     char *name = new char[size];
-    sysctlbyname("hw.model", name, &size, NULL, 0);
+    sysctlbyname("hw.model", name, &size, nullptr, 0);
     model = QString::fromLatin1(name, size);
     free(name);
 #elif defined(Q_OS_WIN)
