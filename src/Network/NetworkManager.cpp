@@ -23,18 +23,13 @@ NetworkManager::NetworkManager(QObject *parent)
     connect(&m_Network, &QNetworkAccessManager::finished, this, &NetworkManager::onRequestFinished);
 }
 
-NetworkManager::~NetworkManager()
-{
-
-}
-
 void NetworkManager::sendGet(const QString &url, RequestCallback callback, const QVariantMap &queryParams)
 {
     const int availableIndex = getAvailableIndex();
     const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     QUrl qurl = QUrl(url);
 
-    if (queryParams.size() > 0) {
+    if (queryParams.isEmpty()) {
         QUrlQuery query;
         for (auto it = queryParams.constBegin(); it != queryParams.constEnd(); it++) {
             query.addQueryItem(it.key(), it.value().toString());
@@ -57,7 +52,7 @@ void NetworkManager::sendHead(const QString &url, RequestCallback callback, cons
     const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     QUrl qurl = QUrl(url);
 
-    if (queryParams.size() > 0) {
+    if (queryParams.isEmpty()) {
         QUrlQuery query;
         for (auto it = queryParams.constBegin(); it != queryParams.constEnd(); it++) {
             query.addQueryItem(it.key(), it.value().toString());
@@ -154,7 +149,7 @@ void NetworkManager::sendMultipartRequest(
         }
 
         QFile *file = new QFile(filePath);
-        if (file->exists() == false) {
+        if (!file->exists()) {
             LOG_ERROR(filePath + " doesn't exist! Skipping the upload.");
             continue;
         }
@@ -162,7 +157,7 @@ void NetworkManager::sendMultipartRequest(
         const QString contentType = db.mimeTypeForFile(filePath).name();
         QHttpPart filePart;
         filePart.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
-        const QString contentDisposition = QString("form-data; name=\"%1\"; filename=\"%2\"").arg(it.key()).arg(file->fileName());
+        const QString contentDisposition = QString(R"(form-data; name="%1"; filename="%2")").arg(it.key()).arg(file->fileName());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, contentDisposition);
 
         if (file->open(QIODevice::ReadOnly)) {
@@ -345,7 +340,7 @@ void NetworkManager::onRequestFinished(QNetworkReply *reply)
 
     bool intConversionOk = false;
     int callbackIndex = reply->objectName().toInt(&intConversionOk);
-    if (intConversionOk == false) {
+    if (!intConversionOk) {
         callbackIndex = -1;
     }
 
