@@ -10,6 +10,7 @@
 #include "qutils/SystemInfo.h"
 #include "qutils/NativeUtils.h"
 #include "qutils/DateManager.h"
+#include "qutils/ScreenHelper.h"
 #include "qutils/CacheManager.h"
 #include "qutils/SignalManager.h"
 #include "qutils/UpdateChecker.h"
@@ -56,6 +57,7 @@ void QutilsPlugin::registerQutils(const char *uri)
 
     qmlRegisterType<zmc::PermissionManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
+    qmlRegisterSingletonType<zmc::ScreenHelper>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "ScreenHelper", zmc::ScreenHelper::singletonProvider);
 }
 
 void QutilsPlugin::registerTypes(const char *uri)

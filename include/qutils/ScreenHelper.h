@@ -3,6 +3,10 @@
 #include <QObject>
 #include <QRect>
 
+// Forward Declerations
+class QQmlEngine;
+class QJSEngine;
+
 namespace zmc
 {
 
@@ -31,7 +35,7 @@ namespace zmc
  *         id: mainWindow
  *
  *         Rectangle {
- *             width: SH.dp(50)
+ *             width: ScreenHelper.dp(50)
  *         }
  *     }
  * \endcode
@@ -71,20 +75,14 @@ public:
      * \param parent
      *
      * Ideally, you should provide different reference sizes for each platform.
-     *
-     * \code
-     *     #if defined(Q_OS_WIN) || defined(Q_OS_WINRT)
-     *          zmc::ScreenHelper screenHelper(96.f, 1368.f, 768.f);
-     *     #elif defined(Q_OS_MACOS)
-     *          zmc::ScreenHelper screenHelper(113.f, 1280.f, 800.f);
-     *     #elif defined(Q_OS_ANDROID)
-     *          zmc::ScreenHelper screenHelper(445.f, 1080.f, 1920.f);
-     *     #elif defined(Q_OS_IOS)
-     *          zmc::ScreenHelper screenHelper(326.f, 750.f, 1334.f);
-     *     #endif // defined(Q_OS_WIN) || defined(Q_OS_WINRT)
-     * \endcode
      */
-    ScreenHelper(const float &refDpi, const float &refWidth, const float &refHeight, const float &refSizeInInches, QObject *parent = nullptr);
+    ScreenHelper(QObject *parent = nullptr);
+
+    /*!
+     * \brief The singleton provider for Cuz class.
+     * \return QObject *
+     */
+    static QObject *singletonProvider(QQmlEngine *qmlEngine, QJSEngine *jsEngine);
 
     /*!
      * \brief This method takes the \a size and returns a DPI version.
@@ -251,6 +249,8 @@ public:
      */
     float getSizeInInches() const;
 
+    void setSizeInInches(float size);
+
     /*!
      * \property ScreenHelper::dpi
      * \brief Returns the DPI of the current screen.
@@ -387,12 +387,18 @@ public:
      */
     float ratio() const;
 
+    QSize getRefSize() const;
+    void setRefSize(const QSize &size);
+
+    float getRefDPI() const;
+    void setRefDPI(const float &refDPI);
+
 private:
     const QRect m_ScreenRect;
-    const QSize m_RefSize;
-    const float m_RefDPI,
-          m_DPI,
-          m_LowDPIValue,
+    QSize m_RefSize;
+    float m_RefDPI, m_DPI;
+
+    const float m_LowDPIValue,
           m_MediumDPIValue,
           m_HighDPIValue,
           m_XHighDPIValue,
@@ -416,7 +422,6 @@ private:
           m_Scale;
 
 private:
-
     /*!
      * \brief This should only be called once since the screen configuration is unlikely to change.
      */
@@ -435,6 +440,9 @@ private:
      * \brief Prints information about the current screen configuration.
      */
     void printScreenInfo() const;
+
+private:
+    static ScreenHelper *m_Instance;
 };
 
 }

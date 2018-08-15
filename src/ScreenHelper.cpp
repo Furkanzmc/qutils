@@ -2,25 +2,25 @@
 // std
 #include <cmath>
 // Qt
-#include <QGuiApplication>
-#include <QScreen>
 #include <QFile>
+#include <QScreen>
+#include <QJSEngine>
+#include <QQmlEngine>
+#include <QGuiApplication>
 // Local
 #include "qutils/Macros.h"
 
 namespace zmc
 {
 
-ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const float &refHeight, const float &refSizeInInches, QObject *parent)
+ScreenHelper *ScreenHelper::m_Instance = nullptr;
+
+ScreenHelper::ScreenHelper(QObject *parent)
     : QObject(parent)
     , m_ScreenRect(QGuiApplication::primaryScreen()->geometry())
-    , m_RefSize(refWidth, refHeight)
-    , m_RefDPI(refDpi)
-#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
-    , m_DPI(refDpi)
-#else
+    , m_RefSize()
+    , m_RefDPI(-1)
     , m_DPI(QGuiApplication::primaryScreen()->physicalDotsPerInch())
-#endif // defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
 #if defined(Q_OS_DESKTOP)
     , m_LowDPIValue(96)
     , m_MediumDPIValue(113)
@@ -40,13 +40,23 @@ ScreenHelper::ScreenHelper(const float &refDpi, const float &refWidth, const flo
     , m_Ratio(1.f)
     , m_DesiredWidth(0.f)
     , m_DesiredHeight(0.f)
-    , m_SizeInInches(refSizeInInches)
+    , m_SizeInInches(0)
     , m_Scale(1.f)
 {
     calculateRatio();
     printScreenInfo();
 
     connect(QGuiApplication::primaryScreen(), &QScreen::orientationChanged, this, &ScreenHelper::calculateRatio);
+}
+
+QObject *ScreenHelper::singletonProvider(QQmlEngine *qmlEngine, QJSEngine *jsEngine)
+{
+    if (m_Instance == nullptr) {
+        m_Instance = new ScreenHelper(qmlEngine);
+    }
+
+    Q_UNUSED(jsEngine);
+    return m_Instance;
 }
 
 qreal ScreenHelper::dp(const qreal &size)
@@ -197,6 +207,13 @@ float ScreenHelper::getSizeInInches() const
     return m_SizeInInches;
 }
 
+void ScreenHelper::setSizeInInches(float size)
+{
+    if (m_SizeInInches != size) {
+        m_SizeInInches = size;
+    }
+}
+
 float ScreenHelper::dpi() const
 {
     return  m_DPI;
@@ -301,6 +318,35 @@ bool ScreenHelper::isXLargeSize() const
 float ScreenHelper::ratio() const
 {
     return m_Ratio;
+}
+
+QSize ScreenHelper::getRefSize() const
+{
+    return m_RefSize;
+}
+
+void ScreenHelper::setRefSize(const QSize &size)
+{
+    if (m_RefSize != size) {
+        m_RefSize = size;
+        calculateRatio();
+    }
+}
+
+float ScreenHelper::getRefDPI() const
+{
+    return m_RefDPI;
+}
+
+void ScreenHelper::setRefDPI(const float &refDPI)
+{
+    if (m_RefDPI != refDPI) {
+        m_RefDPI = refDPI;
+#if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE == 1
+        m_DPI = refDPI;
+#endif
+        calculateRatio();
+    }
 }
 
 void ScreenHelper::calculateRatio()
