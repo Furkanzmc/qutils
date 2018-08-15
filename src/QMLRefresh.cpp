@@ -38,13 +38,11 @@ void QMLRefresh::reload(float delay)
         return;
     }
 
-    const QObjectList objects = m_Engine->rootObjects();
-    if (!objects.isEmpty()) {
-        m_Window = static_cast<QQuickWindow *>(objects.at(0));
-    }
-
     if (m_Window == nullptr) {
-        LOG_WARNING("QML Window is not loaded.");
+        const QObjectList objects = m_Engine->rootObjects();
+        if (!objects.isEmpty()) {
+            m_Window = dynamic_cast<QQuickWindow *>(objects.at(0));
+        }
     }
 
     if (delay == 0.f) {
@@ -74,6 +72,9 @@ void QMLRefresh::reloadCache()
 
     if (m_Window) {
         m_Window->close();
+    }
+    else {
+        LOG_WARNING("QML Window is not loaded.");
     }
 
     m_Engine->clearComponentCache();
