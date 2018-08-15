@@ -29,7 +29,7 @@ void NetworkManager::sendGet(const QString &url, RequestCallback callback, const
     const int threadIndex = availableIndex == -1 ? m_Callbacks.size() : availableIndex;
     QUrl qurl = QUrl(url);
 
-    if (queryParams.isEmpty()) {
+    if (!queryParams.isEmpty()) {
         QUrlQuery query;
         for (auto it = queryParams.constBegin(); it != queryParams.constEnd(); it++) {
             query.addQueryItem(it.key(), it.value().toString());
