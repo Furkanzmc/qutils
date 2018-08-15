@@ -37,24 +37,24 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::AudioRecorder>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "AudioRecorder");
 #endif // QUTILS_MULTIMEDIA_ENABLED
 
-    qmlRegisterType<zmc::CacheManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CacheManager");
-    qmlRegisterUncreatableType<zmc::CppTypes>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CppTypes", "Error: only enums");
-    qmlRegisterType<zmc::DateManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DateManager");
+    qmlRegisterType<zmc::CacheManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CacheManager");
+    qmlRegisterUncreatableType<zmc::CppTypes>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "CppTypes", "Error: only enums");
+    qmlRegisterType<zmc::DateManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DateManager");
 
-    qmlRegisterType<zmc::FileUtils>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "FileUtils");
-    qmlRegisterType<zmc::NativeUtils>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NativeUtils");
-    qmlRegisterType<zmc::NotificationClient>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NotificationClient");
+    qmlRegisterType<zmc::FileUtils>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "FileUtils");
+    qmlRegisterType<zmc::NativeUtils>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NativeUtils");
+    qmlRegisterType<zmc::NotificationClient>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NotificationClient");
 
-    qmlRegisterType<zmc::QutilsLog>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QutilsLog");
-    qmlRegisterType<zmc::SettingsManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SettingsManager");
-    qmlRegisterType<zmc::SignalManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
+    qmlRegisterType<zmc::QutilsLog>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QutilsLog");
+    qmlRegisterType<zmc::SettingsManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SettingsManager");
+    qmlRegisterType<zmc::SignalManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SignalManager");
 
-    qmlRegisterType<zmc::TranslationHelper>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
-    qmlRegisterType<zmc::UpdateChecker>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
-    qmlRegisterType<zmc::Network::DownloadManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
-    qmlRegisterType<zmc::Network::NetworkManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NetworkManager");
+    qmlRegisterType<zmc::TranslationHelper>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
+    qmlRegisterType<zmc::UpdateChecker>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
+    qmlRegisterType<zmc::Network::DownloadManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
+    qmlRegisterType<zmc::Network::NetworkManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NetworkManager");
 
-    qmlRegisterType<zmc::PermissionManager>("qutils", QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
+    qmlRegisterType<zmc::PermissionManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
 }
 
