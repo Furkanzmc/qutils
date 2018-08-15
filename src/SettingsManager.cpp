@@ -108,7 +108,7 @@ QVariant SettingsManager::read(const QString &key)
     };
 
     const QList<QMap<QString, QVariant>> existingData = m_SqlManager.getFromTable(database, m_TableName, -1, &values);
-    const bool exists = !existingData.size();
+    const bool exists = !existingData.isEmpty();
 
     if (exists) {
         value = existingData.at(0)[COL_SETTING_VALUE];
