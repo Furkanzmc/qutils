@@ -17,6 +17,9 @@ namespace zmc
  *
  * To use it, pass the QQmlApplicationEngine pointer and call the reload function when you need.
  * For more information about runtime reloading go here -> http://www.slideshare.net/ICSinc/how-best-to-realize-a-runtime-reload-of-qml
+ *
+ * We can also get the main.qml file using QResource but that would mean that we only get the version of the file
+ * embedded in the executable. But the user may want to load the files from the file system.
  */
 class QMLRefresh : public QObject
 {
