@@ -1,31 +1,58 @@
 #include "qutils/QMLRefresh.h"
+// Qt
+#include <QTimer>
+#include <QQmlContext>
+#include <QQuickWindow>
+#include <QQmlApplicationEngine>
 // Local
 #include "qutils/Macros.h"
 
 namespace zmc
 {
 
-QMLRefresh::QMLRefresh(QQmlApplicationEngine *engine, QObject *parent)
+QMLRefresh *QMLRefresh::m_Instance = nullptr;
+
+QMLRefresh::QMLRefresh(QObject *parent)
     : QObject(parent)
-    , m_Engine(engine)
+    , m_Engine(nullptr)
     , m_Window(nullptr)
 {
 
 }
 
+QObject *QMLRefresh::singletonProvider(QQmlEngine *qmlEngine, QJSEngine *jsEngine)
+{
+    if (m_Instance == nullptr) {
+        m_Instance = new QMLRefresh(qmlEngine);
+    }
+
+    m_Instance->m_Engine = dynamic_cast<QQmlApplicationEngine *>(qmlEngine);
+    Q_UNUSED(jsEngine);
+    return m_Instance;
+}
+
 void QMLRefresh::reload(float delay)
 {
+    if (m_Engine == nullptr) {
+        LOG_ERROR("QML Engine is not yet loaded.");
+        return;
+    }
+
+    const QObjectList objects = m_Engine->rootObjects();
+    if (!objects.isEmpty()) {
+        m_Window = static_cast<QQuickWindow *>(objects.at(0));
+    }
+
+    if (m_Window == nullptr) {
+        LOG_WARNING("QML Window is not loaded.");
+    }
+
     if (delay == 0.f) {
         reloadCache();
     }
     else {
         QTimer::singleShot(delay * 1000, this, &QMLRefresh::reloadCache);
     }
-}
-
-void QMLRefresh::setWindow(QQuickWindow *window)
-{
-    m_Window = window;
 }
 
 QString QMLRefresh::getMainQMLFile() const
