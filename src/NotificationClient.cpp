@@ -44,9 +44,11 @@ QMap<int, NotificationClient *> NotificationClient::m_Instances = QMap<int, Noti
     QString NotificationClient::m_FCMToken = "";
 #endif // FCM_ENABLED == 1
 
+unsigned int NotificationClient::m_NextInstanceID = 0;
+
 NotificationClient::NotificationClient(QObject *parent)
     : QObject(parent)
-    , m_InstanceIndex(m_Instances.size())
+    , m_InstanceIndex(m_NextInstanceID)
 #ifdef Q_OS_IOS
     , m_iOSNative(new iOSNativeUtils())
 #endif // Q_OS_IOS
@@ -54,6 +56,7 @@ NotificationClient::NotificationClient(QObject *parent)
     , m_FCMMessaging(new QtFirebaseMessaging(this))
 #endif // FCM_ENABLED
 {
+    m_NextInstanceID++;
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
     m_Instances.insert(m_InstanceIndex, this);
 

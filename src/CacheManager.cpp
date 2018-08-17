@@ -17,14 +17,16 @@ namespace zmc
 {
 
 QMap<int, CacheManager *> CacheManager::m_Instances = QMap<int, CacheManager *>();
+unsigned int CacheManager::m_NextInstanceID = 0;
 
 CacheManager::CacheManager(const QString &databaseName, const QString &tableName, QObject *parent)
     : QObject(parent)
-    , m_InstanceIndex(m_Instances.size())
+    , m_InstanceIndex(m_NextInstanceID)
     , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_TableName(tableName)
     , m_IsTableCreated(false)
 {
+    m_NextInstanceID++;
     m_Instances.insert(m_InstanceIndex, this);
     // Create the app data location folder if it doesn't exist.
     QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));

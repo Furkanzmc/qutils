@@ -106,6 +106,12 @@ private:
      * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
      */
     static QMap<int, NotificationClient *> m_Instances;
+
+    /*!
+     * \variable static unsigned int m_NextInstanceID
+     * \brief Used to prevent key clashes in m_Instances.
+     */
+    static unsigned int m_NextInstanceID;
 #if FCM_ENABLED == 1
     static QString m_FCMToken;
 #endif // FCM_ENABLED == 1

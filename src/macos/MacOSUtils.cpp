@@ -10,12 +10,14 @@ namespace zmc
 {
 
 QMap<int, MacOSUtils *> MacOSUtils::m_Instances = QMap<int, MacOSUtils *>();
+unsigned int MacOSUtils::m_NextInstanceID = 0;
 
 MacOSUtils::MacOSUtils(QObject *parent)
     : QObject(parent)
-    , m_InstanceID(m_Instances.size())
+    , m_InstanceID(m_NextInstanceID)
     , m_IsMainController(false)
 {
+    m_NextInstanceID++;
     m_Instances.insert(m_InstanceID, this);
 }
 

@@ -81,6 +81,12 @@ private:
     static QMap<int, MacOSUtils *> m_Instances;
 
     /*!
+     * \variable static unsigned int m_NextInstanceID
+     * \brief Used to prevent key clashes in m_Instances.
+     */
+    static unsigned int m_NextInstanceID;
+
+    /*!
      * \internal
      * \variable const int m_InstanceID
      * \brief This variable is initilized in the constructor to the size value of m_Instances.

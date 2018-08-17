@@ -106,6 +106,13 @@ public:
 
 private:
     static std::map<int, PermissionManagerPrivate *> m_Instances;
+
+    /*!
+     * \variable static unsigned int m_NextInstanceID
+     * \brief Used to prevent key clashes in m_Instances.
+     */
+    static unsigned int m_NextInstanceID;
+
     const int m_InstanceIndex;
 
     /*!

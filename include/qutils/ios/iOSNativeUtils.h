@@ -263,6 +263,12 @@ private:
     static QMap<int, iOSNativeUtils *> m_Instances;
 
     /*!
+     * \variable static unsigned int m_NextInstanceID
+     * \brief Used to prevent key clashes in m_Instances.
+     */
+    static unsigned int m_NextInstanceID;
+
+    /*!
      * \internal
      * \variable const int m_InstanceIndex
      * \brief This variable is initilized in the constructor to the size value of m_Instances.

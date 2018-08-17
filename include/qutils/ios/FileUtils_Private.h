@@ -50,6 +50,13 @@ private:
      * \brief This variable is used to keep track of all the instances so that we can send signals to all of them.
      */
     static QMap<int, FileUtilsPrivate *> m_Instances;
+
+    /*!
+     * \variable static unsigned int m_NextInstanceID
+     * \brief Used to prevent key clashes in m_Instances.
+     */
+    static unsigned int m_NextInstanceID;
+
     static bool m_IsDocumentPickerOpen;
 
     /*!

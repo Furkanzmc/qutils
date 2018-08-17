@@ -8,13 +8,15 @@ namespace zmc
 
 bool FileUtilsPrivate::m_IsDocumentPickerOpen = false;
 QMap<int, FileUtilsPrivate *> FileUtilsPrivate::m_Instances = QMap<int, FileUtilsPrivate *>();
+unsigned int FileUtilsPrivate::m_NextInstanceID = 0;
 
 static DocumentPicker *m_DocumentPicker = nullptr;
 
 FileUtilsPrivate::FileUtilsPrivate()
-    : m_InstanceIndex(m_Instances.size())
+    : m_InstanceIndex(m_NextInstanceID)
     , m_IsInvokerInstance(false)
 {
+    m_NextInstanceID++;
     m_Instances.insert(m_InstanceIndex, this);
 }
 

@@ -14,6 +14,7 @@ namespace zmc
 
 std::map<int, AndroidUtils *> AndroidUtils::m_Instances = std::map<int, AndroidUtils *>();
 QString AndroidUtils::m_URLOpenedWith = "";
+unsigned int AndroidUtils::m_NextInstanceID = 0;
 
 AndroidButtonEvent::AndroidButtonEvent(QObject *parent)
     : QObject(parent)
@@ -38,13 +39,14 @@ void AndroidButtonEvent::setAccepted(bool accepted)
 
 AndroidUtils::AndroidUtils(QObject *parent)
     : QObject(parent)
-    , m_InstanceID(m_Instances.size())
+    , m_InstanceID(m_NextInstanceID)
     , m_IsCameraShown(false)
     , m_IsGalleryShown(false)
     , m_IsDocumentPickerShown(false)
     , m_IsMainController(false)
     , m_IsButtonEventsEnabled(false)
 {
+    m_NextInstanceID++;
     m_Instances[m_InstanceID] = this;
     if (m_IsMainController) {
         if (m_URLOpenedWith.length() > 0) {

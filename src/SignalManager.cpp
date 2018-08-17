@@ -4,11 +4,13 @@ namespace zmc
 {
 
 QMap<int, SignalManager *> SignalManager::m_Instances = QMap<int, SignalManager *>();
+unsigned int SignalManager::m_NextInstanceID = 0;
 
 SignalManager::SignalManager(QObject *parent)
     : QObject(parent)
-    , m_InstanceIndex(m_Instances.size())
+    , m_InstanceIndex(m_NextInstanceID)
 {
+    m_NextInstanceID++;
     m_Instances.insert(m_InstanceIndex, this);
 }
 

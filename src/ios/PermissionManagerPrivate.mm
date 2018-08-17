@@ -42,11 +42,13 @@ namespace zmc
 {
 
 std::map<int, PermissionManagerPrivate *> PermissionManagerPrivate::m_Instances = std::map<int, PermissionManagerPrivate *>();
+unsigned int PermissionManagerPrivate::m_NextInstanceID = 0;
 
 PermissionManagerPrivate::PermissionManagerPrivate()
-    : m_InstanceIndex(static_cast<int>(m_Instances.size()))
+    : m_InstanceIndex(m_NextInstanceID)
     , m_IsRequestedLocationPermission(false)
 {
+    m_NextInstanceID++;
     m_Instances[m_InstanceIndex] = this;
 }
 

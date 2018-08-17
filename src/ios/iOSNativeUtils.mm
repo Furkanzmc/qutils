@@ -19,14 +19,16 @@ namespace zmc
 static QutilsViewDelegate *m_QutilsDelegate = [[QutilsViewDelegate alloc] init];
 
 QMap<int, iOSNativeUtils *> iOSNativeUtils::m_Instances = QMap<int, iOSNativeUtils *>();
+unsigned int iOSNativeUtils::m_NextInstanceID = 0;
 
 iOSNativeUtils::iOSNativeUtils()
-    : m_InstanceIndex(m_Instances.size())
+    : m_InstanceIndex(m_NextInstanceID)
     , m_IsImagePickerOpen(false)
     , m_IsAlertDialogVisible(false)
     , m_IsActionSheetDialogVisible(false)
     , m_IsCameraOpen(false)
 {
+    m_NextInstanceID++;
     if (m_Instances.size() == 0) {
         [[NSNotificationCenter defaultCenter] addObserverForName: UIKeyboardWillHideNotification
                                                           object: nil

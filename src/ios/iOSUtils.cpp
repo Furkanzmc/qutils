@@ -9,14 +9,17 @@ namespace zmc
 {
 
 QMap<int, iOSUtils *> iOSUtils::m_Instances = QMap<int, iOSUtils *>();
+unsigned int iOSUtils::m_NextInstanceID = 0;
 QString iOSUtils::m_URLOpenedWith = "";
 
 iOSUtils::iOSUtils(QObject *parent)
     : QObject(parent)
-    , m_InstanceID(m_Instances.size())
+    , m_InstanceID(m_NextInstanceID)
     , m_iOSNative(new iOSNativeUtils())
     , m_IsMainController(false)
 {
+    m_NextInstanceID++;
+
     m_iOSNative->onAlertDialogClicked = std::bind(&iOSUtils::alertDialogClicked, this, std::placeholders::_1);
     m_iOSNative->onActionSheetClicked = std::bind(&iOSUtils::actionSheetClicked, this, std::placeholders::_1);
     m_iOSNative->onKeyboardHeightChanged = std::bind(&iOSUtils::keyboardHeightChanged, this, std::placeholders::_1);
