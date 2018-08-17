@@ -25,13 +25,14 @@ void SignalManager::emitSignal(const QString &signalName, const QString &targetO
         SignalManager *instance = it.value();
 
         if (instance) {
-            if (targetObjectName.length() > 0) {
-                if (targetObjectName == instance->objectName()) {
-                    QMetaObject::invokeMethod(instance, std::bind(&SignalManager::signalReceived, instance, signalName, data), Qt::QueuedConnection);
-                }
+            if (targetObjectName.isEmpty()) {
+                QMetaObject::invokeMethod(instance, std::bind(&SignalManager::signalReceived, instance, signalName, data), Qt::QueuedConnection);
             }
             else {
-                QMetaObject::invokeMethod(instance, std::bind(&SignalManager::signalReceived, instance, signalName, data), Qt::QueuedConnection);
+                if (targetObjectName == instance->objectName()) {
+                    QMetaObject::invokeMethod(instance, std::bind(&SignalManager::signalReceived, instance, signalName, data), Qt::QueuedConnection);
+                    break;
+                }
             }
         }
     }
