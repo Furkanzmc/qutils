@@ -145,6 +145,16 @@ void FileInfo::setAbsoluteDirPath(const QString &path)
     m_AbsoluteDirPath = path;
 }
 
+QString FileInfo::suffix() const
+{
+    return m_Suffix;
+}
+
+void FileInfo::setSuffix(const QString &ext)
+{
+    m_Suffix = ext;
+}
+
 void FileInfo::reset()
 {
     m_AbsoluteFilePath = "";
@@ -238,6 +248,7 @@ QObject *FileUtils::getFileInfo(QString filePath)
         m_FileInfo->setFileName(fileInfo.fileName());
         m_FileInfo->setSize(fileInfo.size());
         m_FileInfo->setAbsoluteDirPath(fileInfo.absoluteDir().absolutePath());
+        m_FileInfo->setSuffix(fileInfo.suffix());
     }
 
     return static_cast<QObject *>(m_FileInfo);

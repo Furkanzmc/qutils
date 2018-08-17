@@ -47,7 +47,6 @@ private:
 class FileInfo : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(bool exists READ exists CONSTANT)
     Q_PROPERTY(QString absoluteFilePath READ absoluteFilePath CONSTANT)
     Q_PROPERTY(QString baseName READ baseName CONSTANT)
@@ -59,6 +58,8 @@ class FileInfo : public QObject
     Q_PROPERTY(QString fileName READ fileName CONSTANT)
     Q_PROPERTY(qint64 size READ size CONSTANT)
     Q_PROPERTY(QString absoluteDirPath READ absoluteDirPath CONSTANT)
+
+    Q_PROPERTY(QString suffix READ suffix CONSTANT)
 
 public:
     explicit FileInfo(QObject *parent = nullptr);
@@ -136,6 +137,14 @@ public:
     void setAbsoluteDirPath(const QString &path);
 
     /*!
+     * \property FileInfo::suffix
+     * \return QString
+     * \sa QFileInfo::suffix
+     */
+    QString suffix() const;
+    void setSuffix(const QString &ext);
+
+    /*!
      * \brief Resets the internal values to their default.
      */
     void reset();
@@ -146,7 +155,8 @@ private:
             m_CompleteBaseName = "",
             m_CompleteSuffix = "",
             m_FileName = "",
-            m_AbsoluteDirPath = "";
+            m_AbsoluteDirPath = "",
+            m_Suffix = "";
 
     bool m_Exists = false;
     qint64 m_Size = 0;
