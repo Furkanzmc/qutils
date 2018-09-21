@@ -72,6 +72,8 @@ void QMLRefresh::reloadCache()
 
     if (m_Window) {
         m_Window->close();
+        m_Window->deleteLater();
+        m_Window = nullptr;
     }
     else {
         LOG_WARNING("QML Window is not loaded.");
