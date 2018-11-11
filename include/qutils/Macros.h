@@ -30,23 +30,23 @@
         #define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
         #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
         #define LOG_ERROR(msg) qDebug() << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
-        #define LOG_STD(msg) std::cout << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
-        #define LOG_WARNING_STD(msg) std::cout << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
-        #define LOG_ERROR_STD(msg) std::cerr << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
+        #define LOG_STD(msg) std::clog << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << "\n"
+        #define LOG_WARNING_STD(msg) std::clog << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg <<  "\n"
+        #define LOG_ERROR_STD(msg) std::cerr << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg << "\n"
     #else // __clang__
         #define LOG(msg) qDebug() << "[INFO] " << msg
         #define LOG_WARNING(msg) qDebug() << "[WARNING] " << msg
         #define LOG_ERROR(msg) qDebug() << "[ERROR] " << msg
-        #define LOG_STD(msg) std::cout << "[INFO] " << msg << std::endl
-        #define LOG_WARNING_STD(msg) std::cout << "[WARNING] " << msg << std::endl
+        #define LOG_STD(msg) std::clog << "[INFO] " << msg << "\n"
+        #define LOG_WARNING_STD(msg) std::clog << "[WARNING] " << msg << "\n"
         #define LOG_ERROR_STD(msg) std::cerr << "[ERROR] " << msg << std::endl
     #endif // __clang__
 #else
     #define LOG(msg) qDebug() << "[INFO]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
     #define LOG_WARNING(msg) qDebug() << "[WARNING]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
     #define LOG_ERROR(msg) qDebug() << "[ERROR]" << __FUNCTION__ << "(" << __LINE__ << "):" << msg
-    #define LOG_STD(msg) std::cout << "[INFO] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
-    #define LOG_WARNING_STD(msg) std::cout << "[WARNING] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
+    #define LOG_STD(msg) std::clog << "[INFO] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << "\n"
+    #define LOG_WARNING_STD(msg) std::clog << "[WARNING] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << "\n"
     #define LOG_ERROR_STD(msg) std::cerr << "[ERROR] " << __FUNCTION__ << "(" << __LINE__ << "):" << msg << std::endl
 #endif // Q_OS_MOBILE
 
