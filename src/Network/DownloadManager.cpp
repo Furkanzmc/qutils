@@ -72,9 +72,9 @@ void DownloadManager::downloadFile(const QUrl &url, const QString &filePath, con
 QString DownloadManager::getSaveFileName(const QNetworkReply *reply) const
 {
     QString filePath = reply->property("file_path").toString();
+    const QFileInfo fileInfo(filePath);
 
-    if (filePath.isEmpty()) {
-        const QFileInfo fileInfo(filePath);
+    if (filePath.isEmpty() || fileInfo.isDir()) {
         const QString contentDisposition = reply->rawHeader("Content-Disposition");
         QRegularExpression re("filename[^;=\n]*=(UTF-8(['\"]*))?(.*)");
         QRegularExpressionMatch match = re.match(contentDisposition);
