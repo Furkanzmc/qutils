@@ -12,6 +12,7 @@ QT += sql network
 # fcm: Enables Firebase messaging integration.
 # multimedia: Enables multimedia features.
 # for_mobile: Enables mobile related features.
+# disable_logs: Disables the LOG macros.
 # disable_auto_register: Add this to disable auto registering QML types.
 # camera_enabled: [iOS Only] This is used to enable camera related functions such as permissions. It links AVFoundation.
 # safari_services: Add in-app browser support.
@@ -66,6 +67,14 @@ contains(QUTILS_FEATURES, for_mobile) {
 else {
     message("[qutils] Disabling mobile related features.")
     DEFINES += QUTILS_FOR_MOBILE=0
+}
+
+contains(QUTILS_FEATURES, disable_logs) {
+    message("[qutils] Disabling logs.")
+    DEFINES += QUTILS_DISABLE_LOGS=1
+}
+else {
+    DEFINES += QUTILS_DISABLE_LOGS=0
 }
 
 contains(QT, positioning) {
