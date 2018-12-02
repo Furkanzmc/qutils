@@ -34,6 +34,11 @@ CacheManager::CacheManager(const QString &databaseName, const QString &tableName
         dir.mkpath(dir.path());
     }
 
+    dir.setPath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    if (!dir.exists()) {
+        dir.mkpath(dir.path());
+    }
+
     openDatabase();
     createTable();
 }
