@@ -16,7 +16,9 @@ QT += sql network
 # disable_auto_register: Add this to disable auto registering QML types.
 # camera_enabled: [iOS Only] This is used to enable camera related functions such as permissions. It links AVFoundation.
 # safari_services: Add in-app browser support.
-# QUTILS_APP_NAME: Used for naming auto-generaed files.
+# QUTILS_APP_NAME: Used for naming auto-generated files.
+# QUTILS_CACHE_DB_FILE_NAME: Used for naming cache file.
+# QUTILS_SETTINGS_DB_FILE_NAME: Used for naming settings file.
 # QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
 
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
@@ -36,6 +38,16 @@ else {
 }
 else {
     message("[qutils] App package name is not set.")
+}
+
+!isEmpty(QUTILS_CACHE_DB_FILE_NAME) {
+    message("[qutils] App cache file name is set to" $$QUTILS_CACHE_DB_FILE_NAME)
+    DEFINES += QUTILS_CACHE_DB_FILE_NAME=$$QUTILS_CACHE_DB_FILE_NAME
+}
+
+!isEmpty(QUTILS_SETTINGS_DB_FILE_NAME) {
+    message("[qutils] App settings file name is set to" $$QUTILS_SETTINGS_DB_FILE_NAME)
+    DEFINES += QUTILS_SETTINGS_DB_FILE_NAME=$$QUTILS_SETTINGS_DB_FILE_NAME
 }
 
 contains(QUTILS_FEATURES, multimedia) {

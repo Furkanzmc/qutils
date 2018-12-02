@@ -22,10 +22,17 @@ unsigned int CacheManager::m_NextInstanceID = 0;
 CacheManager::CacheManager(const QString &databaseName, const QString &tableName, QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_NextInstanceID)
-    , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_TableName(tableName)
     , m_IsTableCreated(false)
 {
+    const QFileInfo fileInfo(databaseName);
+    if (fileInfo.isAbsolute()) {
+        m_DatabasePath = databaseName;
+    }
+    else {
+        m_DatabasePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName;
+    }
+
     m_NextInstanceID++;
     m_Instances.insert(m_InstanceIndex, this);
     // Create the app data location folder if it doesn't exist.
@@ -48,13 +55,13 @@ CacheManager::~CacheManager()
     m_Instances.remove(m_InstanceIndex);
 
     if (m_Instances.isEmpty()) {
-        m_SqlManager.removeDatabase(m_DatabaseName);
+        m_SqlManager.removeDatabase(m_DatabasePath);
     }
 }
 
 bool CacheManager::write(const QString &key, const QVariant &value)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     bool successful = false;
@@ -87,11 +94,11 @@ bool CacheManager::write(const QString &key, const QVariant &value)
         QVariant oldValue = oldMap[COL_CACHE_VALUE];
         oldValue.convert(oldMap[COL_CACHE_VALUE].toInt());
 
-        emitCacheChangedInAllInstances(key, oldMap[COL_CACHE_VALUE].toString(), newMap[COL_CACHE_VALUE].toString(), m_DatabaseName, m_TableName);
+        emitCacheChangedInAllInstances(key, oldMap[COL_CACHE_VALUE].toString(), newMap[COL_CACHE_VALUE].toString(), m_DatabasePath, m_TableName);
     }
     else {
         successful = m_SqlManager.insertIntoTable(database, m_TableName, newMap);
-        emitCacheChangedInAllInstances(key, "", value, m_DatabaseName, m_TableName);
+        emitCacheChangedInAllInstances(key, "", value, m_DatabasePath, m_TableName);
     }
 
     return successful;
@@ -99,7 +106,7 @@ bool CacheManager::write(const QString &key, const QVariant &value)
 
 QVariant CacheManager::read(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> values {
@@ -129,7 +136,7 @@ QVariant CacheManager::read(const QString &key)
 
 bool CacheManager::remove(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
@@ -141,7 +148,7 @@ bool CacheManager::remove(const QString &key)
 
 bool CacheManager::exists(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
@@ -153,7 +160,7 @@ bool CacheManager::exists(const QString &key)
 
 bool CacheManager::clear()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const bool success = m_SqlManager.clearTable(database, m_TableName);
@@ -166,7 +173,7 @@ bool CacheManager::clear()
 
 QString CacheManager::getDatabaseName() const
 {
-    return m_DatabaseName;
+    return m_DatabasePath;
 }
 
 void CacheManager::setDatabaseName(const QString &databaseName)
@@ -176,10 +183,10 @@ void CacheManager::setDatabaseName(const QString &databaseName)
         return;
     }
 
-    const bool changed = m_DatabaseName != databaseName;
+    const bool changed = m_DatabasePath != databaseName;
     if (changed) {
         m_IsTableCreated = false;
-        m_DatabaseName = databaseName;
+        m_DatabasePath = databaseName;
 
         restartDatabase();
         createTable();
@@ -212,7 +219,7 @@ QString CacheManager::getWritableLocation() const
 bool CacheManager::createTable()
 {
     if (!m_IsTableCreated) {
-        QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+        QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
         DATABASE_CHECK(database);
 
         QList<SqliteManager::ColumnDefinition> columns {
@@ -232,9 +239,9 @@ bool CacheManager::createTable()
 
 void CacheManager::openDatabase()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     if (!database.isOpen()) {
-        database = m_SqlManager.openDatabase(m_DatabaseName);
+        database = m_SqlManager.openDatabase(m_DatabasePath);
         if (database.isOpen()) {
             emit databaseOpened();
         }
@@ -243,13 +250,13 @@ void CacheManager::openDatabase()
 
 void CacheManager::restartDatabase()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     if (database.isOpen()) {
         m_SqlManager.closeDatabase(database);
         emit databaseClosed();
     }
 
-    database = m_SqlManager.openDatabase(m_DatabaseName);
+    database = m_SqlManager.openDatabase(m_DatabasePath);
     if (database.isOpen()) {
         emit databaseOpened();
     }

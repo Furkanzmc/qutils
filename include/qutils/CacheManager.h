@@ -5,11 +5,15 @@
 #include "qutils/SqliteManager.h"
 #include "qutils/Macros.h"
 
-#ifdef QUTILS_APP_NAME
-    #define CACHE_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_cache.sqlite"
+#ifndef QUTILS_CACHE_DB_FILE_NAME
+    #ifdef QUTILS_APP_NAME
+        #define CACHE_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_cache.sqlite"
+    #else
+        #define CACHE_DB_FILE_NAME "qutils_cache.sqlite"
+    #endif // QUTILS_APP_NAME
 #else
-    #define CACHE_DB_FILE_NAME "qutils_cache.sqlite"
-#endif // QUTILS_APP_NAME
+        #define CACHE_DB_FILE_NAME STRINGIFY(QUTILS_CACHE_DB_FILE_NAME)
+#endif // QUTILS_CACHE_DB_FILE_NAME
 
 namespace zmc
 {
@@ -20,11 +24,13 @@ namespace zmc
  */
 class CacheManager : public QObject
 {
-    Q_OBJECT Q_PROPERTY(QString databasePath READ getDatabaseName WRITE setDatabaseName NOTIFY databaseNameChanged)
+    Q_OBJECT Q_PROPERTY(QString databasePath READ getDatabaseName WRITE setDatabaseName NOTIFY
+        databaseNameChanged)
     Q_PROPERTY(QString cacheTableName READ getTableName WRITE setTableName NOTIFY tableNameChanged)
 
 public:
-    explicit CacheManager(const QString &databaseName = CACHE_DB_FILE_NAME, const QString &tableName = "cache", QObject *parent = 0);
+    explicit CacheManager(const QString &databaseName = CACHE_DB_FILE_NAME,
+        const QString &tableName = "cache", QObject *parent = 0);
     ~CacheManager();
 
     /*!
@@ -113,7 +119,7 @@ private:
      */
     const int m_InstanceIndex;
 
-    QString m_DatabaseName, m_TableName;
+    QString m_DatabasePath, m_TableName;
     zmc::SqliteManager m_SqlManager;
     bool m_IsTableCreated;
 
@@ -142,7 +148,8 @@ private:
      * \param databaseName
      * \param tableName
      */
-    void emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue, const QVariant &newCachedValue, const QString &databaseName,
+    void emitCacheChangedInAllInstances(const QString &cacheName, const QVariant &oldCachedValue,
+        const QVariant &newCachedValue, const QString &databaseName,
         const QString &tableName);
 
 signals:

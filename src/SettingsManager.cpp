@@ -22,10 +22,17 @@ unsigned int SettingsManager::m_NextInstanceID = 0;
 SettingsManager::SettingsManager(const QString &databaseName, const QString &tableName, QObject *parent)
     : QObject(parent)
     , m_InstanceIndex(m_NextInstanceID)
-    , m_DatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName)
     , m_TableName(tableName)
     , m_IsTableCreated(false)
 {
+    const QFileInfo fileInfo(databaseName);
+    if (fileInfo.isAbsolute()) {
+        m_DatabasePath = databaseName;
+    }
+    else {
+        m_DatabasePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + databaseName;
+    }
+
     m_NextInstanceID++;
     m_Instances.insert(m_InstanceIndex, this);
 
@@ -43,7 +50,7 @@ SettingsManager::~SettingsManager()
 {
     m_Instances.remove(m_InstanceIndex);
     if (m_Instances.isEmpty()) {
-        m_SqlManager.removeDatabase(m_DatabaseName);
+        m_SqlManager.removeDatabase(m_DatabasePath);
     }
 }
 
@@ -56,7 +63,7 @@ QString SettingsManager::getSystemLanguage() const
 
 bool SettingsManager::write(const QString &key, const QVariant &value)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     bool successful = false;
@@ -89,11 +96,11 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
         QVariant oldValue = oldMap[COL_SETTING_VALUE];
         oldValue.convert(oldMap[COL_SETTING_TYPE].toInt());
 
-        emitSettingChangedInAllInstances(key, oldValue, value, m_TableName, m_DatabaseName);
+        emitSettingChangedInAllInstances(key, oldValue, value, m_TableName, m_DatabasePath);
     }
     else {
         successful = m_SqlManager.insertIntoTable(database, m_TableName, newMap);
-        emitSettingChangedInAllInstances(key, "", value, m_TableName, m_DatabaseName);
+        emitSettingChangedInAllInstances(key, "", value, m_TableName, m_DatabasePath);
     }
 
     return successful;
@@ -101,7 +108,7 @@ bool SettingsManager::write(const QString &key, const QVariant &value)
 
 QVariant SettingsManager::read(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     QVariant value;
@@ -131,7 +138,7 @@ QVariant SettingsManager::read(const QString &key)
 
 bool SettingsManager::remove(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
@@ -143,7 +150,7 @@ bool SettingsManager::remove(const QString &key)
 
 bool SettingsManager::exists(const QString &key)
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     const QList<SqliteManager::Constraint> constraints {
@@ -155,7 +162,7 @@ bool SettingsManager::exists(const QString &key)
 
 bool SettingsManager::clear()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     DATABASE_CHECK(database);
 
     bool successful = m_SqlManager.clearTable(database, m_TableName);
@@ -169,7 +176,7 @@ bool SettingsManager::clear()
 QStringList SettingsManager::getKeys()
 {
     QStringList keys;
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     if (!database.isOpen()) {
         LOG_WARNING("Database is not open!");
         return keys;
@@ -185,7 +192,7 @@ QStringList SettingsManager::getKeys()
 
 QString SettingsManager::getDatabaseName() const
 {
-    return m_DatabaseName;
+    return m_DatabasePath;
 }
 
 void SettingsManager::setDatabaseName(const QString &databaseName)
@@ -195,10 +202,10 @@ void SettingsManager::setDatabaseName(const QString &databaseName)
         return;
     }
 
-    const bool changed = m_DatabaseName != databaseName;
+    const bool changed = m_DatabasePath != databaseName;
     if (changed) {
         m_IsTableCreated = false;
-        m_DatabaseName = databaseName;
+        m_DatabasePath = databaseName;
 
         restartDatabase();
         createTable();
@@ -225,7 +232,7 @@ void SettingsManager::setTableName(const QString &tableName)
 bool SettingsManager::createTable()
 {
     if (!m_IsTableCreated) {
-        QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+        QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
         DATABASE_CHECK(database);
 
         QList<SqliteManager::ColumnDefinition> columns {
@@ -245,9 +252,9 @@ bool SettingsManager::createTable()
 
 void SettingsManager::openDatabase()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     if (!database.isOpen()) {
-        database = m_SqlManager.openDatabase(m_DatabaseName);
+        database = m_SqlManager.openDatabase(m_DatabasePath);
         if (database.isOpen()) {
             emit databaseOpened();
         }
@@ -256,13 +263,13 @@ void SettingsManager::openDatabase()
 
 void SettingsManager::restartDatabase()
 {
-    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabaseName);
+    QSqlDatabase database = m_SqlManager.openDatabase(m_DatabasePath);
     if (database.isOpen()) {
         m_SqlManager.closeDatabase(database);
         emit databaseClosed();
     }
 
-    database = m_SqlManager.openDatabase(m_DatabaseName);
+    database = m_SqlManager.openDatabase(m_DatabasePath);
     if (database.isOpen()) {
         emit databaseOpened();
     }

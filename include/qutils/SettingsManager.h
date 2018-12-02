@@ -5,11 +5,15 @@
 #include "qutils/SqliteManager.h"
 #include "qutils/Macros.h"
 
-#ifdef QUTILS_APP_NAME
-    #define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"
+#ifndef QUTILS_SETTINGS_DB_FILE_NAME
+    #ifdef QUTILS_APP_NAME
+        #define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_APP_NAME) "_settings.sqlite"
+    #else
+        #define SETTINGS_DB_FILE_NAME "qutils_settings.sqlite"
+    #endif // QUTILS_APP_NAME
 #else
-    #define SETTINGS_DB_FILE_NAME "qutils_settings.sqlite"
-#endif // QUTILS_APP_NAME
+    #define SETTINGS_DB_FILE_NAME STRINGIFY(QUTILS_SETTINGS_DB_FILE_NAME)
+#endif // QUTILS_SETTINGS_DB_FILE_NAME
 
 namespace zmc
 {
@@ -20,11 +24,13 @@ namespace zmc
  */
 class SettingsManager : public QObject
 {
-    Q_OBJECT Q_PROPERTY(QString databasePath READ getDatabaseName WRITE setDatabaseName NOTIFY databaseNameChanged)
+    Q_OBJECT Q_PROPERTY(QString databasePath READ getDatabaseName WRITE setDatabaseName NOTIFY
+        databaseNameChanged)
     Q_PROPERTY(QString settingsTableName READ getTableName WRITE setTableName NOTIFY tableNameChanged)
 
 public:
-    explicit SettingsManager(const QString &databaseName = SETTINGS_DB_FILE_NAME, const QString &tableName = "settings", QObject *parent = 0);
+    explicit SettingsManager(const QString &databaseName = SETTINGS_DB_FILE_NAME,
+        const QString &tableName = "settings", QObject *parent = 0);
     ~SettingsManager();
 
     /*!
@@ -120,7 +126,7 @@ private:
      */
     const int m_InstanceIndex;
 
-    QString m_DatabaseName, m_TableName;
+    QString m_DatabasePath, m_TableName;
     zmc::SqliteManager m_SqlManager;
     bool m_IsTableCreated;
 
@@ -149,7 +155,8 @@ private:
      * \param tableName
      * \param databaseName
      */
-    static void emitSettingChangedInAllInstances(const QString &settingName, const QVariant &oldSettingValue, const QVariant &newSettingValue,
+    static void emitSettingChangedInAllInstances(const QString &settingName,
+        const QVariant &oldSettingValue, const QVariant &newSettingValue,
         const QString &tableName, const QString &databaseName);
 
     /*!
