@@ -13,8 +13,10 @@
 
 #if defined(Q_OS_WIN) || defined(Q_OS_WINRT)
     #define FILE_PATH_PREFIX "file:///"
+    #define FILE_PATH_DIVIDER "\\"
 #else
     #define FILE_PATH_PREFIX "file://"
+    #define FILE_PATH_DIVIDER "/"
 #endif // defined(Q_OS_WIN)
 
 #if (!defined(Q_OS_IOS) && !defined(Q_OS_ANDROID)) && (defined(Q_OS_WIN) || defined(Q_OS_MACOS) || defined(Q_OS_WINRT))

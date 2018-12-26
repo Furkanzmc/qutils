@@ -16,6 +16,7 @@
 #include "qutils/SignalManager.h"
 #include "qutils/UpdateChecker.h"
 #include "qutils/SettingsManager.h"
+#include "qutils/Network/Download.h"
 #include "qutils/PermissionManager.h"
 #include "qutils/TranslationHelper.h"
 #include "qutils/NotificationClient.h"
@@ -54,12 +55,13 @@ void QutilsPlugin::registerQutils(const char *uri)
     qmlRegisterType<zmc::TranslationHelper>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "TranslationHelper");
     qmlRegisterType<zmc::UpdateChecker>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "UpdateChecker");
     qmlRegisterType<zmc::Network::DownloadManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "DownloadManager");
-    qmlRegisterType<zmc::Network::NetworkManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NetworkManager");
 
+    qmlRegisterType<zmc::Network::Download>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "Download");
+    qmlRegisterType<zmc::Network::NetworkManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "NetworkManager");
     qmlRegisterType<zmc::PermissionManager>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "PermissionManager");
+
     qmlRegisterSingletonType<zmc::SystemInfo>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "SystemInfo", zmc::SystemInfo::singletonProvider);
     qmlRegisterSingletonType<zmc::ScreenHelper>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "ScreenHelper", zmc::ScreenHelper::singletonProvider);
-
     qmlRegisterSingletonType<zmc::QMLRefresh>(uri, QUTILS_VER_MAJOR, QUTILS_VER_MINOR, "QMLRefresh", zmc::QMLRefresh::singletonProvider);
 }
 
