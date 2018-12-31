@@ -37,7 +37,7 @@ ScreenHelper::ScreenHelper(QObject *parent)
     , m_XXXHighDPIValue(640)
 #endif // Q_OS_DESKTOP
     , m_DPIVariation(20)
-    , m_Ratio(1.f)
+    , m_Ratio(1)
     , m_DesiredWidth(0.f)
     , m_DesiredHeight(0.f)
     , m_SizeInInches(0)
@@ -59,9 +59,9 @@ QObject *ScreenHelper::singletonProvider(QQmlEngine *qmlEngine, QJSEngine *jsEng
     return m_Instance;
 }
 
-qreal ScreenHelper::dp(const qreal &size)
+int ScreenHelper::dp(const int &size)
 {
-    return qMax(1, static_cast<int>(size * m_Ratio));
+    return std::max(1, size * m_Ratio);
 }
 
 QString ScreenHelper::getLowResourceFolderName() const
@@ -315,7 +315,7 @@ bool ScreenHelper::isXLargeSize() const
 #endif // Q_OS_MOBILE
 }
 
-float ScreenHelper::ratio() const
+int ScreenHelper::ratio() const
 {
     return m_Ratio;
 }
@@ -381,7 +381,7 @@ void ScreenHelper::calculateRatio()
 #elif defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
     const float baseDPI = 113.5f;
 #endif // Q_OS_ANDROID
-    m_Ratio = (m_DPI / baseDPI) * m_Scale;
+    m_Ratio = std::max(1, static_cast<int>(std::nearbyint((m_DPI / baseDPI) * m_Scale)));
 }
 
 float ScreenHelper::getAspectRatioWidth(const QSize &origSize, const float &newHeight) const

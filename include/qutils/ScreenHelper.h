@@ -87,9 +87,9 @@ public:
     /*!
      * \brief This method takes the \a size and returns a DPI version.
      * \param size
-     * \return qreal
+     * \return int
      */
-    Q_INVOKABLE qreal dp(const qreal &size);
+    Q_INVOKABLE int dp(const int &size);
 
     /*!
      * \brief Returns the assets folder name for a low DPI screen.
@@ -383,9 +383,9 @@ public:
     /*!
      * \property ScreenHelper::ratio
      * \brief Returns the ratio used to calculate dp values.
-     * \return float
+     * \return int
      */
-    float ratio() const;
+    int ratio() const;
 
     QSize getRefSize() const;
     void setRefSize(const QSize &size);
@@ -415,8 +415,8 @@ private:
             m_XXXHighResourceName,
             m_CommonAssetFolder;
 
-    float m_Ratio,
-          m_DesiredWidth,
+    int m_Ratio;
+    float m_DesiredWidth,
           m_DesiredHeight,
           m_SizeInInches,
           m_Scale;
