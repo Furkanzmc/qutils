@@ -10,6 +10,26 @@
 // Local
 #include "qutils/Macros.h"
 
+#if defined(Q_OS_ANDROID)
+// This is here because nearbyint in mising in NDK: https://github.com/android-ndk/ndk/issues/82
+namespace std
+{
+    double nearbyint(double arg)
+    {
+        const double bottom = std::floor(arg);
+        const double middle = bottom + 0.5;
+        if (arg <= middle) {
+            arg = bottom;
+        }
+        else {
+            arg = std::ceil(arg);
+        }
+
+        return arg;
+    }
+}
+#endif // Q_OS_ANDROID
+
 namespace zmc
 {
 
@@ -351,6 +371,11 @@ void ScreenHelper::setRefDPI(const float &refDPI)
 
 void ScreenHelper::calculateRatio()
 {
+    if (QGuiApplication::testAttribute(Qt::AA_EnableHighDpiScaling)) {
+        m_Ratio = 1;
+        return;
+    }
+
 #if defined(Q_OS_DESKTOP) && QUTILS_FOR_MOBILE
     const QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
     m_DesiredHeight = qMin(static_cast<float>(m_RefSize.height()), static_cast<float>(screenGeometry.height()) * 0.8f);
@@ -408,7 +433,10 @@ void ScreenHelper::printScreenInfo() const
         << "isXXHDPI: " << isXXHDPI() << "\n"
         << "isXXXHDPI: " << isXXXHDPI() << "\n"
         << "Ratio: " << m_Ratio << "\n"
-        << "Actual DPI: " << QGuiApplication::primaryScreen()->physicalDotsPerInch() << "\n"
+        << "Physical DPI: " << QGuiApplication::primaryScreen()->physicalDotsPerInch() << "\n"
+        << "Logical DPI: " << QGuiApplication::primaryScreen()->logicalDotsPerInch() << "\n"
+        << "Device Pixel Ratio: " << QGuiApplication::primaryScreen()->devicePixelRatio()
+        << "\n"
         << "----- Screen Info End -----");
 }
 
