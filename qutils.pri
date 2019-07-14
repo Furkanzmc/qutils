@@ -8,21 +8,21 @@ CONFIG += c++11
 QT += sql network
 
 # Available QUTILS_FEATURES options:
-# no_photos: Disables the Photos framework on iOS.
-# fcm: Enables Firebase messaging integration.
-# multimedia: Enables multimedia features.
-# for_mobile: Enables mobile related features.
-# disable_logs: Disables the LOG macros.
-# disable_auto_register: Add this to disable auto registering QML types.
-# camera_enabled: [iOS Only] This is used to enable camera related functions such as permissions. It links AVFoundation.
-# safari_services: Add in-app browser support.
-# QUTILS_APP_NAME: Used for naming auto-generated files.
-# QUTILS_CACHE_DB_FILE_NAME: Used for naming cache file.
-# QUTILS_SETTINGS_DB_FILE_NAME: Used for naming settings file.
-# QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
+#    - no_photos: Disables the Photos framework on iOS.
+#    - multimedia: Enables multimedia features.
+#    - for_mobile: Enables mobile related features.
+#    - disable_logs: Disables the LOG macros.
+#    - disable_auto_register: Add this to disable auto registering QML types.
+#    - camera_enabled: [iOS Only] This is used to enable camera related functions such as permissions. It links AVFoundation.
+#    - safari_services: Add in-app browser support.
+
+# Available Options:
+#    - QUTILS_APP_NAME: Used for naming auto-generated files.
+#    - QUTILS_CACHE_DB_FILE_NAME: Used for naming cache file.
+#    - QUTILS_SETTINGS_DB_FILE_NAME: Used for naming settings file.
+#    - QUTILS_APP_PACKAGE_NAME: This is the package name of the app.
 
 QUTILS_FEATURE_SAFARI_SERVICES = safari_services
-QUTILS_FEATURE_FCM = fcm
 
 !isEmpty(QUTILS_APP_NAME) {
     message("[qutils] App name is set to" $$QUTILS_APP_NAME)
@@ -98,18 +98,6 @@ else {
     DEFINES += QUTILS_LOCATION_ENABLED=0
 }
 
-FCM_ENABLED=false
-
-contains(QUTILS_FEATURES, $$QUTILS_FEATURE_FCM) {
-    message("[qutils] Firebase Cloud Messageing is enabled. It will only work on mobile devices.")
-    FCM_ENABLED=true
-    DEFINES += FCM_ENABLED=1
-}
-else {
-    message("[qutils] Firebase Cloud Messageing is NOT enabled.")
-    DEFINES += FCM_ENABLED=0
-}
-
 android {
     QT += androidextras
 
@@ -154,10 +142,7 @@ ios {
         LIBS += -framework SafariServices
     }
 
-    isEqual(FCM_ENABLED, true) {
-        LIBS += -framework UserNotifications
-        QMAKE_LFLAGS += -ObjC
-
+    contains(QTFIREBASE_CONFIG, messaging) {
         MY_ENTITLEMENTS.name = CODE_SIGN_ENTITLEMENTS
         MY_ENTITLEMENTS.value = $$PWD/ios/pushnotifications.entitlements
         QMAKE_MAC_XCODE_SETTINGS += MY_ENTITLEMENTS

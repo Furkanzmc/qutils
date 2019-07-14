@@ -125,12 +125,6 @@ public:
     void dismissKeyboard();
 
     /*!
-     * \brief Returns teh FCM token if it was generated. If it wasn't, returns an empty string.
-     * \return QString
-     */
-    QString getFCMToken() const;
-
-    /*!
      * \brief Sets the application's icon badge number. Set to 0 to clear it.
      * \param number
      * \return void

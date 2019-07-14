@@ -11,9 +11,9 @@
 #include <QMetaMethod>
 #include <QGuiApplication>
 // QtFirebase
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     #include "QtFirebase/src/qtfirebasemessaging.h"
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 // Local
 #ifdef Q_OS_ANDROID
     #include "qutils/android/JNICallbacks.h"
@@ -40,9 +40,9 @@ ClientsList NotificationClient::m_Clients = ClientsList();
 NotificationQueue NotificationClient::m_NotificationQueue = NotificationQueue();
 
 QMap<int, NotificationClient *> NotificationClient::m_Instances = QMap<int, NotificationClient *>();
-#if FCM_ENABLED == 1
+#ifdef QTFIREBASE_BUILD_MESSAGING
     QString NotificationClient::m_FCMToken = "";
-#endif // FCM_ENABLED == 1
+#endif // QTFIREBASE_BUILD_MESSAGING
 
 unsigned int NotificationClient::m_NextInstanceID = 0;
 
@@ -52,20 +52,20 @@ NotificationClient::NotificationClient(QObject *parent)
 #ifdef Q_OS_IOS
     , m_iOSNative(new iOSNativeUtils())
 #endif // Q_OS_IOS
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     , m_FCMMessaging(new QtFirebaseMessaging(this))
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 {
     m_NextInstanceID++;
     QTimer::singleShot(1, std::bind(&NotificationClient::processQueue, this));
     m_Instances.insert(m_InstanceIndex, this);
 
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     // Call this to connect the signals. QtFirebase is designed to be used with QML.
     m_FCMMessaging->componentComplete();
     connect(m_FCMMessaging, &QtFirebaseMessaging::messageReceived, this, &NotificationClient::onMessageReceived);
     connect(m_FCMMessaging, &QtFirebaseMessaging::tokenChanged, this, &NotificationClient::onTokenChanged);
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 }
 
 NotificationClient::~NotificationClient()
@@ -132,19 +132,6 @@ int NotificationClient::getNextID() const
     return m_NotificationID;
 }
 
-QString NotificationClient::getFCMToken() const
-{
-    QString token = "";
-#ifdef Q_OS_IOS
-    token = m_iOSNative->getFCMToken();
-#endif // Q_OS_IOS
-
-#ifdef Q_OS_ANDROID
-
-#endif // Q_OS_ANDROID
-    return token;
-}
-
 void NotificationClient::emitNotificationReceivedSignal(QString payload)
 {
 #ifdef Q_OS_MOBILE
@@ -208,11 +195,11 @@ void NotificationClient::emitFCMTokenReceivedSignal(const QString &token)
             }
         }
     }
-#if FCM_ENABLED == 1
+#ifdef QTFIREBASE_BUILD_MESSAGING
     else {
         m_FCMToken = token;
     }
-#endif // FCM_ENABLED == 1
+#endif // QTFIREBASE_BUILD_MESSAGING
 #else
     Q_UNUSED(token);
 #endif // Q_OS_MOBILE
@@ -226,11 +213,9 @@ QVariantMap NotificationClient::payload() const
 QString NotificationClient::token() const
 {
     QString tk = "";
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     tk = m_FCMMessaging->token();
-#elif defined(Q_OS_IOS)
-    tk = m_iOSNative->getFCMToken();
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 
     return tk;
 }
@@ -315,7 +300,7 @@ void NotificationClient::scheduleNotificationIOS(zmc::Notification *notification
 
 #endif // Q_OS_IOS
 
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
 void NotificationClient::onMessageReceived()
 {
     m_LastPayload = m_FCMMessaging->data();
@@ -326,6 +311,6 @@ void NotificationClient::onTokenChanged()
 {
     emit fcmTokenReceived();
 }
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 
 }

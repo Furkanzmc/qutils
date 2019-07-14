@@ -2,11 +2,10 @@
 // Qt
 #include <QObject>
 #include <QVariantMap>
-// QtFirebase
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
-    #include "QtFirebase/src/qtfirebasemessaging.h"
+
+#ifdef QTFIREBASE_BUILD_MESSAGING
     class QtFirebaseMessaging;
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 
 namespace zmc
 {
@@ -52,12 +51,6 @@ public:
      * @return int
      */
     Q_INVOKABLE int getNextID() const;
-
-    /**
-     * @brief Returns the FCM token if available. If it is not yet generated, or If FCM is disabled, returns an empty string.
-     * @return QString
-     */
-    Q_INVOKABLE QString getFCMToken() const;
 
     void emitNotificationReceivedSignal(QString payload);
     void emitNotificationTappedSignal(QString payload);
@@ -112,9 +105,9 @@ private:
      * \brief Used to prevent key clashes in m_Instances.
      */
     static unsigned int m_NextInstanceID;
-#if FCM_ENABLED == 1
+#ifdef QTFIREBASE_BUILD_MESSAGING
     static QString m_FCMToken;
-#endif // FCM_ENABLED == 1
+#endif // QTFIREBASE_BUILD_MESSAGING
 
     /*!
      * \variable const int m_InstanceIndex
@@ -127,9 +120,9 @@ private:
     iOSNativeUtils *m_iOSNative;
 #endif // Q_OS_IOS
 
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     QtFirebaseMessaging *m_FCMMessaging;
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 
     QVariantMap m_LastPayload;
 
@@ -146,10 +139,10 @@ private:
     void scheduleNotificationIOS(zmc::Notification *notification);
 #endif // Q_OS_IOS
 
-#if FCM_ENABLED && defined(Q_OS_ANDROID)
+#ifdef QTFIREBASE_BUILD_MESSAGING
     void onMessageReceived();
     void onTokenChanged();
-#endif // FCM_ENABLED
+#endif // QTFIREBASE_BUILD_MESSAGING
 };
 
 }

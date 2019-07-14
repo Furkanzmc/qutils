@@ -5,10 +5,6 @@
 #endif // SAFARI_SERVICES_ENABLED
 #import <sys/utsname.h>
 #import <UIKit/UIKit.h>
-// Firebase
-#if FCM_ENABLED == 1
-    #import <FirebaseMessaging/FirebaseMessaging.h>
-#endif // FCM_ENABLED
 // Local
 #include "qutils/Macros.h"
 #import "qutils/ios/QutilsViewDelegate.h"
@@ -181,19 +177,6 @@ void iOSNativeUtils::schedulePushNotification(const QString &title, const QStrin
 void iOSNativeUtils::dismissKeyboard()
 {
     [[UIApplication sharedApplication] sendAction: @selector(resignFirstResponder) to: nil from: nil forEvent: nil];
-}
-
-QString iOSNativeUtils::getFCMToken() const
-{
-    QString token = "";
-#if FCM_ENABLED == 1
-    NSString *fcmToken = [FIRMessaging messaging].FCMToken;
-    if (fcmToken) {
-        token = QString::fromNSString(fcmToken);
-    }
-#endif // FCM_ENABLED
-
-    return token;
 }
 
 void iOSNativeUtils::setApplicationIconBadgeNumber(const int &number)
