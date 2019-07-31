@@ -2,7 +2,7 @@ package org.zmc.qutils;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 import android.util.Log;
 import android.graphics.Color;
 import android.view.Window;
