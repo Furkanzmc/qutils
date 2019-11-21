@@ -16,13 +16,7 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
 
     QVariantMap data;
-    NSURL *fileURL = nil;
-    NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-
-    if (imageURL) {
-        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil] lastObject];
-        fileURL = [self getAssetPath:asset];
-    }
+    NSURL *fileURL = [info valueForKey:UIImagePickerControllerImageURL];
 
     data["mediaType"] = QString::fromNSString(info[UIImagePickerControllerMediaType]);
     if (fileURL != nil) {
@@ -57,9 +51,13 @@
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+#if QUTILS_PHOTOS_ENABLED == 1
     [picker dismissViewControllerAnimated:YES completion:nil];
 
     zmc::iOSNativeUtils::emitImagePickerCancelled();
+#else
+    Q_UNUSED(picker);
+#endif // QUTILS_PHOTOS_ENABLED == 1
 }
 
 -(NSURL *)getAssetPath:(PHAsset *)asset {
@@ -73,13 +71,13 @@
         [[PHImageManager defaultManager] requestImageDataForAsset:asset
                                                           options:imageRequestOptions
                                                     resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                                                        (void)imageData;
-                                                        (void)dataUTI;
-                                                        (void)orientation;
-                                                        if ([info objectForKey:@"PHImageFileURLKey"]) {
-                                                            fileURL = [info objectForKey:@"PHImageFileURLKey"];
-                                                        }
-                                                    }
+            (void)imageData;
+            (void)dataUTI;
+            (void)orientation;
+            if ([info objectForKey:@"PHImageFileURLKey"]) {
+                fileURL = [info objectForKey:@"PHImageFileURLKey"];
+            }
+        }
          ];
     }
 #else
